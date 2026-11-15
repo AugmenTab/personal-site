@@ -7,16 +7,16 @@ packages:
 - completed:
     name: brigid
     pantry-tree:
-      sha256: ebed346c92afc3825f55a18e9834d4451b81ba49c449f1266b259c558f328740
-      size: 14081
-    sha256: efa282d045f4ad3dbd315c6ef9a35b0730ba16a85b56d1f5bbe1408439be99a6
-    size: 416985
+      sha256: 4b039d632635c74cec2ea8a040ebad0f76c7435620957b50b55c35d0ceacfce1
+      size: 14285
+    sha256: 3bfd4b6eb908a91a71253996739f51aae6aab6732185e6bd348df5086f8e2609
+    size: 427476
     subdir: brigid
-    url: https://github.com/AugmenTab/brigid/archive/9344bfb561d5a9637f691ac7e734186667df4a61.tar.gz
+    url: https://github.com/AugmenTab/brigid/archive/e0f4d45f4b91a1a381c64845861237d06b3b0803.tar.gz
     version: 0.4.0.0
   original:
     subdir: brigid
-    url: https://github.com/AugmenTab/brigid/archive/9344bfb561d5a9637f691ac7e734186667df4a61.tar.gz
+    url: https://github.com/AugmenTab/brigid/archive/e0f4d45f4b91a1a381c64845861237d06b3b0803.tar.gz
 - completed:
     name: beeline-http-client
     pantry-tree:

@@ -171,3 +171,31 @@ against the plate seams). Interaction transitions (nav underline, card
 arrow, button fill) last up to 200 ms. With `prefers-reduced-motion:
 reduce` all transitions are off and smooth scrolling is disabled. The page
 ships no JavaScript.
+
+## Phase 03: the scrolling homepage
+
+The rhythm is **grand → intriguing → substantial → reflective →
+personal**, carried by surface and ornament rather than by new imagery.
+
+| Section | Treatment |
+| --- | --- |
+| Arrival | Unchanged and regression-gated (hero band pixel-identical to the approved baseline) |
+| Black teaser | The same 9-slice frame over the stage art. The code panel is wider at ≥1100 px so the verified program fits unscrolled; a chamfered "Explore Black" cartouche (as in the render) replaces the render's fake Compile/Run controls |
+| Selected Work | The render's framed horizontal cards (art panel left, text right), two or three per row; text-only cards use a single column. Below 900 px a single column; below 640 px art above text |
+| Engineering Philosophy | No frame and no art: an engraved verdigris label, an italic Garamond heading (echoing the thesis), a diamond rule, and three principles divided by gold hairlines with Roman numerals. A faint band of eclipse light between two fading hairlines marks the change of mood |
+| Writing (conditional) | A ruled article index: date column, title in tracked capitals, summary, "Read" link |
+| About and Contact | The tree emblem (its one appearance) beside a lede and a quieter paragraph; contacts as small hairline cartouches showing label and destination |
+
+Between sections: the existing ruled section titles (Selected Work, About,
+Writing), hairlines and spacing. No additional eclipse, monogram or monument.
+
+### Visual discrepancy register (Phase 03)
+
+| Area | Difference from the approved render | Why |
+| --- | --- | --- |
+| Black teaser points | "Closed types and exhaustive matching / Integer arithmetic proved to fit its types / Compile-time contracts, for a first fragment" replace "Strong static guarantees / Effect and resource safety / A foundation for AI-native development" | Effects and ownership are reserved words in Black, not implemented; the AI-agent loop is planned, not built. Only implemented capabilities are claimed |
+| Black excerpt | A real 15-line conformance program instead of the render's invented 10-line one | The render's syntax (`fn`, `IO Unit`, `F64`) is not Black's |
+| Black teaser height | Taller than the Phase 00 teaser (15 lines, plus the link) | Follows from the verified program. The teaser frame's top edge is unchanged |
+| Selected Work | Two cards (Brigid, Lockdown), not the render's three (Brigid, Crest, Lockstep) | Crest and Lockstep are withheld (see the Phase 03 retrospective); the render's card copy for Brigid described a language, which Brigid is not |
+| Nav | No Writing or Résumé links | No published writing and no résumé yet; links appear only with real destinations |
+| Code ligatures | Disabled in all code | JetBrains Mono drew `->` as an arrow, altering the verified source |

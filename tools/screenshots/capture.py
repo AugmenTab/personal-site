@@ -30,7 +30,9 @@ PAGES_OUT = f"{OUT}/pages"
 PAGES = {
     "home": "/",
     "work": "/work/",
+    "project-black": "/work/black/",
     "project-brigid": "/work/brigid/",
+    "project-lockdown": "/work/lockdown/",
     "about": "/about/",
     "404": "/404.html",
     "404-deep": "/no/such/page/",
@@ -180,7 +182,7 @@ def no_js_walk(browser, failures):
     page.goto(urljoin(BASE, "/"), wait_until="networkidle")
     steps = [
         ("nav Work", "nav >> text=Work", "/work/"),
-        ("Brigid card", ".project-card__link", "/work/brigid/"),
+        ("Brigid card", ".project-card__link[href='/work/brigid/']", "/work/brigid/"),
         ("sidebar All projects", ".project-nav__back", "/work/"),
         ("nav About", "nav >> text=About", "/about/"),
         ("nav Contact", "nav >> text=Contact", "/about/#contact"),
@@ -208,7 +210,7 @@ def no_js_walk(browser, failures):
     return walk
 
 
-PROJECT_PAGES = {"project-brigid": "/work/brigid/"}
+PROJECT_PAGES = {name: path for name, path in PAGES.items() if name.startswith("project-")}
 
 
 def project_sidebar_checks(browser, failures):
@@ -326,6 +328,88 @@ def focus_checks(browser, failures):
     return report
 
 
+PHASE03_OUT = f"{OUT}/phase-03"
+
+# The required homepage order (Phase 03 §11). #writing is conditional.
+HOME_SECTIONS = ["top", "black", "selected-work", "philosophy", "writing", "about"]
+
+SECTION_CAPTURES = {
+    "desktop": ["black", "selected-work", "philosophy", "writing", "about"],
+    "tablet": ["black", "selected-work", "philosophy", "about"],
+    "mobile": ["black", "selected-work", "philosophy", "about"],
+}
+
+HOME_STRUCTURE_JS = """
+() => {
+  const ids = [...document.querySelectorAll('main > *, main .stage > section')]
+    .map(e => e.id).filter(Boolean);
+  const cards = [...document.querySelectorAll('#selected-work .project-card')].map(c => {
+    const t = c.querySelector('.project-card__title');
+    return { title: t.textContent, href: c.querySelector('.project-card__link').getAttribute('href'),
+             titleClipped: t.scrollWidth > t.clientWidth + 1,
+             height: Math.round(c.getBoundingClientRect().height),
+             width: Math.round(c.getBoundingClientRect().width) };
+  });
+  const black = document.getElementById('black');
+  const controls = black.querySelectorAll('button, input, textarea, select, [contenteditable], form').length;
+  const blackLinks = [...black.querySelectorAll('a')].map(a => a.getAttribute('href'));
+  const lede = document.querySelector('.philosophy__lede');
+  const frame = document.querySelector('.feature__frame').getBoundingClientRect();
+  return { sectionOrder: ids, cards, blackControls: controls, blackLinks,
+           philosophyLedeWidth: lede ? Math.round(lede.getBoundingClientRect().width) : null,
+           featureFrameTop: Math.round(frame.top + scrollY),
+           writingPresent: !!document.getElementById('writing') };
+}
+"""
+
+
+def phase03_captures(browser, failures):
+    """Phase 03 evidence: full-page and per-section captures of the
+    homepage at every viewport (plus a wide desktop), its section order,
+    the Selected Work cards' destinations, and the Black teaser's lack of
+    controls. Writes into design/proof/phase-03/."""
+    os.makedirs(PHASE03_OUT, exist_ok=True)
+    report = {}
+    viewports = dict(VIEWPORTS, wide={"width": 1920, "height": 1080})
+    for vp_name, viewport in viewports.items():
+        page = browser.new_page(viewport=viewport, device_scale_factor=1)
+        ready(page)
+        page.screenshot(path=f"{PHASE03_OUT}/home-{vp_name}-full.png", full_page=True)
+        page.screenshot(path=f"{PHASE03_OUT}/home-{vp_name}-hero.png", full_page=False)
+        info = page.evaluate(HOME_STRUCTURE_JS)
+        expected = [s for s in HOME_SECTIONS if s != "writing" or info["writingPresent"]]
+        if info["sectionOrder"] != expected:
+            failures.append(f"home/{vp_name}: section order {info['sectionOrder']}, expected {expected}")
+        if info["blackControls"]:
+            failures.append(f"home/{vp_name}: the Black teaser contains {info['blackControls']} control(s)")
+        for card in info["cards"]:
+            if card["titleClipped"]:
+                failures.append(f"home/{vp_name}: card title clipped: {card['title']}")
+            status = page.request.get(urljoin(BASE, card["href"])).status
+            card["status"] = status
+            if status != 200 or not card["href"].startswith("/work/"):
+                failures.append(f"home/{vp_name}: card {card['title']} -> {card['href']} (HTTP {status})")
+        for href in info["blackLinks"]:
+            if page.request.get(urljoin(BASE, href)).status != 200:
+                failures.append(f"home/{vp_name}: Black teaser link {href} does not resolve")
+        for section in SECTION_CAPTURES.get(vp_name, []):
+            locator = page.locator(f"#{section}")
+            if locator.count():
+                locator.screenshot(path=f"{PHASE03_OUT}/{vp_name}-{section}.png")
+        report[vp_name] = info
+        page.close()
+
+    # Without JavaScript the whole page is still there.
+    context = browser.new_context(viewport=VIEWPORTS["desktop"], java_script_enabled=False)
+    page = context.new_page()
+    page.goto(BASE, wait_until="networkidle")
+    page.screenshot(path=f"{PHASE03_OUT}/home-desktop-no-javascript-full.png", full_page=True)
+    report["noJavaScriptSections"] = page.eval_on_selector_all(
+        "main section[id]", "els => els.filter(e => e.getBoundingClientRect().height > 0).map(e => e.id)")
+    context.close()
+    return report
+
+
 def main() -> int:
     report = {}
     failures = []
@@ -422,13 +506,32 @@ def main() -> int:
             page.keyboard.press("Tab")
         page.wait_for_timeout(500)  # let focus/hover transitions (<= 200ms) finish
         page.screenshot(path=f"{OUT}/keyboard-focus.png", full_page=False)
-        # Then (past the secondary CTA) the project card link.
-        page.keyboard.press("Tab")
-        page.keyboard.press("Tab")
+        # Keep tabbing (secondary CTA, Explore Black, ...) to the first
+        # Selected Work card link; every stop on the way must show a ring.
+        homeStops = []
+        for _ in range(12):
+            page.keyboard.press("Tab")
+            stop = page.evaluate(
+                "() => { const e = document.activeElement; const s = getComputedStyle(e);"
+                " const ring = s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) > 0;"
+                " const after = getComputedStyle(e, '::after');"
+                " const cardRing = e.classList.contains('project-card__link') && after.outlineStyle !== 'none';"
+                " return { href: e.getAttribute('href'), focusVisible: ring || cardRing,"
+                "          card: e.classList.contains('project-card__link') }; }")
+            homeStops.append(stop)
+            if not stop["focusVisible"]:
+                failures.append(f"home keyboard: no visible focus on {stop['href']}")
+            if stop["card"]:
+                break
+        report["homeKeyboardToFirstCard"] = homeStops
+        if not homeStops or not homeStops[-1]["card"]:
+            failures.append("home keyboard: never reached a Selected Work card")
         page.evaluate("document.activeElement.closest('article').scrollIntoView({block: 'center', behavior: 'instant'})")
         page.wait_for_timeout(500)
         page.screenshot(path=f"{OUT}/keyboard-focus-card.png", full_page=False)
         page.close()
+
+        report["phase03"] = phase03_captures(browser, failures)
 
         # Reduced motion: confirm animations and smooth scrolling are off.
         context = browser.new_context(viewport=VIEWPORTS["desktop"], reduced_motion="reduce")
@@ -459,7 +562,7 @@ def main() -> int:
     # The container runs as root; hand the evidence to whoever owns the
     # bind-mounted proof directory (matters on Linux hosts only).
     st = os.stat(OUT)
-    for directory in (OUT, PAGES_OUT):
+    for directory in (OUT, PAGES_OUT, PHASE03_OUT):
         for name in [""] + os.listdir(directory):
             try:
                 os.chown(os.path.join(directory, name), st.st_uid, st.st_gid)

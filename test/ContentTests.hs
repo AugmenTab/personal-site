@@ -4,7 +4,17 @@
 -- temporary source tree, loaded with 'loadContent' / 'loadSite', rendered
 -- through the real layout, and (where it matters) built with 'buildSite'.
 -- Safety assertions inspect the final HTML, not an intermediate tree.
-module ContentTests (contentTests) where
+module ContentTests
+  ( contentTests
+    -- * Fixtures shared with HomeTests
+  , withSource
+  , projectJson
+  , articleJson
+  , svg
+  , listFiles
+  , readTree
+  , slugOf
+  ) where
 
 import Control.Exception (try)
 import Control.Monad (forM, forM_)
@@ -150,13 +160,13 @@ parseErrs = either id (const []) . parseDocument "test.md" ["main"]
 metadataTests :: TestTree
 metadataTests =
   testGroup "metadata validation"
-    [ testCase "the real Brigid content loads and is published" $ do
+    [ testCase "the real project content loads and is published" $ do
         loaded <- loadContent "."
         case loaded of
           Left errs -> assertFailure (concatMap show errs)
           Right content -> do
-            map (slugText . projectSlug) (publishedProjects content) @?= ["brigid"]
-            map (slugText . projectSlug) (featuredProjects content) @?= ["brigid"]
+            map (slugText . projectSlug) (publishedProjects content) @?= ["black", "brigid", "lockdown"]
+            map (slugText . projectSlug) (featuredProjects content) @?= ["black", "brigid", "lockdown"]
     , testCase "a missing required field" $
         expectContentError
           [ ("content/projects/demo/project.json", projectJson "demo" [("summary", Nothing)])

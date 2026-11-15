@@ -12,7 +12,7 @@ allow-newer: true
 extra-deps:
   # Brigid — core library ONLY (no brigid-generation, benchmarks, or test data).
   - github: AugmenTab/brigid
-    commit: 9344bfb561d5a9637f691ac7e734186667df4a61
+    commit: e0f4d45f4b91a1a381c64845861237d06b3b0803
     subdirs:
       - brigid
 

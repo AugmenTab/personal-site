@@ -34,6 +34,7 @@ import Site.Validate (PageProblem (..), activeContent, attributeValues, validate
 import System.IO.Unsafe (unsafePerformIO)
 
 import ContentTests (contentTests)
+import HomeTests (homeTests)
 
 main :: IO ()
 main =
@@ -45,6 +46,7 @@ main =
       , validationTests
       , buildTests
       , contentTests
+      , homeTests
       ]
 
 --------------------------------------------------------------------------------
@@ -63,7 +65,7 @@ brigidRoute :: Route
 brigidRoute = WorkDetail (slug "brigid")
 
 allRoutes :: [Route]
-allRoutes = [Home, WorkIndex, brigidRoute, About, NotFound]
+allRoutes = [Home, WorkIndex, WorkDetail (slug "black"), brigidRoute, WorkDetail (slug "lockdown"), About, NotFound]
 
 pageFor :: Route -> Page
 pageFor route =
@@ -102,9 +104,9 @@ routeTests :: TestTree
 routeTests =
   testGroup "routes"
     [ testCase "route URLs and output files" $ do
-        map routePath allRoutes @?= ["/", "/work/", "/work/brigid/", "/about/", "/404.html"]
+        map routePath allRoutes @?= ["/", "/work/", "/work/black/", "/work/brigid/", "/work/lockdown/", "/about/", "/404.html"]
         map outputOf allRoutes
-          @?= ["index.html", "work/index.html", "work/brigid/index.html", "about/index.html", "404.html"]
+          @?= ["index.html", "work/index.html", "work/black/index.html", "work/brigid/index.html", "work/lockdown/index.html", "about/index.html", "404.html"]
     , testCase "the site defines exactly the required routes" $
         sort (map pageRoute (sitePages theSite)) @?= sort allRoutes
     , testCase "valid slugs are accepted unchanged" $
@@ -147,7 +149,7 @@ manifestTests =
             let paths = map entryOutput (manifestEntries m)
             paths @?= sort paths
             length paths @?= length allRoutes + length allAssets + length (siteMedia theSite)
-            map outputText [ p | (_, p) <- manifestMedia m ] @?= ["media/projects/brigid/card.svg"]
+            map outputText [ p | (_, p) <- manifestMedia m ] @?= ["media/projects/black/card.svg", "media/projects/brigid/card.svg", "media/projects/lockdown/card.svg"]
     , testCase "two pages with the same route are rejected" $
         assertCollision (mkManifest [Home, About, Home] [] [])
     , testCase "two project pages with the same slug are rejected" $
@@ -235,7 +237,7 @@ renderTests =
         let html = htmlOf Home
         forM_ [ "class=\"stage\"", "class=\"stage__art\"", "hero-plate-centre.webp", "hero-plate-left.webp", "hero-plate-right.webp"
               , "class=\"hero__divider\"", "id=\"top\"", "id=\"black\"", "class=\"feature__code\"", "id=\"selected-work\""
-              , "class=\"project-card\"", "id=\"about\"", "id=\"contact\"" ] $ \frag ->
+              , "class=\"project-card\"", "id=\"philosophy\"", "id=\"about\"", "id=\"contact\"" ] $ \frag ->
           assertBool (T.unpack frag) (frag `T.isInfixOf` html)
         forM_ ["href=\"#selected-work\"", "href=\"#about\""] $ \frag ->
           assertBool (T.unpack frag) (frag `T.isInfixOf` html)
@@ -257,7 +259,7 @@ renderTests =
         assertBool "home about" ("about__tree" `T.isInfixOf` snd (T.breakOn "id=\"about\"" (htmlOf Home)))
         assertBool "home: not before about" (not ("about__tree" `T.isInfixOf` fst (T.breakOn "id=\"about\"" (htmlOf Home))))
         assertBool "about page" ("about__tree" `T.isInfixOf` htmlOf About)
-        forM_ [WorkIndex, brigidRoute, NotFound] $ \r ->
+        forM_ (filter (`notElem` [Home, About]) allRoutes) $ \r ->
           assertBool (show r <> " has no tree") (not ("about__tree" `T.isInfixOf` htmlOf r))
     , testCase "the Brigid page has its content, source link and a way back to Work" $ do
         let html = htmlOf brigidRoute
@@ -321,14 +323,20 @@ validationTests =
         m <- either (assertFailure . show) pure (mkManifest (map pageRoute pages) allAssets [])
         let problems = validatePages m [ (route, TE.decodeUtf8 (LBS.toStrict html)) | (route, _, html) <- renderSite (withPages pages) m ]
         sort [ url | BrokenLink _ url _ <- problems ] @?= sort ["/nowhere/", "/about/#missing", "work/", "/assets/missing.png", "#nope"]
-    , testCase "an attribute value that breaks out of its quotes is caught" $ do
-        -- Brigid does not escape '"' in attribute values: reproduce the
-        -- injection directly and check that the build's validator stops it.
-        let injected = stubPage About [ E.p [ A.title "x\" onmouseover=\"alert(1)" ] [ E.text "x" ] ]
+    , testCase "an attribute value cannot break out of its quotes (Brigid escapes; the validator still checks)" $ do
+        -- Brigid e0f4d45 escapes every attribute value at serialization, so
+        -- the quote can no longer close the attribute. The build's
+        -- conservative active-content scan stays as defence in depth and
+        -- still refuses the page.
+        let injected = stubPage About [ E.p [ A.title "x\" onmouseover=\"alert(1) & more" ] [ E.text "x" ] ]
             pages = [stubPage Home [], stubPage WorkIndex [], injected]
         m <- either (assertFailure . show) pure (mkManifest (map pageRoute pages) allAssets [])
-        let problems = validatePages m [ (route, TE.decodeUtf8 (LBS.toStrict html)) | (route, _, html) <- renderSite (withPages pages) m ]
-        [ r | ActiveContent r _ <- problems ] @?= [About]
+        let rendered = [ (route, TE.decodeUtf8 (LBS.toStrict html)) | (route, _, html) <- renderSite (withPages pages) m ]
+            aboutHtml = maybe "" id (lookup About rendered)
+        assertBool "quote escaped" (not ("x\" onmouseover" `T.isInfixOf` aboutHtml))
+        assertBool "ampersand escaped" (not ("1) & more" `T.isInfixOf` aboutHtml))
+        assertBool "value still present, escaped" ("onmouseover=" `T.isInfixOf` aboutHtml)
+        [ r | ActiveContent r _ <- validatePages m rendered ] @?= [About]
     , testCase "harmless look-alikes in text and attribute values are not flagged" $ do
         activeContent "<p class=\"a\">x onclick=y &#60;script&#62;</p><a href=\"/a?on=1\">z</a>" @?= []
         activeContent "<img src=\"/x.svg\" alt=\"\" onerror=\"alert(1)\"/>" @?= ["img src=\"/x.svg\" alt=\"\" onerror=\"alert(1)\"/"]
@@ -614,6 +622,6 @@ copyAssets from to = do
     let target = to </> "assets" </> assetPath asset
     Dir.createDirectoryIfMissing True (takeDirectory target)
     Dir.copyFile (from </> "assets" </> assetPath asset) target
-  forM_ ["content/projects/brigid/project.json", "content/projects/brigid/body.md", "content/projects/brigid/card.svg"] $ \file -> do
+  forM_ [ "content/projects" </> p </> f | p <- ["black", "brigid", "lockdown"], f <- ["project.json", "body.md", "card.svg"] ] $ \file -> do
     Dir.createDirectoryIfMissing True (takeDirectory (to </> file))
     Dir.copyFile (from </> file) (to </> file)

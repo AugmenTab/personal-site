@@ -1929,3 +1929,496 @@ ul {
   text-transform: uppercase;
   color: var(--text-gold);
 }
+
+/* 12. Homepage composition (Phase 03)
+
+   Below the frozen stage the page grows quieter: Selected Work (framed
+   cards), Engineering Philosophy (typography and hairlines only), Writing
+   (an index, only when published writing exists), then About and Contact.
+   Hero rules above are untouched. */
+
+/* Black teaser: link to the project page, comment colour for the excerpt */
+.feature__status {
+  margin-top: auto;
+}
+
+.feature__action {
+  align-self: flex-start;
+  min-height: 2.9rem;
+  margin-top: 0.35rem;
+  padding: 0.75rem 1.5rem;
+  font-size: var(--step--2);
+}
+
+.tok-com {
+  color: #8A8272;
+  font-style: italic;
+}
+
+/* Selected Work on the homepage: a balanced grid, wider than the Work index */
+.work--home {
+  padding-bottom: var(--space-5);
+}
+
+.work__list--home {
+  display: grid;
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+  max-width: var(--container);
+}
+
+.work__list--count-1 {
+  max-width: 46rem;
+}
+
+.work__list--count-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.work__list--count-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.work__list--home .work__item {
+  display: flex;
+}
+
+.work__list--home .project-card {
+  flex: 1;
+  min-height: 0;
+}
+
+/* side by side at two columns: a narrower art panel, as in the render */
+.work__list--count-2 .project-card {
+  grid-template-columns: minmax(8rem, 32%) 1fr;
+}
+
+.work__list--count-2 .project-card--text,
+.work__list--count-3 .project-card--text {
+  grid-template-columns: 1fr;
+}
+
+/* three across: art above the text */
+.work__list--count-3 .project-card {
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
+}
+
+.work__list--count-3 .project-card__visual {
+  aspect-ratio: 16 / 9;
+  border-right: 0;
+  border-bottom: var(--rule);
+}
+
+.work__list--home .project-card__title {
+  font-size: clamp(1.45rem, 1.1rem + 0.9vw, 1.9rem);
+}
+
+.work__list--home .project-card__summary {
+  font-size: 1.06rem;
+}
+
+.work__more {
+  margin-top: var(--space-4);
+  text-align: center;
+}
+
+.work__more a {
+  display: inline-block;
+  padding: 0.5rem 0.25rem;
+  font-family: var(--font-display);
+  font-size: var(--step--1);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.work__more a:hover .work__more-arrow,
+.work__more a:focus-visible .work__more-arrow {
+  margin-left: 0.2em;
+}
+
+.work__more-arrow {
+  font-family: var(--font-body);
+  letter-spacing: 0;
+  transition: margin-left 200ms ease;
+}
+
+/* Engineering Philosophy: the quietest framed moment. No frame, no art;
+   a faint band of eclipse light between two fading hairlines. */
+.philosophy {
+  position: relative;
+  padding: var(--space-6) var(--gutter);
+  background:
+    radial-gradient(48rem 20rem at 50% 38%, rgb(194 164 106 / 0.055), transparent 70%),
+    linear-gradient(180deg, transparent, rgb(26 22 25 / 0.55) 30%, rgb(26 22 25 / 0.55) 70%, transparent);
+  scroll-margin-top: 1rem;
+}
+
+.philosophy::before,
+.philosophy::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  width: min(62rem, calc(100% - 2 * var(--gutter)));
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-hairline) 25%, var(--gold-hairline) 75%, transparent);
+  transform: translateX(-50%);
+}
+
+.philosophy::before {
+  top: 0;
+}
+
+.philosophy::after {
+  bottom: 0;
+}
+
+.philosophy__inner {
+  display: grid;
+  justify-items: center;
+  max-width: 62rem;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.philosophy__label {
+  font-family: var(--font-display);
+  font-size: var(--step--1);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--verdigris-bright);
+}
+
+.philosophy__title {
+  margin-top: var(--space-2);
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: clamp(2rem, 1.3rem + 2.4vw, 3.1rem);
+  line-height: 1.15;
+  color: #EDE4CE;
+}
+
+.philosophy__rule {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: var(--space-3) 0;
+}
+
+.philosophy__rule::before,
+.philosophy__rule::after {
+  content: "";
+  width: clamp(3.5rem, 10vw, 7rem);
+  height: 1px;
+}
+
+.philosophy__rule::before {
+  background: linear-gradient(90deg, transparent, var(--gold-line));
+}
+
+.philosophy__rule::after {
+  background: linear-gradient(270deg, transparent, var(--gold-line));
+}
+
+.philosophy__rule-diamond {
+  width: 7px;
+  height: 7px;
+  border: 1px solid var(--gold);
+  transform: rotate(45deg);
+}
+
+.philosophy__lede {
+  max-width: 36rem;
+  font-size: var(--step-1);
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.philosophy__principles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: var(--space-5);
+  text-align: left;
+}
+
+.philosophy__principle {
+  display: grid;
+  align-content: start;
+  gap: 0.6rem;
+  padding: 0 clamp(1.25rem, 2.6vw, 2.25rem);
+}
+
+.philosophy__principle + .philosophy__principle {
+  border-left: 1px solid var(--gold-hairline);
+}
+
+.philosophy__numeral {
+  font-family: var(--font-display);
+  font-size: var(--step--1);
+  letter-spacing: var(--tracking-caps);
+  color: var(--gold);
+}
+
+.philosophy__principle-title {
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  letter-spacing: 0.12em;
+  line-height: 1.3;
+  text-transform: uppercase;
+  color: var(--bone);
+}
+
+.philosophy__principle-text {
+  color: var(--text-muted);
+  font-size: 1.06rem;
+  line-height: 1.55;
+}
+
+/* Writing preview: a quiet article index (only rendered with articles) */
+.writing-preview {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: var(--space-6) var(--gutter) 0;
+  scroll-margin-top: 1rem;
+}
+
+.writing-preview__list {
+  margin-top: var(--space-4);
+}
+
+.writing-preview__item {
+  display: grid;
+  grid-template-columns: 9rem minmax(0, 1fr);
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--gold-hairline);
+}
+
+.writing-preview__item:first-child {
+  border-top: 1px solid var(--gold-hairline);
+}
+
+.writing-preview__date {
+  padding-top: 0.45rem;
+  font-family: var(--font-display);
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-caps);
+  color: var(--text-faint);
+}
+
+.writing-preview__title {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bone);
+}
+
+.writing-preview__summary {
+  margin-top: 0.35rem;
+  color: var(--text-muted);
+}
+
+.writing-preview__link {
+  display: inline-block;
+  margin-top: 0.35rem;
+  padding: 0.3rem 0;
+  font-family: var(--font-display);
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+/* About and Contact: personal and editorial */
+.about--home {
+  padding-top: var(--space-6);
+}
+
+.about__bio {
+  margin-top: var(--space-2);
+  color: var(--text-muted);
+}
+
+.about__links {
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.about__links a {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 13rem;
+  padding: 0.7rem 1.1rem 0.75rem;
+  border: 1px solid var(--gold-hairline);
+  background: linear-gradient(180deg, rgb(26 22 25 / 0.8), rgb(18 16 19 / 0.8));
+  text-decoration: none;
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+
+.about__links a:hover {
+  border-color: var(--gold-line);
+}
+
+.about__link-label {
+  font-family: var(--font-display);
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.about__link-display {
+  font-size: var(--step-1);
+  color: var(--text-gold);
+}
+
+.about__links a:hover .about__link-display {
+  color: var(--gold-bright);
+}
+
+@media (max-width: 1099px) {
+  .work__list--count-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .work__list--count-2,
+  .work__list--count-3 {
+    grid-template-columns: 1fr;
+    max-width: 46rem;
+  }
+
+  .work__list--count-2 .project-card,
+  .work__list--count-3 .project-card {
+    grid-template-columns: minmax(10rem, 34%) 1fr;
+    grid-template-rows: none;
+  }
+
+  .work__list--count-3 .project-card__visual {
+    aspect-ratio: auto;
+    border-right: var(--rule);
+    border-bottom: 0;
+  }
+
+  .philosophy__principles {
+    grid-template-columns: 1fr;
+    max-width: 36rem;
+    margin-top: var(--space-4);
+  }
+
+  .philosophy__principle {
+    padding: var(--space-3) 0;
+  }
+
+  .philosophy__principle + .philosophy__principle {
+    border-left: 0;
+    border-top: 1px solid var(--gold-hairline);
+  }
+}
+
+@media (max-width: 640px) {
+  .work__list--count-2 .project-card,
+  .work__list--count-3 .project-card {
+    grid-template-columns: 1fr;
+  }
+
+  .work__list--count-2 .project-card__visual,
+  .work__list--count-3 .project-card__visual {
+    aspect-ratio: 16 / 9;
+    border-right: 0;
+    border-bottom: var(--rule);
+  }
+
+  .philosophy {
+    padding-block: var(--space-5);
+  }
+
+  .philosophy__principle {
+    text-align: center;
+  }
+
+  .writing-preview__item {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+
+  .writing-preview__date {
+    padding-top: 0;
+  }
+
+  .about--home {
+    padding-top: var(--space-5);
+  }
+
+  .about__links a {
+    min-width: min(100%, 16rem);
+  }
+
+  .feature__action {
+    align-self: stretch;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .work__more a:hover .work__more-arrow,
+  .work__more a:focus-visible .work__more-arrow {
+    margin-left: 0;
+  }
+}
+
+@media (forced-colors: active) {
+  .about__links a {
+    border: 1px solid LinkText;
+  }
+}
+
+/* 12b. Composition refinements (Phase 03 review) */
+
+/* Give the verified program room: at desktop widths its longest line (a
+   76-column comment) fits without scrolling. */
+@media (min-width: 1100px) {
+  .feature__frame {
+    grid-template-columns: minmax(0, 0.74fr) minmax(0, 1.36fr);
+  }
+
+  .feature__pre {
+    font-size: 0.78rem;
+  }
+
+  .feature__pre .code-line::before {
+    width: 2.6em;
+    margin-right: 0.9em;
+  }
+}
+
+.feature__code-tag {
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .about__text {
+    max-width: 38rem;
+    margin-inline: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .philosophy__title {
+    font-size: 1.8rem;
+  }
+
+  .feature__code-tag {
+    font-size: 0.8rem;
+  }
+}
+
+/* Code is shown exactly as written: no programming ligatures (JetBrains
+   Mono would otherwise draw -> as an arrow). */
+pre,
+code {
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
+}

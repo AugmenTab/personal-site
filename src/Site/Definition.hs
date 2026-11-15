@@ -33,7 +33,7 @@ siteFrom content =
   Site
     { siteConfig = config
     , sitePages =
-        [ Home.page config (featuredProjects content)
+        [ Home.page config (Home.homeContent content)
         , Work.indexPage config projects
         ]
           <> map (Work.projectPage config) projects

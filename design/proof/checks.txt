@@ -6,7 +6,9 @@
         "horizontalOverflow": false,
         "headings": [
           "h1: Work",
-          "h2: Brigid"
+          "h2: Black",
+          "h2: Brigid",
+          "h2: Lockdown"
         ],
         "brokenFragmentLinks": [],
         "httpErrorsAndConsole": [],
@@ -17,7 +19,9 @@
         "horizontalOverflow": false,
         "headings": [
           "h1: Work",
-          "h2: Brigid"
+          "h2: Black",
+          "h2: Brigid",
+          "h2: Lockdown"
         ],
         "brokenFragmentLinks": [],
         "httpErrorsAndConsole": [],
@@ -28,7 +32,53 @@
         "horizontalOverflow": false,
         "headings": [
           "h1: Work",
-          "h2: Brigid"
+          "h2: Black",
+          "h2: Brigid",
+          "h2: Lockdown"
+        ],
+        "brokenFragmentLinks": [],
+        "httpErrorsAndConsole": [],
+        "imagesLoaded": true
+      }
+    },
+    "project-black": {
+      "desktop": {
+        "httpStatus": 200,
+        "horizontalOverflow": false,
+        "headings": [
+          "h1: Black",
+          "h2: Overview",
+          "h2: Technical approach",
+          "h2: Current capabilities",
+          "h2: Limitations and status"
+        ],
+        "brokenFragmentLinks": [],
+        "httpErrorsAndConsole": [],
+        "imagesLoaded": true
+      },
+      "tablet": {
+        "httpStatus": 200,
+        "horizontalOverflow": false,
+        "headings": [
+          "h1: Black",
+          "h2: Overview",
+          "h2: Technical approach",
+          "h2: Current capabilities",
+          "h2: Limitations and status"
+        ],
+        "brokenFragmentLinks": [],
+        "httpErrorsAndConsole": [],
+        "imagesLoaded": true
+      },
+      "mobile": {
+        "httpStatus": 200,
+        "horizontalOverflow": false,
+        "headings": [
+          "h1: Black",
+          "h2: Overview",
+          "h2: Technical approach",
+          "h2: Current capabilities",
+          "h2: Limitations and status"
         ],
         "brokenFragmentLinks": [],
         "httpErrorsAndConsole": [],
@@ -76,6 +126,50 @@
           "h2: Current capabilities",
           "h2: Limitations and status",
           "h2: Resources"
+        ],
+        "brokenFragmentLinks": [],
+        "httpErrorsAndConsole": [],
+        "imagesLoaded": true
+      }
+    },
+    "project-lockdown": {
+      "desktop": {
+        "httpStatus": 200,
+        "horizontalOverflow": false,
+        "headings": [
+          "h1: Lockdown",
+          "h2: Overview",
+          "h2: Technical approach",
+          "h2: Current capabilities",
+          "h2: Limitations and status"
+        ],
+        "brokenFragmentLinks": [],
+        "httpErrorsAndConsole": [],
+        "imagesLoaded": true
+      },
+      "tablet": {
+        "httpStatus": 200,
+        "horizontalOverflow": false,
+        "headings": [
+          "h1: Lockdown",
+          "h2: Overview",
+          "h2: Technical approach",
+          "h2: Current capabilities",
+          "h2: Limitations and status"
+        ],
+        "brokenFragmentLinks": [],
+        "httpErrorsAndConsole": [],
+        "imagesLoaded": true
+      },
+      "mobile": {
+        "httpStatus": 200,
+        "horizontalOverflow": false,
+        "headings": [
+          "h1: Lockdown",
+          "h2: Overview",
+          "h2: Technical approach",
+          "h2: Current capabilities",
+          "h2: Limitations and status"
         ],
         "brokenFragmentLinks": [],
         "httpErrorsAndConsole": [],
@@ -191,6 +285,11 @@
       "h2: Black",
       "h2: Selected Work",
       "h3: Brigid",
+      "h3: Lockdown",
+      "h2: Correctness enables creativity.",
+      "h3: Make correctness practical",
+      "h3: Say where the guarantees end",
+      "h3: Keep judgement human",
       "h2: About",
       "h3: Contact"
     ],
@@ -222,6 +321,11 @@
       },
       {
         "src": "/media/projects/brigid/card.svg",
+        "alt": "",
+        "loaded": true
+      },
+      {
+        "src": "/media/projects/lockdown/card.svg",
         "alt": "",
         "loaded": true
       },
@@ -250,6 +354,11 @@
       "h2: Black",
       "h2: Selected Work",
       "h3: Brigid",
+      "h3: Lockdown",
+      "h2: Correctness enables creativity.",
+      "h3: Make correctness practical",
+      "h3: Say where the guarantees end",
+      "h3: Keep judgement human",
       "h2: About",
       "h3: Contact"
     ],
@@ -281,6 +390,11 @@
       },
       {
         "src": "/media/projects/brigid/card.svg",
+        "alt": "",
+        "loaded": true
+      },
+      {
+        "src": "/media/projects/lockdown/card.svg",
         "alt": "",
         "loaded": true
       },
@@ -309,6 +423,11 @@
       "h2: Black",
       "h2: Selected Work",
       "h3: Brigid",
+      "h3: Lockdown",
+      "h2: Correctness enables creativity.",
+      "h3: Make correctness practical",
+      "h3: Say where the guarantees end",
+      "h3: Keep judgement human",
       "h2: About",
       "h3: Contact"
     ],
@@ -344,6 +463,11 @@
         "loaded": true
       },
       {
+        "src": "/media/projects/lockdown/card.svg",
+        "alt": "",
+        "loaded": true
+      },
+      {
         "src": "/assets/images/about-tree.webp",
         "alt": "",
         "loaded": true
@@ -365,10 +489,12 @@
       "/404.html",
       "/about/",
       "/work/",
-      "/work/brigid/"
+      "/work/black/",
+      "/work/brigid/",
+      "/work/lockdown/"
     ],
-    "internalUrlsChecked": 14,
-    "fragmentLinksChecked": 17,
+    "internalUrlsChecked": 18,
+    "fragmentLinksChecked": 29,
     "problems": []
   },
   "noJavaScriptNavigation": [
@@ -407,11 +533,39 @@
         "a \"Tyler Baum \u2014 home\" -> /",
         "a \"ABOUT\" -> /about/",
         "a \"CONTACT\" -> /about/#contact",
-        "a \"VIEW PROJECT : BRIGID \u2192\" -> /work/brigid/"
+        "a \"VIEW PROJECT : BLACK \u2192\" -> /work/black/"
+      ],
+      "focusVisible": true
+    },
+    "project-black": {
+      "firstTabIsSkipLink": true,
+      "skipLinkTarget": "#main",
+      "focusOrder": [
+        "a \"SKIP TO CONTENT\" -> #main",
+        "a \"HOME\" -> /",
+        "a \"WORK\" -> /work/",
+        "a \"Tyler Baum \u2014 home\" -> /",
+        "a \"ABOUT\" -> /about/",
+        "a \"CONTACT\" -> /about/#contact",
+        "a \"\u2190 ALL PROJECTS\" -> /work/"
       ],
       "focusVisible": true
     },
     "project-brigid": {
+      "firstTabIsSkipLink": true,
+      "skipLinkTarget": "#main",
+      "focusOrder": [
+        "a \"SKIP TO CONTENT\" -> #main",
+        "a \"HOME\" -> /",
+        "a \"WORK\" -> /work/",
+        "a \"Tyler Baum \u2014 home\" -> /",
+        "a \"ABOUT\" -> /about/",
+        "a \"CONTACT\" -> /about/#contact",
+        "a \"\u2190 ALL PROJECTS\" -> /work/"
+      ],
+      "focusVisible": true
+    },
+    "project-lockdown": {
       "firstTabIsSkipLink": true,
       "skipLinkTarget": "#main",
       "focusOrder": [
@@ -435,7 +589,7 @@
         "a \"Tyler Baum \u2014 home\" -> /",
         "a \"ABOUT\" -> /about/",
         "a \"CONTACT\" -> /about/#contact",
-        "a \"GitHub\" -> https://github.com/AugmenTab"
+        "a \"GITHUB github.com/AugmenTab\" -> https://github.com/AugmenTab"
       ],
       "focusVisible": true
     },
@@ -469,6 +623,164 @@
     }
   },
   "projectSidebar": {
+    "project-black": {
+      "desktop": {
+        "sectionLinks": [
+          "#overview",
+          "#technical-approach",
+          "#current-capabilities",
+          "#limitations-and-status"
+        ],
+        "clicks": [
+          {
+            "#overview": {
+              "hash": "#overview",
+              "top": 25,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#technical-approach": {
+              "hash": "#technical-approach",
+              "top": 24,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#current-capabilities": {
+              "hash": "#current-capabilities",
+              "top": 25,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#limitations-and-status": {
+              "hash": "#limitations-and-status",
+              "top": 267,
+              "inView": true,
+              "underSidebar": false
+            }
+          }
+        ],
+        "desktopGeometry": {
+          "navRight": 376,
+          "contentLeft": 434,
+          "stickyTopAfterScroll": 24,
+          "position": "sticky"
+        },
+        "keyboardStops": [
+          "/work/",
+          "/work/black/",
+          "#overview",
+          "#technical-approach",
+          "#current-capabilities",
+          "#limitations-and-status"
+        ]
+      },
+      "tablet": {
+        "sectionLinks": [
+          "#overview",
+          "#technical-approach",
+          "#current-capabilities",
+          "#limitations-and-status"
+        ],
+        "clicks": [
+          {
+            "#overview": {
+              "hash": "#overview",
+              "top": 25,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#technical-approach": {
+              "hash": "#technical-approach",
+              "top": 24,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#current-capabilities": {
+              "hash": "#current-capabilities",
+              "top": 25,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#limitations-and-status": {
+              "hash": "#limitations-and-status",
+              "top": 390,
+              "inView": true,
+              "underSidebar": false
+            }
+          }
+        ],
+        "keyboardStops": [
+          "/work/",
+          "/work/black/",
+          "#overview",
+          "#technical-approach",
+          "#current-capabilities",
+          "#limitations-and-status"
+        ]
+      },
+      "mobile": {
+        "sectionLinks": [
+          "#overview",
+          "#technical-approach",
+          "#current-capabilities",
+          "#limitations-and-status"
+        ],
+        "clicks": [
+          {
+            "#overview": {
+              "hash": "#overview",
+              "top": 25,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#technical-approach": {
+              "hash": "#technical-approach",
+              "top": 25,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#current-capabilities": {
+              "hash": "#current-capabilities",
+              "top": 24,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#limitations-and-status": {
+              "hash": "#limitations-and-status",
+              "top": 29,
+              "inView": true,
+              "underSidebar": false
+            }
+          }
+        ],
+        "keyboardStops": [
+          "/work/",
+          "/work/black/",
+          "#overview",
+          "#technical-approach",
+          "#current-capabilities",
+          "#limitations-and-status"
+        ]
+      }
+    },
     "project-brigid": {
       "desktop": {
         "sectionLinks": [
@@ -656,6 +968,164 @@
           "#resources"
         ]
       }
+    },
+    "project-lockdown": {
+      "desktop": {
+        "sectionLinks": [
+          "#overview",
+          "#technical-approach",
+          "#current-capabilities",
+          "#limitations-and-status"
+        ],
+        "clicks": [
+          {
+            "#overview": {
+              "hash": "#overview",
+              "top": 24,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#technical-approach": {
+              "hash": "#technical-approach",
+              "top": 25,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#current-capabilities": {
+              "hash": "#current-capabilities",
+              "top": 25,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#limitations-and-status": {
+              "hash": "#limitations-and-status",
+              "top": 366,
+              "inView": true,
+              "underSidebar": false
+            }
+          }
+        ],
+        "desktopGeometry": {
+          "navRight": 376,
+          "contentLeft": 434,
+          "stickyTopAfterScroll": 24,
+          "position": "sticky"
+        },
+        "keyboardStops": [
+          "/work/",
+          "/work/lockdown/",
+          "#overview",
+          "#technical-approach",
+          "#current-capabilities",
+          "#limitations-and-status"
+        ]
+      },
+      "tablet": {
+        "sectionLinks": [
+          "#overview",
+          "#technical-approach",
+          "#current-capabilities",
+          "#limitations-and-status"
+        ],
+        "clicks": [
+          {
+            "#overview": {
+              "hash": "#overview",
+              "top": 24,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#technical-approach": {
+              "hash": "#technical-approach",
+              "top": 25,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#current-capabilities": {
+              "hash": "#current-capabilities",
+              "top": 47,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#limitations-and-status": {
+              "hash": "#limitations-and-status",
+              "top": 489,
+              "inView": true,
+              "underSidebar": false
+            }
+          }
+        ],
+        "keyboardStops": [
+          "/work/",
+          "/work/lockdown/",
+          "#overview",
+          "#technical-approach",
+          "#current-capabilities",
+          "#limitations-and-status"
+        ]
+      },
+      "mobile": {
+        "sectionLinks": [
+          "#overview",
+          "#technical-approach",
+          "#current-capabilities",
+          "#limitations-and-status"
+        ],
+        "clicks": [
+          {
+            "#overview": {
+              "hash": "#overview",
+              "top": 24,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#technical-approach": {
+              "hash": "#technical-approach",
+              "top": 24,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#current-capabilities": {
+              "hash": "#current-capabilities",
+              "top": 25,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#limitations-and-status": {
+              "hash": "#limitations-and-status",
+              "top": 157,
+              "inView": true,
+              "underSidebar": false
+            }
+          }
+        ],
+        "keyboardStops": [
+          "/work/",
+          "/work/lockdown/",
+          "#overview",
+          "#technical-approach",
+          "#current-capabilities",
+          "#limitations-and-status"
+        ]
+      }
     }
   },
   "monogramImages": {
@@ -665,7 +1135,13 @@
     "work": [
       "nav"
     ],
+    "project-black": [
+      "nav"
+    ],
     "project-brigid": [
+      "nav"
+    ],
+    "project-lockdown": [
       "nav"
     ],
     "about": [
@@ -687,11 +1163,173 @@
     "a \"CONTACT\" -> /about/#contact",
     "a \"EXPLORE SELECTED WORK\" -> #selected-work",
     "a \"ABOUT & CONTACT\" -> #about",
+    "a \"EXPLORE BLACK\" -> /work/black/",
     "a \"VIEW PROJECT : BRIGID \u2192\" -> /work/brigid/",
-    "a \"GitHub\" -> https://github.com/AugmenTab",
-    "body \"SKIP TO CONTENT HOME WORK ABOUT CONTACT SOFTWARE ENGINEER TYLER BAUM Building precise systems for ambitious ideas. LANGUAGE DESIGN SYSTEMS ENGINEERING AUDIO TECHNOLOGY SIMULATION EXPLORE SELECTED WORK ABOUT & CONTACT FEATURED PROJECT \u00b7 PROGRAMMING LANGUAGE BLACK A modern, correctness-focused programming language for ambitious systems. Strong static guarantees Effect and resource safety A foundation for AI-native development PROJECT PAGE AND PLAYGROUND IN PREPARATION Main Black \u00b7 experimental module Main type Vec2 = { x : F64, y : F64 } fn length(v : Vec2) : F64 = sqrt(v.x * v.x + v.y * v.y) fn main() : IO Unit = let v = { x = 3.0, y = 4.0 } print(length(v)) Illustrative excerpt; syntax may change. Nothing is compiled or run on this page. SELECTED WORK HASKELL LIBRARY \u00b7 IN DEVELOPMENT BRIGID Type-safe, (mostly) spec-compliant HTML for Haskell. This page is rendered with it. HASKELL HTML TYPE SAFETY VIEW PROJECT : BRIGID \u2192 ABOUT I design programming languages and build the libraries and tools around them, with a bias toward correctness that stays practical. This page is an early design preview of a portfolio in progress. CONTACT GitHub TYLER BAUM\" -> null",
-    "a \"SKIP TO CONTENT\" -> #main"
+    "a \"VIEW PROJECT : LOCKDOWN \u2192\" -> /work/lockdown/",
+    "a \"ALL PROJECTS \u2192\" -> /work/"
   ],
+  "homeKeyboardToFirstCard": [
+    {
+      "href": "#about",
+      "focusVisible": true,
+      "card": false
+    },
+    {
+      "href": "/work/black/",
+      "focusVisible": true,
+      "card": false
+    },
+    {
+      "href": "/work/brigid/",
+      "focusVisible": true,
+      "card": true
+    }
+  ],
+  "phase03": {
+    "desktop": {
+      "sectionOrder": [
+        "top",
+        "black",
+        "selected-work",
+        "philosophy",
+        "about"
+      ],
+      "cards": [
+        {
+          "title": "Brigid",
+          "href": "/work/brigid/",
+          "titleClipped": false,
+          "height": 414,
+          "width": 576,
+          "status": 200
+        },
+        {
+          "title": "Lockdown",
+          "href": "/work/lockdown/",
+          "titleClipped": false,
+          "height": 414,
+          "width": 576,
+          "status": 200
+        }
+      ],
+      "blackControls": 0,
+      "blackLinks": [
+        "/work/black/"
+      ],
+      "philosophyLedeWidth": 576,
+      "featureFrameTop": 421,
+      "writingPresent": false
+    },
+    "tablet": {
+      "sectionOrder": [
+        "top",
+        "black",
+        "selected-work",
+        "philosophy",
+        "about"
+      ],
+      "cards": [
+        {
+          "title": "Brigid",
+          "href": "/work/brigid/",
+          "titleClipped": false,
+          "height": 287,
+          "width": 707,
+          "status": 200
+        },
+        {
+          "title": "Lockdown",
+          "href": "/work/lockdown/",
+          "titleClipped": false,
+          "height": 312,
+          "width": 707,
+          "status": 200
+        }
+      ],
+      "blackControls": 0,
+      "blackLinks": [
+        "/work/black/"
+      ],
+      "philosophyLedeWidth": 576,
+      "featureFrameTop": 421,
+      "writingPresent": false
+    },
+    "mobile": {
+      "sectionOrder": [
+        "top",
+        "black",
+        "selected-work",
+        "philosophy",
+        "about"
+      ],
+      "cards": [
+        {
+          "title": "Brigid",
+          "href": "/work/brigid/",
+          "titleClipped": false,
+          "height": 481,
+          "width": 358,
+          "status": 200
+        },
+        {
+          "title": "Lockdown",
+          "href": "/work/lockdown/",
+          "titleClipped": false,
+          "height": 565,
+          "width": 358,
+          "status": 200
+        }
+      ],
+      "blackControls": 0,
+      "blackLinks": [
+        "/work/black/"
+      ],
+      "philosophyLedeWidth": 358,
+      "featureFrameTop": 638,
+      "writingPresent": false
+    },
+    "wide": {
+      "sectionOrder": [
+        "top",
+        "black",
+        "selected-work",
+        "philosophy",
+        "about"
+      ],
+      "cards": [
+        {
+          "title": "Brigid",
+          "href": "/work/brigid/",
+          "titleClipped": false,
+          "height": 414,
+          "width": 576,
+          "status": 200
+        },
+        {
+          "title": "Lockdown",
+          "href": "/work/lockdown/",
+          "titleClipped": false,
+          "height": 414,
+          "width": 576,
+          "status": 200
+        }
+      ],
+      "blackControls": 0,
+      "blackLinks": [
+        "/work/black/"
+      ],
+      "philosophyLedeWidth": 576,
+      "featureFrameTop": 461,
+      "writingPresent": false
+    },
+    "noJavaScriptSections": [
+      "top",
+      "black",
+      "selected-work",
+      "philosophy",
+      "about"
+    ]
+  },
   "reducedMotion": {
     "home": {
       "runningAnimations": 0,
@@ -701,7 +1339,15 @@
       "runningAnimations": 0,
       "scrollBehavior": "auto"
     },
+    "project-black": {
+      "runningAnimations": 0,
+      "scrollBehavior": "auto"
+    },
     "project-brigid": {
+      "runningAnimations": 0,
+      "scrollBehavior": "auto"
+    },
+    "project-lockdown": {
       "runningAnimations": 0,
       "scrollBehavior": "auto"
     },

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 360" width="360" height="360">
+  <!-- Project card art for Black: the teaser emblem's three slanted pillars
+       and descending stroke, engraved in a stepped Deco frame above a ruled
+       grid of small check marks (a nod to proof obligations). Decorative
+       only. -->
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#EBD3A0"/>
+      <stop offset="1" stop-color="#9C7F48"/>
+    </linearGradient>
+    <radialGradient id="bg" cx="0.5" cy="0.4" r="0.75">
+      <stop offset="0" stop-color="#2A1214"/>
+      <stop offset="0.6" stop-color="#120F10"/>
+      <stop offset="1" stop-color="#0B0B0D"/>
+    </radialGradient>
+  </defs>
+  <rect width="360" height="360" fill="url(#bg)"/>
+
+  <g fill="none" stroke="url(#g)" stroke-linecap="round" stroke-linejoin="round">
+    <!-- stepped frame around the emblem -->
+    <path stroke-width="1.2" d="M96 236V96H112V80H248V96H264V236Z"/>
+    <path stroke-width="0.7" opacity="0.5" d="M104 228V104H120V88H240V104H256V228Z"/>
+
+    <!-- three pillars rising left to right -->
+    <path stroke-width="1.5" d="M138 132L150 127V212L138 215Z"/>
+    <path stroke-width="1.5" d="M162 116L174 111V204L162 207Z"/>
+    <path stroke-width="1.5" d="M186 100L198 95V196L186 199Z"/>
+    <path stroke-width="0.6" opacity="0.5" d="M144 136V211M168 120V203M192 104V195"/>
+    <!-- the descending stroke -->
+    <path stroke-width="1.6" d="M128 226L232 160"/>
+    <path stroke-width="0.7" opacity="0.6" d="M134 230L236 166"/>
+
+    <!-- rays behind -->
+    <g stroke-width="0.7" opacity="0.4">
+      <path d="M180 80V40M150 82L132 46M210 82L228 46M124 92L96 64M236 92L264 64"/>
+    </g>
+
+    <!-- grid of proof marks -->
+    <g stroke-width="0.8" opacity="0.55">
+      <path d="M64 262H296M64 284H296M64 306H296"/>
+      <path d="M78 272l4 4l8 -9M120 272l4 4l8 -9M162 272l4 4l8 -9M204 272l4 4l8 -9M246 272l4 4l8 -9"/>
+      <path d="M99 294l4 4l8 -9M141 294l4 4l8 -9M183 294l4 4l8 -9M225 294l4 4l8 -9M267 294l4 4l8 -9"/>
+    </g>
+    <path stroke-width="1.1" d="M60 248H300"/>
+
+    <!-- frame -->
+    <rect x="16" y="16" width="328" height="328" stroke-width="1" opacity="0.55"/>
+    <rect x="22" y="22" width="316" height="316" stroke-width="0.6" opacity="0.35"/>
+  </g>
+</svg>

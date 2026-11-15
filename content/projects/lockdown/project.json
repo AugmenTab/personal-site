@@ -1,0 +1,16 @@
+{
+  "slug": "lockdown",
+  "title": "Lockdown",
+  "summary": "A prototype game engine in Rust: a deterministic, replayable simulation, with gameplay rules as content that can change while the game runs.",
+  "category": "Game engine prototype",
+  "development_status": "in_development",
+  "publication_status": "published",
+  "technologies": ["Rust", "Bevy", "Deterministic simulation"],
+  "featured_order": 3,
+  "body": "body.md",
+  "showcase": {
+    "kind": "image",
+    "src": "card.svg",
+    "alt": "Gold line drawing of a stepped facility in isometric projection, crossed by a ruled timeline of tick marks with a branching path"
+  }
+}

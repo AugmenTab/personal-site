@@ -1,0 +1,16 @@
+{
+  "slug": "black",
+  "title": "Black",
+  "summary": "A correctness-focused programming language whose compiler proves, before a program runs, that its integer arithmetic and conversions fit their types.",
+  "category": "Programming language",
+  "development_status": "in_development",
+  "publication_status": "published",
+  "technologies": ["Haskell", "LLVM IR", "Type systems", "Verification"],
+  "featured_order": 1,
+  "body": "body.md",
+  "showcase": {
+    "kind": "image",
+    "src": "card.svg",
+    "alt": "Gold line drawing of three slanted pillars crossed by a descending stroke, inside a stepped Art Deco frame over a ruled grid of proof marks"
+  }
+}
