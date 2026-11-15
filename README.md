@@ -273,7 +273,7 @@ and needs owner review before public launch:**
 | Role, name, thesis, disciplines | `Home.introduction` | Draft (working copy from the approved render; layout frozen) |
 | Black summary and three points | `Home.blackTeaser` | Draft. Each point is an implemented compiler capability, checked against the Black repository |
 | Black excerpt | `Home.blackExample` | **Verified, not draft**: `white/test/conformance/NominalRecord.blk` from Black at `c1a45af`, an `accept` case in the compiler's conformance suite, shown verbatim (a test checks the rendering is lossless) |
-| Engineering Philosophy | `Home.philosophy` | Draft: proposed editorial copy |
+| Engineering Philosophy | `Home.philosophy` | **Placeholder** (owner, 2026-11-15): directional copy only. The section's place on the page and its lack of a link from the navigation are also open, for the owner's content pass |
 | Biography | `About.biography` (shared with `/about/`) | Draft |
 | Black and Lockdown project pages | `content/projects/{black,lockdown}/body.md` | Draft: factual, from each project's repository and README |
 
