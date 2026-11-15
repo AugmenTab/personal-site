@@ -180,8 +180,8 @@ personal**, carried by surface and ornament rather than by new imagery.
 | Section | Treatment |
 | --- | --- |
 | Arrival | Unchanged and regression-gated (hero band pixel-identical to the approved baseline) |
-| Black teaser | The same 9-slice frame over the stage art. The code panel is wider at ≥1100 px so the verified program fits unscrolled; a chamfered "Explore Black" cartouche (as in the render) replaces the render's fake Compile/Run controls |
-| Selected Work | The render's framed horizontal cards (art panel left, text right), two or three per row; text-only cards use a single column. Below 900 px a single column; below 640 px art above text |
+| Black teaser | The same 9-slice frame over the stage art. The code panel is wider at ≥1100 px so the verified program fits unscrolled; below that, long lines wrap with a hanging indent beside their line number, so the whole program is readable on a phone without horizontal scrolling. A chamfered "Explore Black" cartouche (as in the render) replaces the render's fake Compile/Run controls. Labels wrap balanced (no orphaned words) |
+| Selected Work | The render's framed horizontal cards (art panel left, text right), two or three per row; text-only cards use a single column. On the homepage the category sits above the verdigris status, so titles align across a row; tags follow the summary and the "View project" link is pinned to the card's foot above a hairline, so equal-height cards end on one ruled line. Below 900 px a single column; below 640 px art above text |
 | Engineering Philosophy | No frame and no art: an engraved verdigris label, an italic Garamond heading (echoing the thesis), a diamond rule, and three principles divided by gold hairlines with Roman numerals. A faint band of eclipse light between two fading hairlines marks the change of mood |
 | Writing (conditional) | A ruled article index: date column, title in tracked capitals, summary, "Read" link |
 | About and Contact | The tree emblem (its one appearance) beside a lede and a quieter paragraph; contacts as small hairline cartouches showing label and destination |

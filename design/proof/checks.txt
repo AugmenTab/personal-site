@@ -1199,7 +1199,7 @@
           "title": "Brigid",
           "href": "/work/brigid/",
           "titleClipped": false,
-          "height": 414,
+          "height": 390,
           "width": 576,
           "status": 200
         },
@@ -1207,7 +1207,7 @@
           "title": "Lockdown",
           "href": "/work/lockdown/",
           "titleClipped": false,
-          "height": 414,
+          "height": 390,
           "width": 576,
           "status": 200
         }
@@ -1233,7 +1233,7 @@
           "title": "Brigid",
           "href": "/work/brigid/",
           "titleClipped": false,
-          "height": 287,
+          "height": 306,
           "width": 707,
           "status": 200
         },
@@ -1241,7 +1241,7 @@
           "title": "Lockdown",
           "href": "/work/lockdown/",
           "titleClipped": false,
-          "height": 312,
+          "height": 330,
           "width": 707,
           "status": 200
         }
@@ -1267,7 +1267,7 @@
           "title": "Brigid",
           "href": "/work/brigid/",
           "titleClipped": false,
-          "height": 481,
+          "height": 482,
           "width": 358,
           "status": 200
         },
@@ -1275,7 +1275,7 @@
           "title": "Lockdown",
           "href": "/work/lockdown/",
           "titleClipped": false,
-          "height": 565,
+          "height": 566,
           "width": 358,
           "status": 200
         }
@@ -1301,7 +1301,7 @@
           "title": "Brigid",
           "href": "/work/brigid/",
           "titleClipped": false,
-          "height": 414,
+          "height": 390,
           "width": 576,
           "status": 200
         },
@@ -1309,7 +1309,7 @@
           "title": "Lockdown",
           "href": "/work/lockdown/",
           "titleClipped": false,
-          "height": 414,
+          "height": 390,
           "width": 576,
           "status": 200
         }

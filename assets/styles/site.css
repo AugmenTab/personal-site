@@ -1989,7 +1989,7 @@ ul {
 
 /* side by side at two columns: a narrower art panel, as in the render */
 .work__list--count-2 .project-card {
-  grid-template-columns: minmax(8rem, 32%) 1fr;
+  grid-template-columns: minmax(8rem, 28%) 1fr;
 }
 
 .work__list--count-2 .project-card--text,
@@ -2421,4 +2421,89 @@ pre,
 code {
   font-variant-ligatures: none;
   font-feature-settings: "liga" 0, "calt" 0;
+}
+
+/* 12c. Homepage cards: aligned titles, intentional footers */
+
+/* Category over status (the status keeps its verdigris), so a long
+   category never pushes one card's title below its neighbour's. The
+   separator stays in the accessible text. */
+.work__list--home .project-card__category,
+.work__list--home .project-card__status {
+  display: block;
+}
+
+.work__list--home .project-card__category {
+  color: var(--text-gold);
+}
+
+.work__list--home .project-card__kicker-sep {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Tags follow the summary; only the link is pinned to the card's foot,
+   above a hairline, so equal-height cards end on the same ruled line and
+   any spare height reads as space, not as a gap inside the text. */
+.work__list--home .project-card__footer {
+  display: contents;
+}
+
+.work__list--home .project-card__tags {
+  margin-top: 0.3rem;
+}
+
+.work__list--home .project-card__link {
+  margin-top: auto;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--gold-hairline);
+}
+
+/* No orphaned words in the teaser's labels and lists when they wrap */
+.feature__kicker,
+.feature__status {
+  text-wrap: balance;
+}
+
+.feature__summary,
+.feature__points li,
+.project-card__summary,
+.philosophy__lede,
+.philosophy__principle-text,
+.about__text p {
+  text-wrap: pretty;
+}
+
+/* The verified Black program is fully readable at every width: below the
+   desktop layout, long lines wrap with a hanging indent beside their line
+   number instead of scrolling. */
+@media (max-width: 1099px) {
+  .feature__pre {
+    overflow-x: visible;
+    padding-right: 0.9rem;
+    white-space: pre-wrap;
+  }
+
+  .feature__pre .code-line {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    min-height: 1.75em;
+    padding-left: 4.4em;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+  }
+
+  .feature__pre .code-line::before {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 3.4em;
+    margin: 0;
+  }
 }

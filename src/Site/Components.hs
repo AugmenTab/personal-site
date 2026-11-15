@@ -19,7 +19,7 @@ import Brigid.HTML.Types qualified as HTML
 import Brigid.Types qualified as B
 
 import Site.Assets qualified as Asset
-import Site.Content.Types (MediaOwner (..), Project (..), Showcase (..), mediaUrl, projectKicker, projectTitleId)
+import Site.Content.Types (MediaOwner (..), Project (..), Showcase (..), developmentLabel, mediaUrl, projectTitleId)
 import Site.Routes (Route (WorkDetail), routeUrl)
 
 -- | An image with empty alt text: artwork that carries no information.
@@ -68,7 +68,14 @@ projectCard level project =
     ]
     ( visual
         <> [ E.div [ A.class_ "project-card__body" ]
-               [ E.p [ A.class_ "project-card__kicker" ] [ E.text (projectKicker project) ]
+               [ -- Category and status as separate spans (same text as
+                 -- 'projectKicker'), so narrow cards can stack them on two
+                 -- lines and keep every card's title on the same line.
+                 E.p [ A.class_ "project-card__kicker" ]
+                   [ E.span [ A.class_ "project-card__category" ] [ E.text (projectCategory project) ]
+                   , E.span [ A.class_ "project-card__kicker-sep" ] [ E.text " · " ]
+                   , E.span [ A.class_ "project-card__status" ] [ E.text (developmentLabel (projectDevelopment project)) ]
+                   ]
                , case level of
                    Level2 -> E.h2 [ A.class_ "project-card__title", A.id (projectTitleId project) ] [ E.text (projectTitle project) ]
                    Level3 -> E.h3 [ A.class_ "project-card__title", A.id (projectTitleId project) ] [ E.text (projectTitle project) ]
