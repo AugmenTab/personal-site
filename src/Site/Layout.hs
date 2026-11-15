@@ -37,7 +37,7 @@ pageDocument config page =
     [ E.head [] (headContent page)
     , E.body [ A.class_ "page" ]
         [ E.a [ A.class_ "skip-link", A.href mainId ] [ E.text "Skip to content" ]
-        , siteHeader (pageRoute page)
+        , siteHeader config (pageRoute page)
         , E.main (A.id mainId : layoutAttributes (pageLayout page)) (pageMain page)
         , siteFooter config
         ]
@@ -79,19 +79,22 @@ data NavItem =
     , navFragment :: Maybe B.Id
     }
 
--- | The two link groups either side of the monogram medallion.
-navItems :: ([NavItem], [NavItem])
-navItems =
+-- | The two link groups either side of the monogram medallion. Writing is
+-- listed only when published writing exists, so the navigation never links
+-- to an empty section.
+navItems :: SiteConfig -> ([NavItem], [NavItem])
+navItems config =
   ( [ NavItem "Home" Home Nothing
     , NavItem "Work" WorkIndex Nothing
     ]
+      <> [ NavItem "Writing" WritingIndex Nothing | siteHasWriting config ]
   , [ NavItem "About" About Nothing
     , NavItem "Contact" About (Just contactId)
     ]
   )
 
-siteHeader :: Route -> E.ChildHTML E.Body grandparent
-siteHeader current =
+siteHeader :: SiteConfig -> Route -> E.ChildHTML E.Body grandparent
+siteHeader config current =
   E.header [ A.class_ "site-header" ]
     [ E.nav [ A.class_ "site-nav", A.aria_label "Primary" ]
         [ E.ul [ A.class_ "site-nav__list site-nav__list--start" ] (map (navLink current) start)
@@ -102,7 +105,7 @@ siteHeader current =
         ]
     ]
   where
-    (start, end) = navItems
+    (start, end) = navItems config
 
 navLink :: Route -> NavItem -> E.ChildHTML E.UnorderedList grandparent
 navLink current item =

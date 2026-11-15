@@ -1,70 +1,130 @@
- Container personal-site-site-build-run-0da56247d00e Creating 
- Container personal-site-site-build-run-0da56247d00e Created 
+ Container personal-site-site-build-run-0ae8bf824087 Creating 
+ Container personal-site-site-build-run-0ae8bf824087 Created 
 personal-site> test (suite: site-test, args: --color never)
 
 personal-site
   routes
-    route URLs and output files:                                              OK
-    the site defines exactly the required routes:                             OK
-    valid slugs are accepted unchanged:                                       OK
-    invalid or non-canonical slugs are rejected:                              OK
-    an invalid slug makes the project definition fail:                        OK
-    output paths reject traversal, absolute and non-canonical spellings:      OK
-    accepted output paths cannot escape the output root:                      OK
-    URL paths map to output files by one rule:                                OK
-    every route's output agrees with its URL:                                 OK
+    route URLs and output files:                                                    OK
+    the site defines exactly the required routes:                                   OK
+    valid slugs are accepted unchanged:                                             OK
+    invalid or non-canonical slugs are rejected:                                    OK
+    output paths reject traversal, absolute and non-canonical spellings:            OK
+    accepted output paths cannot escape the output root:                            OK
+    URL paths map to output files by one rule:                                      OK
+    every route's output agrees with its URL:                                       OK
   manifest
-    the site's manifest is valid and sorted:                                  OK
-    two pages with the same route are rejected:                               OK
-    two project pages with the same slug are rejected:                        OK
-    assets differing only in case collide:                                    OK
-    a page and an asset with the same destination collide:                    OK
-    a file cannot also be needed as a directory:                              OK
-    path errors and collisions are reported together:                         OK
-    unsafe asset paths are rejected before any file is touched:               OK
+    the site's manifest is valid and sorted:                                        OK
+    two pages with the same route are rejected:                                     OK
+    two project pages with the same slug are rejected:                              OK
+    assets differing only in case collide:                                          OK
+    a page and an asset with the same destination collide:                          OK
+    a file cannot also be needed as a directory:                                    OK
+    path errors and collisions are reported together:                               OK
+    unsafe asset paths are rejected before any file is touched:                     OK
   Brigid render
-    every page is a complete HTML document:                                   OK (0.07s)
-    titles and the single h1 of each page:                                    OK
-    every page has the skip link, header nav, main and footer landmarks:      OK
-    shared navigation links to routes, marking only the current page:         OK
-    the homepage keeps its approved major sections and same-page CTAs:        OK
-    every <img> has an alt attribute:                                         OK
-    pages are static: no scripts, forms or controls:                          OK
-    the monogram appears once per page, inside the navigation medallion:      OK
-    the tree emblem is in About content only:                                 OK (0.04s)
-    the Brigid page has its facts, source link and a way back to Work:        OK
-    project pages have the project sidebar beside the content:                OK
-    every sidebar section link has a section, and every section a link:       OK
-    non-project pages have no project sidebar:                                OK
-    cards on Home and Work link to the project page:                          OK
-    the 404 page links back to the homepage:                                  OK
-    rendering is deterministic:                                               OK
+    every page is a complete HTML document:                                         OK
+    titles and the single h1 of each page:                                          OK
+    every page has the skip link, header nav, main and footer landmarks:            OK
+    shared navigation links to routes, marking only the current page:               OK
+    the homepage keeps its approved major sections and same-page CTAs:              OK
+    every <img> has an alt attribute:                                               OK
+    pages are static: no scripts, forms or controls:                                OK
+    the monogram appears once per page, inside the navigation medallion:            OK
+    the tree emblem is in About content only:                                       OK
+    the Brigid page has its content, source link and a way back to Work:            OK
+    project pages have the project sidebar beside the content:                      OK
+    every sidebar section link has a section, and every section a link:             OK
+    non-project pages have no project sidebar:                                      OK
+    cards on Home and Work link to the project page:                                OK
+    the 404 page links back to the homepage:                                        OK
+    rendering is deterministic:                                                     OK
   output validation
-    the real site's pages and links validate:                                 OK
-    links to missing pages, missing fragments and relative URLs are caught:   OK
-    a page without exactly one h1 is caught:                                  OK
+    the real site's pages and links validate:                                       OK
+    links to missing pages, missing fragments and relative URLs are caught:         OK
+    an attribute value that breaks out of its quotes is caught:                     OK
+    harmless look-alikes in text and attribute values are not flagged:              OK
+    a page without exactly one h1 is caught:                                        OK
   build
-    a clean build writes exactly the manifest's files:                        OK (0.03s)
-    repeated builds produce byte-identical trees:                             OK (0.03s)
-    site check validates without writing anything:                            OK
-    fails clearly when a required asset is missing, keeping prior output:     OK (0.01s)
-    a missing asset on a first build writes no output:                        OK
-    fails when a stylesheet references an unlisted file:                      OK
-    duplicate routes fail the build, keeping prior output:                    OK
-    an unsafe asset path fails the build:                                     OK
-    an asset symlinked outside assets/ is rejected:                           OK
-    an asset that is a directory is rejected:                                 OK
-    a page with a broken internal link fails the build, keeping prior output: OK
-    refuses output directories that would destroy sources:                    OK (0.01s)
-    an existing empty output directory is accepted:                           OK
-    a generator-managed directory can be rebuilt:                             OK (0.01s)
-    a foreign directory is refused even when it contains index.html:          OK
-    a malformed, misplaced or symlinked marker cannot authorize replacement:  OK
-    an interrupted earlier promotion stops the build:                         OK
-    a failed promotion restores the previous output:                          OK
-    cssReferences ignores data URIs and absolute URLs:                        OK
+    a clean build writes exactly the manifest's files:                              OK
+    repeated builds produce byte-identical trees:                                   OK (0.02s)
+    site check validates without writing anything:                                  OK
+    fails clearly when a required asset is missing, keeping prior output:           OK (0.01s)
+    a missing asset on a first build writes no output:                              OK
+    fails when a stylesheet references an unlisted file:                            OK
+    duplicate routes fail the build, keeping prior output:                          OK
+    an unsafe asset path fails the build:                                           OK
+    an asset symlinked outside assets/ is rejected:                                 OK
+    an asset that is a directory is rejected:                                       OK
+    a page with a broken internal link fails the build, keeping prior output:       OK (0.01s)
+    refuses output directories that would destroy sources:                          OK (0.01s)
+    an existing empty output directory is accepted:                                 OK
+    a generator-managed directory can be rebuilt:                                   OK (0.01s)
+    a foreign directory is refused even when it contains index.html:                OK
+    a malformed, misplaced or symlinked marker cannot authorize replacement:        OK (0.01s)
+    an interrupted earlier promotion stops the build:                               OK
+    a failed promotion restores the previous output:                                OK
+    cssReferences ignores data URIs and absolute URLs:                              OK
+  content (Phase 02)
+    metadata validation
+      the real Brigid content loads and is published:                               OK
+      a missing required field:                                                     OK
+      a field of the wrong JSON type:                                               OK
+      an unknown status value names the allowed values:                             OK
+      an unknown (misspelled) field is rejected:                                    OK
+      null is not a way to omit a field:                                            OK
+      a missing body reference, and a body that does not exist:                     OK
+      malformed JSON is reported with the parser's position:                        OK
+      invalid directory slugs and slug/directory mismatches:                        OK
+      two projects claiming one slug cannot both load:                              OK
+      duplicate featured order among published projects:                            OK
+      an unsupported showcase kind, and an unrendered kind on a published project:  OK
+      missing showcase properties:                                                  OK
+      unsafe and broken media references:                                           OK (0.02s)
+      attribute-bound text may not contain a straight double quote:                 OK
+      external links must be https:                                                 OK
+      independent errors are all reported in one run:                               OK
+    markdown rendering
+      paragraphs, sections and nested headings:                                     OK
+      nested lists, ordered lists and blockquotes:                                  OK
+      emphasis, strong, links and inline code:                                      OK
+      fenced code is escaped text with a validated language class:                  OK
+      escaped characters and entities become plain text:                            OK
+      images resolve to the item's published media, with alt text:                  OK
+      images need alt text:                                                         OK
+      duplicate and reserved headings get unique ids:                               OK
+      heading ids handle punctuation, inline formatting, non-ASCII and empty text:  OK
+      an empty document renders no sections and no sidebar list:                    OK
+      non-ASCII text survives intact:                                               OK
+      heading policy: no #, no skipped levels, top-level only, no links:            OK
+      links inside emphasis are rejected (Brigid does not allow <a> in <em>):       OK
+      errors carry line numbers:                                                    OK
+    adversarial markdown
+      raw HTML is rejected, inline and block:                                       OK (0.02s)
+      dangerous and obfuscated link schemes are rejected:                           OK (0.06s)
+      dangerous image sources are rejected:                                         OK (0.03s)
+      attribute-escaping attempts cannot break out of attributes:                   OK (0.02s)
+      HTML inside code is inert text:                                               OK
+      malformed link destinations are not links:                                    OK
+    filesystem boundaries
+      body paths cannot traverse or be absolute:                                    OK (0.01s)
+      symlinked bodies, media and directories cannot escape:                        OK
+      a content file cannot be published as media:                                  OK
+      stray files and dot-files in content/projects:                                OK
+      no content directory means no projects, not an error:                         OK
+      content slugs can never claim a fixed route:                                  OK
+    publication
+      published projects get a route, a card and media; drafts get nothing:         OK (0.02s)
+      draft articles stay absent and no Writing section exists:                     OK
+      one published article creates the Writing routes and nav entry:               OK
+      the real site has no Writing section:                                         OK
+      Work index order: featured by position, then by title, never by directory:    OK
+      built output contains no Markdown or JSON sources:                            OK
+    content build reliability
+      content errors, bad Markdown and malformed JSON preserve the previous output: OK (0.01s)
+      an invalid published project cannot partially publish:                        OK
+      repeated content builds are byte-identical:                                   OK (0.02s)
 
-All 55 tests passed (0.31s)
+All 108 tests passed (0.51s)
 
 
 

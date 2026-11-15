@@ -5,17 +5,15 @@ import System.Environment (getArgs)
 import System.Exit (exitFailure)
 import System.IO (hPutStrLn, stderr)
 
-import Site.Build (BuildConfig (..), BuildError, BuildReport (..), CheckReport (..), buildSite, checkSite)
-import Site.Definition (site)
+import Site.Build (BuildConfig (..), BuildError, BuildReport (..), CheckReport (..), buildSite, checkSite, loadSite)
 import Site.Manifest (Entry (..), describeSource, manifestEntries)
-import Site.Page (Site)
 import Site.Path (outputText)
 
 usage :: String
 usage =
   unlines
-    [ "usage: site build [--out DIR]   validate, render and publish the site into DIR (default: dist)"
-    , "       site check               validate routes, assets and rendered pages; write nothing"
+    [ "usage: site build [--out DIR]   validate content, render and publish the site into DIR (default: dist)"
+    , "       site check               validate content, routes, assets and rendered pages; write nothing"
     ]
 
 main :: IO ()
@@ -29,39 +27,33 @@ main = do
       hPutStrLn stderr usage
       exitFailure
 
-loadSite :: IO Site
-loadSite =
-  case site of
-    Right s -> pure s
-    Left err -> do
-      hPutStrLn stderr ("Build failed: " <> show err)
-      exitFailure
-
 check :: IO ()
 check = do
-  s <- loadSite
-  result <- try (checkSite BuildConfig { sourceRoot = ".", outputDir = "dist" } s)
+  result <- try $ do
+    s <- loadSite "."
+    checkSite BuildConfig { sourceRoot = ".", outputDir = "dist" } s
   case result of
     Left err -> failWith err
     Right report -> do
       let entries = manifestEntries (checkManifest report)
-      let width = 2 + maximum (0 : map (length . outputText . entryOutput) entries)
+          width = 2 + maximum (0 : map (length . outputText . entryOutput) entries)
       mapM_ (putStrLn . describeEntry width) entries
       putStrLn $
         "OK: " <> show (length (checkPages report)) <> " pages and "
           <> show (length entries - length (checkPages report))
-          <> " assets validated; nothing written."
+          <> " files validated; nothing written."
 
 build :: FilePath -> IO ()
 build dir = do
-  s <- loadSite
-  result <- try (buildSite BuildConfig { sourceRoot = ".", outputDir = dir } s)
+  result <- try $ do
+    s <- loadSite "."
+    buildSite BuildConfig { sourceRoot = ".", outputDir = dir } s
   case result of
     Left err -> failWith err
     Right report ->
       putStrLn $
         "Wrote " <> show (reportPageCount report) <> " pages (" <> show (reportHtmlBytes report)
-          <> " bytes of HTML) and " <> show (reportAssetCount report) <> " assets to " <> dir <> "/."
+          <> " bytes of HTML) and " <> show (reportAssetCount report) <> " assets and media files to " <> dir <> "/."
 
 describeEntry :: Int -> Entry -> String
 describeEntry width entry = "  " <> padRight width (outputText (entryOutput entry)) <> describeSource (entrySource entry)

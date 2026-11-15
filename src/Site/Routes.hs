@@ -5,6 +5,8 @@
 -- | 'Home'               | @/@               | @index.html@                |
 -- | 'WorkIndex'          | @/work/@          | @work/index.html@           |
 -- | @'WorkDetail' slug@  | @/work/{slug}/@   | @work/{slug}/index.html@    |
+-- | 'WritingIndex'       | @/writing/@       | @writing/index.html@        |
+-- | @'WritingArticle' s@ | @/writing/{s}/@   | @writing/{s}/index.html@    |
 -- | 'About'              | @/about/@         | @about/index.html@          |
 -- | 'NotFound'           | @/404.html@       | @404.html@                  |
 --
@@ -71,17 +73,24 @@ data Route
   = Home
   | WorkIndex
   | WorkDetail Slug
+  | WritingIndex
+    -- ^ Generated only when published writing exists.
+  | WritingArticle Slug
   | About
   | NotFound
   deriving (Eq, Ord, Show)
 
--- | The root-absolute URL path of a route.
+-- | The root-absolute URL path of a route. Content slugs only ever appear
+-- below @/work/@ or @/writing/@, so content can never claim a fixed route
+-- such as @/about/@ or @/404.html@.
 routePath :: Route -> T.Text
 routePath route =
   case route of
     Home -> "/"
     WorkIndex -> "/work/"
     WorkDetail slug -> "/work/" <> slugText slug <> "/"
+    WritingIndex -> "/writing/"
+    WritingArticle slug -> "/writing/" <> slugText slug <> "/"
     About -> "/about/"
     NotFound -> "/404.html"
 

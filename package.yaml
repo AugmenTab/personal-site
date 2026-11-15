@@ -17,15 +17,19 @@ ghc-options:
   - -Wredundant-constraints
 
 dependencies:
+  - aeson         # JSON content metadata (decoded strictly by hand from Value)
   - base
   - brigid
   - bytestring
+  - commonmark    # CommonMark parser; rendered through our own AST into Brigid
   - containers
+  - scientific    # JSON numbers (featured_order)
   - directory
   - filepath
   - integer-types
   - non-empty-text
   - ogma
+  - parsec        # source positions in commonmark errors (already a commonmark dependency)
   - text
 
 library:

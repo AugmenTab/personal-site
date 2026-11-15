@@ -7,15 +7,21 @@
 --   and has exactly one @<h1>@;
 -- * no element id is repeated;
 -- * every internal @href@/@src@ is root-absolute and names a file in the
---   manifest, and every @#fragment@ names an id on its target page.
+--   manifest, and every @#fragment@ names an id on its target page;
+-- * no tag carries active content: no @<script>@, @<iframe>@, @<object>@,
+--   @<embed>@ or @<style>@ element, and no @on…=@ event-handler attribute.
+--   The site uses none of these, so any occurrence means content escaped
+--   its attribute or text (see 'activeContent').
 --
 -- External @http(s):@ and @mailto:@ URLs are not fetched.
 module Site.Validate
   ( PageProblem (..)
   , validatePages
   , attributeValues
+  , activeContent
   ) where
 
+import Data.Char (isAsciiLower, isSpace)
 import Data.List (group, sort)
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
@@ -30,6 +36,8 @@ data PageProblem
   | DuplicateId Route T.Text
   | BrokenLink Route T.Text String
     -- ^ The page, the URL, and why it does not resolve.
+  | ActiveContent Route T.Text
+    -- ^ A tag that would run script (see 'activeContent').
   deriving (Eq)
 
 instance Show PageProblem where
@@ -39,6 +47,9 @@ instance Show PageProblem where
       HeadingCount route n -> page route <> " must have exactly one <h1>, found " <> show n
       DuplicateId route ident -> page route <> " repeats the element id " <> show (T.unpack ident)
       BrokenLink route url why -> page route <> " links to " <> show (T.unpack url) <> ": " <> why
+      ActiveContent route tag ->
+        page route <> " contains active content in the tag " <> show (T.unpack (T.take 120 tag))
+          <> " (an attribute or text value broke out of its context)"
     where
       page route = "page " <> T.unpack (routePath route)
 
@@ -50,6 +61,7 @@ validatePages manifest pages = concatMap check pages
 
     check (route, html) =
       structure route html
+        <> [ ActiveContent route tag | tag <- activeContent html ]
         <> [ DuplicateId route ident | ident : _ : _ <- group (sort (attributeValues "id" html)) ]
         <> concatMap (link route) (attributeValues "href" html <> attributeValues "src" html)
 
@@ -69,6 +81,7 @@ validatePages manifest pages = concatMap check pages
                         (Nothing, _) -> []
                         (Just fragment, PageSource target) -> fragmentOn route target url fragment
                         (Just _, AssetSource _) -> [BrokenLink route url "fragment on an asset"]
+                        (Just _, MediaSource _) -> [BrokenLink route url "fragment on a media file"]
       | otherwise = [BrokenLink route url "relative URLs are not allowed; use a root-absolute URL"]
 
     fragmentOn route target url fragment
@@ -89,6 +102,29 @@ structure route html =
       , ("missing <title>", "<title>" `T.isInfixOf` html)
       , ("missing <main>", "<main " `T.isInfixOf` html)
       , ("missing </html>", "</html>" `T.isSuffixOf` T.strip html)
+      ]
+
+-- | Tags that would run script. Brigid escapes @<@ in text, so every
+-- literal @<@ in the output starts a real tag; each tag (up to its @>@) is
+-- checked for a script-capable element name or an attribute named @on…@
+-- (an event handler) appearing after whitespace.
+activeContent :: T.Text -> [T.Text]
+activeContent html =
+  [ tag
+  | chunk <- drop 1 (T.splitOn "<" html)
+  , let tag = T.takeWhile (/= '>') chunk
+        name = T.toLower (T.takeWhile (\c -> not (isSpace c) && c /= '/' ) tag)
+  , name `elem` ["script", "iframe", "object", "embed", "style", "frame", "frameset", "applet", "base"]
+      || any handler (attributeNames tag)
+  ]
+  where
+    handler n = "on" `T.isPrefixOf` n && T.length n > 2 && T.all isAsciiLower (T.drop 2 n)
+    -- every word immediately followed by '=' and preceded by whitespace
+    attributeNames tag =
+      [ T.toLower (T.takeWhileEnd (not . isSpace) before)
+      | (before, _) <- T.breakOnAll "=" tag
+      , not (T.null before)
+      , T.any isSpace before
       ]
 
 -- | Values of every @ name="..."@ attribute, with @&amp;@ decoded.

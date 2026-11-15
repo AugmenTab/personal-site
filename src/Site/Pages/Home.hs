@@ -24,21 +24,45 @@ import Site.Assets qualified as Asset
 import Site.Components (HeadingLevel (..), decorativeImage, projectCard, sectionHeading)
 import Site.Page (Layout (..), Page (..), SiteConfig)
 import Site.Pages.About (aboutEmblem, aboutLede, contactId, contactLinks)
-import Site.Projects (Project)
-import Site.Routes (Route (Home), elementId)
+import Site.Content.Types (Project)
+import Site.Routes (Route (Home, WorkIndex), elementId, routeUrl)
 
+-- | The homepage introduction: the one place its copy is maintained. The
+-- hero's layout is approved and frozen; only this copy may change.
+data Introduction =
+  Introduction
+    { introRole :: T.Text
+    , introGivenName :: T.Text
+    , introFamilyName :: T.Text
+    , introThesis :: T.Text
+      -- ^ DRAFT, taken from the approved homepage render.
+    , introDisciplines :: [T.Text]
+    }
+
+introduction :: Introduction
+introduction =
+  Introduction
+    { introRole = "Software Engineer"
+    , introGivenName = "Tyler"
+    , introFamilyName = "Baum"
+    , introThesis = "Building precise systems for ambitious ideas."
+    , introDisciplines = [ "Language design", "Systems engineering", "Audio technology", "Simulation" ]
+    }
+
+-- | The homepage, with the published featured projects (in order) as
+-- Selected Work. Without any, the section is left out and the primary call
+-- to action leads to the Work index instead.
 page :: SiteConfig -> [Project] -> Page
-page _config projects =
+page _config featured =
   Page
     { pageRoute = Home
     , pageTitle = "Tyler Baum — Software Engineer"
     , pageDescription = "Tyler Baum builds precise systems: programming languages, libraries, and tools."
     , pageLayout = Stage
     , pageMain =
-        [ stage
-        , selectedWork projects
-        , aboutSection
-        ]
+        [ stage (not (null featured)) ]
+          <> [ selectedWork featured | not (null featured) ]
+          <> [ aboutSection ]
     }
 
 --------------------------------------------------------------------------------
@@ -49,8 +73,8 @@ page _config projects =
 -- UI removed and cut into three feathered plates. At 1100px and wider they
 -- tile back into the original composition; narrower, the side plates slide
 -- inward. One art layer sits behind both the hero and the Black teaser.
-stage :: E.ChildHTML E.Main grandparent
-stage =
+stage :: Bool -> E.ChildHTML E.Main grandparent
+stage hasSelectedWork =
   E.div [ A.class_ "stage" ]
     [ E.div [ A.class_ "stage__art", A.aria_hidden True ]
         [ E.img
@@ -65,36 +89,34 @@ stage =
         , decorativeImage "stage__plate stage__plate--right" Asset.heroPlateRight 640 800
         , E.div [ A.class_ "stage__veil" ] []
         ]
-    , hero
+    , hero hasSelectedWork
     , blackFeature
     ]
 
-hero :: E.ChildHTML E.Division grandparent
-hero =
+hero :: Bool -> E.ChildHTML E.Division grandparent
+hero hasSelectedWork =
   E.section [ A.class_ "hero", A.id topId, A.aria_labelledby (NEL.singleton heroTitleId) ]
     [ E.div [ A.class_ "hero__content" ]
-        [ E.p [ A.class_ "hero__role" ] [ E.text "Software Engineer" ]
+        [ E.p [ A.class_ "hero__role" ] [ E.text (introRole introduction) ]
         , E.h1 [ A.class_ "hero__name", A.id heroTitleId ]
-            [ E.span [ A.class_ "hero__name-word" ] [ E.text "Tyler" ]
+            [ E.span [ A.class_ "hero__name-word" ] [ E.text (introGivenName introduction) ]
             , E.text " "
-            , E.span [ A.class_ "hero__name-word" ] [ E.text "Baum" ]
+            , E.span [ A.class_ "hero__name-word" ] [ E.text (introFamilyName introduction) ]
             ]
         , -- Art Deco rule with a central diamond (CSS); the monogram appears
           -- only in the navigation medallion.
           E.div [ A.class_ "hero__divider", A.aria_hidden True ]
             [ E.span [ A.class_ "hero__divider-diamond" ] [] ]
-        , -- DRAFT thesis, taken from the approved homepage render.
-          E.p [ A.class_ "hero__thesis" ]
-            [ E.text "Building precise systems for ambitious ideas." ]
+        , E.p [ A.class_ "hero__thesis" ] [ E.text (introThesis introduction) ]
         , E.ul [ A.class_ "hero__disciplines", A.aria_label "Areas of work" ]
-            [ E.li [] [ E.text "Language design" ]
-            , E.li [] [ E.text "Systems engineering" ]
-            , E.li [] [ E.text "Audio technology" ]
-            , E.li [] [ E.text "Simulation" ]
-            ]
-        , -- Same-page anchors: both targets are sections of this page.
+            (map (\d -> E.li [] [ E.text d ]) (introDisciplines introduction))
+        , -- Same-page anchors: both targets are sections of this page (the
+          -- primary one falls back to the Work index without Selected Work).
           E.div [ A.class_ "hero__actions" ]
-            [ E.a [ A.class_ "button button--primary", A.href selectedWorkId ]
+            [ E.a
+                [ A.class_ "button button--primary"
+                , if hasSelectedWork then A.href selectedWorkId else A.href (routeUrl WorkIndex)
+                ]
                 [ E.span [ A.class_ "button__label" ] [ E.text "Explore selected work" ] ]
             , E.a [ A.class_ "button button--secondary", A.href aboutId ]
                 [ E.span [ A.class_ "button__label" ] [ E.text "About & contact" ] ]

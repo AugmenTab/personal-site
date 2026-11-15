@@ -28,6 +28,7 @@ module Site.Build
   , BuildError (..)
   , CheckReport (..)
   , BuildReport (..)
+  , loadSite
   , checkSite
   , buildSite
   , renderSite
@@ -38,7 +39,7 @@ module Site.Build
   ) where
 
 import Control.Exception (Exception, SomeException, onException, throwIO, try)
-import Control.Monad (filterM, forM, forM_, unless, when)
+import Control.Monad (forM, forM_, unless, when)
 import Data.ByteString qualified as BS
 import Data.ByteString.Lazy qualified as LBS
 import Data.IORef (modifyIORef', newIORef, readIORef)
@@ -49,10 +50,14 @@ import System.Directory qualified as Dir
 import System.FilePath (dropTrailingPathSeparator, joinPath, splitDirectories, takeDirectory, (</>))
 
 import Site.Assets (Asset, assetPath)
+import Site.Content.Load (ContentError, loadContent)
+import Site.Content.Types (MediaFile (..))
+import Site.Definition (siteFrom)
 import Site.Layout (renderPage)
-import Site.Manifest (Entry (..), Manifest, ManifestError, manifestAssets, manifestEntries, manifestPages, mkManifest)
+import Site.Manifest (Entry (..), Manifest, ManifestError, manifestAssets, manifestEntries, manifestMedia, manifestPages, mkManifest)
 import Site.Page (Page (..), Site (..))
-import Site.Path (OutputPath, isWithin, outputFilePath, resolveUnder)
+import Site.Path (OutputPath, isWithin, mkOutputPath, outputFilePath, resolveUnder)
+import Site.Source (SourceProblem (..), describeSourceProblem, sourceFileProblem)
 import Site.Routes (Route)
 import Site.Validate (PageProblem, validatePages)
 
@@ -65,13 +70,17 @@ data BuildConfig =
     }
 
 data BuildError
-  = InvalidManifest [ManifestError]
+  = InvalidContent [ContentError]
+    -- ^ Content metadata or Markdown failed validation.
+  | InvalidManifest [ManifestError]
   | MissingAssets [FilePath]
     -- ^ Listed in the manifest but absent from the source tree.
   | UnsafeAsset FilePath String
     -- ^ Not a regular file, or resolves outside @assets/@ (e.g. a symlink).
   | UnlistedStylesheetReference FilePath T.Text
     -- ^ A stylesheet @url(...)@ that does not resolve to a listed asset.
+  | InvalidMedia [String]
+    -- ^ Published media that is missing, not a file, or escapes its directory.
   | InvalidPages [PageProblem]
   | UnsafeOutputDirectory FilePath String
   | StagedOutputMismatch [FilePath] [FilePath]
@@ -89,6 +98,10 @@ instance Show BuildError where
   show err =
     "Build failed: " <>
     case err of
+      InvalidContent errs ->
+        "invalid content:\n" <> concatMap show errs
+      InvalidMedia problems ->
+        "published media cannot be copied:\n" <> bullets problems
       InvalidManifest errs ->
         "invalid routes or output paths:\n" <> bullets (map show errs)
       MissingAssets paths ->
@@ -130,6 +143,13 @@ data BuildReport =
     , reportHtmlBytes :: Int
     }
 
+-- | Load and validate @content/@ under the source root, and derive the
+-- site from it. Throws 'InvalidContent' with every content problem found.
+loadSite :: FilePath -> IO Site
+loadSite root = do
+  loaded <- loadContent root
+  either (throwIO . InvalidContent) (pure . siteFrom) loaded
+
 -- | Render every page, in manifest (output path) order.
 renderSite :: Site -> Manifest -> [(Route, OutputPath, LBS.ByteString)]
 renderSite s manifest =
@@ -143,24 +163,29 @@ checkSite :: BuildConfig -> Site -> IO CheckReport
 checkSite config s = do
   manifest <-
     either (throwIO . InvalidManifest) pure $
-      mkManifest (map pageRoute (sitePages s)) (siteAssets s)
+      mkManifest (map pageRoute (sitePages s)) (siteAssets s) (siteMedia s)
 
   let assetsRoot = sourceRoot config </> "assets"
       sourceOf asset = assetsRoot </> assetPath asset
       assets = map fst (manifestAssets manifest)
 
-  missing <- filterM (fmap not . Dir.doesPathExist . sourceOf) assets
+  -- Assets and media go through the same source check ("Site.Source").
+  assetProblems <- forM assets $ \asset ->
+    case mkOutputPath (assetPath asset) of
+      Left err -> pure (asset, Just (Left (show err)))
+      Right rel -> (,) asset . fmap Right <$> sourceFileProblem assetsRoot rel
+  let missing = [ asset | (asset, Just (Right SourceMissing)) <- assetProblems ]
   unless (null missing) $
     throwIO (MissingAssets (map (("assets/" <>) . assetPath) missing))
+  forM_ assetProblems $ \(asset, problem) ->
+    forM_ problem $ \p ->
+      throwIO (UnsafeAsset ("assets/" <> assetPath asset) (either id describeSourceProblem p))
 
-  rootCanonical <- Dir.canonicalizePath assetsRoot
-  forM_ assets $ \asset -> do
-    let shown = "assets/" <> assetPath asset
-    isFile <- Dir.doesFileExist (sourceOf asset)
-    unless isFile $ throwIO (UnsafeAsset shown "is not a regular file")
-    resolved <- Dir.canonicalizePath (sourceOf asset)
-    unless (resolved `isWithin` rootCanonical) $
-      throwIO (UnsafeAsset shown ("resolves to " <> resolved <> ", outside the assets directory"))
+  mediaProblems <- forM (manifestMedia manifest) $ \(m, _) -> do
+    problem <- sourceFileProblem (sourceRoot config </> mediaRoot m) (mediaPath m)
+    pure [ mediaRoot m </> outputFilePath (mediaPath m) <> " " <> describeSourceProblem p | Just p <- [problem] ]
+  unless (null (concat mediaProblems)) $
+    throwIO (InvalidMedia (concat mediaProblems))
 
   forM_ (filter isStylesheet assets) $ \css -> do
     contents <- TE.decodeUtf8 <$> BS.readFile (sourceOf css)
@@ -204,6 +229,10 @@ buildSite config s = do
       let target = resolveUnder staging path
       Dir.createDirectoryIfMissing True (takeDirectory target)
       Dir.copyFile (assetsRoot </> assetPath asset) target
+    forM_ (manifestMedia manifest) $ \(m, path) -> do
+      let target = resolveUnder staging path
+      Dir.createDirectoryIfMissing True (takeDirectory target)
+      Dir.copyFile (sourceRoot config </> mediaRoot m </> outputFilePath (mediaPath m)) target
     BS.writeFile (staging </> ownershipMarker) ownershipMarkerContents
 
     staged <- listFilesRecursive staging
@@ -217,7 +246,7 @@ buildSite config s = do
     BuildReport
       { reportEntries = manifestEntries manifest
       , reportPageCount = length (checkPages report)
-      , reportAssetCount = length (manifestAssets manifest)
+      , reportAssetCount = length (manifestAssets manifest) + length (manifestMedia manifest)
       , reportHtmlBytes = sum [ fromIntegral (LBS.length html) | (_, _, html) <- checkPages report ]
       }
 

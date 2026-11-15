@@ -20,7 +20,6 @@ module Site.Assets
   , heroPlateCentre
   , heroPlateRight
   , aboutTree
-  , cardBrigid
   , blackEmblem
   ) where
 
@@ -72,8 +71,9 @@ heroPlateCentre = Asset "images/hero-plate-centre.webp"
 heroPlateRight = Asset "images/hero-plate-right.webp"
 aboutTree = Asset "images/about-tree.webp"
 
-cardBrigid, blackEmblem :: Asset
-cardBrigid = Asset "images/card-brigid.svg"
+-- | Project art is not here: it is content media, kept in the project's
+-- directory under @content/projects/@ and published only with the project.
+blackEmblem :: Asset
 blackEmblem = Asset "images/black-emblem.svg"
 
 -- | Everything copied into @dist/assets/@, including files referenced only
@@ -89,7 +89,6 @@ allAssets =
   , heroPlateCentre
   , heroPlateRight
   , aboutTree
-  , cardBrigid
   , blackEmblem
   , Asset "images/texture-grain.svg"
   , Asset "images/ornament-corner.svg"

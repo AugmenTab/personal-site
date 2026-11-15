@@ -42,7 +42,9 @@
         "headings": [
           "h1: Brigid",
           "h2: Overview",
-          "h2: Technical details",
+          "h2: Technical approach",
+          "h2: Current capabilities",
+          "h2: Limitations and status",
           "h2: Resources"
         ],
         "brokenFragmentLinks": [],
@@ -55,7 +57,9 @@
         "headings": [
           "h1: Brigid",
           "h2: Overview",
-          "h2: Technical details",
+          "h2: Technical approach",
+          "h2: Current capabilities",
+          "h2: Limitations and status",
           "h2: Resources"
         ],
         "brokenFragmentLinks": [],
@@ -68,7 +72,9 @@
         "headings": [
           "h1: Brigid",
           "h2: Overview",
-          "h2: Technical details",
+          "h2: Technical approach",
+          "h2: Current capabilities",
+          "h2: Limitations and status",
           "h2: Resources"
         ],
         "brokenFragmentLinks": [],
@@ -215,7 +221,7 @@
         "loaded": true
       },
       {
-        "src": "/assets/images/card-brigid.svg",
+        "src": "/media/projects/brigid/card.svg",
         "alt": "",
         "loaded": true
       },
@@ -274,7 +280,7 @@
         "loaded": true
       },
       {
-        "src": "/assets/images/card-brigid.svg",
+        "src": "/media/projects/brigid/card.svg",
         "alt": "",
         "loaded": true
       },
@@ -333,7 +339,7 @@
         "loaded": true
       },
       {
-        "src": "/assets/images/card-brigid.svg",
+        "src": "/media/projects/brigid/card.svg",
         "alt": "",
         "loaded": true
       },
@@ -362,7 +368,7 @@
       "/work/brigid/"
     ],
     "internalUrlsChecked": 14,
-    "fragmentLinksChecked": 15,
+    "fragmentLinksChecked": 17,
     "problems": []
   },
   "noJavaScriptNavigation": [
@@ -467,7 +473,9 @@
       "desktop": {
         "sectionLinks": [
           "#overview",
-          "#technical-details",
+          "#technical-approach",
+          "#current-capabilities",
+          "#limitations-and-status",
           "#resources"
         ],
         "clicks": [
@@ -480,9 +488,25 @@
             }
           },
           {
-            "#technical-details": {
-              "hash": "#technical-details",
-              "top": 266,
+            "#technical-approach": {
+              "hash": "#technical-approach",
+              "top": 25,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#current-capabilities": {
+              "hash": "#current-capabilities",
+              "top": 24,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#limitations-and-status": {
+              "hash": "#limitations-and-status",
+              "top": 44,
               "inView": true,
               "underSidebar": false
             }
@@ -490,7 +514,7 @@
           {
             "#resources": {
               "hash": "#resources",
-              "top": 569,
+              "top": 480,
               "inView": true,
               "underSidebar": false
             }
@@ -506,54 +530,18 @@
           "/work/",
           "/work/brigid/",
           "#overview",
-          "#technical-details",
+          "#technical-approach",
+          "#current-capabilities",
+          "#limitations-and-status",
           "#resources"
         ]
       },
       "tablet": {
         "sectionLinks": [
           "#overview",
-          "#technical-details",
-          "#resources"
-        ],
-        "clicks": [
-          {
-            "#overview": {
-              "hash": "#overview",
-              "top": 55,
-              "inView": true,
-              "underSidebar": false
-            }
-          },
-          {
-            "#technical-details": {
-              "hash": "#technical-details",
-              "top": 413,
-              "inView": true,
-              "underSidebar": false
-            }
-          },
-          {
-            "#resources": {
-              "hash": "#resources",
-              "top": 693,
-              "inView": true,
-              "underSidebar": false
-            }
-          }
-        ],
-        "keyboardStops": [
-          "/work/",
-          "/work/brigid/",
-          "#overview",
-          "#technical-details",
-          "#resources"
-        ]
-      },
-      "mobile": {
-        "sectionLinks": [
-          "#overview",
-          "#technical-details",
+          "#technical-approach",
+          "#current-capabilities",
+          "#limitations-and-status",
           "#resources"
         ],
         "clicks": [
@@ -566,9 +554,25 @@
             }
           },
           {
-            "#technical-details": {
-              "hash": "#technical-details",
-              "top": 102,
+            "#technical-approach": {
+              "hash": "#technical-approach",
+              "top": 25,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#current-capabilities": {
+              "hash": "#current-capabilities",
+              "top": 24,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#limitations-and-status": {
+              "hash": "#limitations-and-status",
+              "top": 192,
               "inView": true,
               "underSidebar": false
             }
@@ -576,7 +580,7 @@
           {
             "#resources": {
               "hash": "#resources",
-              "top": 513,
+              "top": 604,
               "inView": true,
               "underSidebar": false
             }
@@ -586,7 +590,69 @@
           "/work/",
           "/work/brigid/",
           "#overview",
-          "#technical-details",
+          "#technical-approach",
+          "#current-capabilities",
+          "#limitations-and-status",
+          "#resources"
+        ]
+      },
+      "mobile": {
+        "sectionLinks": [
+          "#overview",
+          "#technical-approach",
+          "#current-capabilities",
+          "#limitations-and-status",
+          "#resources"
+        ],
+        "clicks": [
+          {
+            "#overview": {
+              "hash": "#overview",
+              "top": 24,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#technical-approach": {
+              "hash": "#technical-approach",
+              "top": 24,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#current-capabilities": {
+              "hash": "#current-capabilities",
+              "top": 24,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#limitations-and-status": {
+              "hash": "#limitations-and-status",
+              "top": 24,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#resources": {
+              "hash": "#resources",
+              "top": 395,
+              "inView": true,
+              "underSidebar": false
+            }
+          }
+        ],
+        "keyboardStops": [
+          "/work/",
+          "/work/brigid/",
+          "#overview",
+          "#technical-approach",
+          "#current-capabilities",
+          "#limitations-and-status",
           "#resources"
         ]
       }

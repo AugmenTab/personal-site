@@ -19,7 +19,7 @@ import Brigid.HTML.Types qualified as HTML
 import Brigid.Types qualified as B
 
 import Site.Assets qualified as Asset
-import Site.Projects (Project (..), projectTitleId)
+import Site.Content.Types (MediaOwner (..), Project (..), Showcase (..), mediaUrl, projectKicker, projectTitleId)
 import Site.Routes (Route (WorkDetail), routeUrl)
 
 -- | An image with empty alt text: artwork that carries no information.
@@ -62,26 +62,49 @@ data HeadingLevel = Level2 | Level3
 projectCard :: E.ValidChild E.Article parent grandparent
             => HeadingLevel -> Project -> E.ChildHTML parent grandparent
 projectCard level project =
-  E.article [ A.class_ "project-card", A.aria_labelledby (NEL.singleton (projectTitleId project)) ]
-    [ E.div [ A.class_ "project-card__visual", A.aria_hidden True ]
-        [ decorativeImage "project-card__art" (projectCardArt project) 360 360 ]
-    , E.div [ A.class_ "project-card__body" ]
-        [ E.p [ A.class_ "project-card__kicker" ] [ E.text (projectKicker project) ]
-        , case level of
-            Level2 -> E.h2 [ A.class_ "project-card__title", A.id (projectTitleId project) ] [ E.text (projectName project) ]
-            Level3 -> E.h3 [ A.class_ "project-card__title", A.id (projectTitleId project) ] [ E.text (projectName project) ]
-        , E.p [ A.class_ "project-card__summary" ] [ E.text (projectSummary project) ]
-        , E.div [ A.class_ "project-card__footer" ]
-            [ E.ul [ A.class_ "project-card__tags", A.aria_label "Topics" ]
-                (map (\tag -> E.li [] [ E.text tag ]) (projectTags project))
-            , E.a
-                [ A.class_ "project-card__link"
-                , A.href (routeUrl (WorkDetail (projectSlug project)))
-                ]
-                [ E.text "View project"
-                , E.span [ A.class_ "visually-hidden" ] [ E.text (": " <> projectName project) ]
-                , E.span [ A.class_ "project-card__arrow", A.aria_hidden True ] [ E.text "→" ]
+  E.article
+    [ A.class_ (if hasVisual then "project-card" else "project-card project-card--text")
+    , A.aria_labelledby (NEL.singleton (projectTitleId project))
+    ]
+    ( visual
+        <> [ E.div [ A.class_ "project-card__body" ]
+               [ E.p [ A.class_ "project-card__kicker" ] [ E.text (projectKicker project) ]
+               , case level of
+                   Level2 -> E.h2 [ A.class_ "project-card__title", A.id (projectTitleId project) ] [ E.text (projectTitle project) ]
+                   Level3 -> E.h3 [ A.class_ "project-card__title", A.id (projectTitleId project) ] [ E.text (projectTitle project) ]
+               , E.p [ A.class_ "project-card__summary" ] [ E.text (projectSummary project) ]
+               , E.div [ A.class_ "project-card__footer" ]
+                   [ E.ul [ A.class_ "project-card__tags", A.aria_label "Topics" ]
+                       (map (\tag -> E.li [] [ E.text tag ]) (projectTechnologies project))
+                   , E.a
+                       [ A.class_ "project-card__link"
+                       , A.href (routeUrl (WorkDetail (projectSlug project)))
+                       ]
+                       [ E.text "View project"
+                       , E.span [ A.class_ "visually-hidden" ] [ E.text (": " <> projectTitle project) ]
+                       , E.span [ A.class_ "project-card__arrow", A.aria_hidden True ] [ E.text "→" ]
+                       ]
+                   ]
+               ]
+           ]
+    )
+  where
+    -- The card shows an image showcase as decorative art (the project page
+    -- shows it with its alt text); other showcase kinds give a text-only card.
+    (hasVisual, visual) =
+      case projectShowcase project of
+        Just (ImageShowcase path _) ->
+          ( True
+          , [ E.div [ A.class_ "project-card__visual", A.aria_hidden True ]
+                [ E.img
+                    [ A.class_ "project-card__art"
+                    , A.src (mediaUrl (ProjectMedia (projectSlug project)) path)
+                    , A.alt ""
+                    , A.width (360 :: Positive)
+                    , A.height (360 :: Positive)
+                    , A.decoding HTML.DecodeAsync
+                    ]
                 ]
             ]
-        ]
-    ]
+          )
+        _ -> (False, [])

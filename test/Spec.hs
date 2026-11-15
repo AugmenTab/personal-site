@@ -24,15 +24,16 @@ import Brigid.Types qualified as B
 
 import Site.Assets (Asset, allAssets, assetPath, mkAsset)
 import Site.Build
-import Site.Definition (site, siteConfiguration)
 import Site.Layout (renderPage)
 import Site.Manifest
 import Site.Page (Layout (..), Page (..), Site (..))
 import Site.Pages.About (contactId)
 import Site.Path
-import Site.Projects qualified as Projects
 import Site.Routes
-import Site.Validate (PageProblem (..), attributeValues, validatePages)
+import Site.Validate (PageProblem (..), activeContent, attributeValues, validatePages)
+import System.IO.Unsafe (unsafePerformIO)
+
+import ContentTests (contentTests)
 
 main :: IO ()
 main =
@@ -43,13 +44,17 @@ main =
       , renderTests
       , validationTests
       , buildTests
+      , contentTests
       ]
 
 --------------------------------------------------------------------------------
 -- Fixtures
 
+-- | The real site, loaded from this repository's @content/@ exactly as the
+-- CLI loads it. Loaded once; a content error fails every test that uses it.
 theSite :: Site
-theSite = either (error . show) id site
+theSite = unsafePerformIO (loadSite ".")
+{-# NOINLINE theSite #-}
 
 slug :: T.Text -> Slug
 slug = either (error . show) id . mkSlug
@@ -67,7 +72,7 @@ pageFor route =
     _ -> error ("expected exactly one page for " <> show route)
 
 htmlOf :: Route -> T.Text
-htmlOf = TE.decodeUtf8 . LBS.toStrict . renderPage siteConfiguration . pageFor
+htmlOf = TE.decodeUtf8 . LBS.toStrict . renderPage (siteConfig theSite) . pageFor
 
 count :: T.Text -> T.Text -> Int
 count needle haystack = length (T.breakOnAll needle haystack)
@@ -109,8 +114,6 @@ routeTests =
         forM_ [ "", "Brigid", "BRIGID", "brigid-", "-brigid", "bri--gid", "bri_gid", "brigid/"
               , " brigid", "brigid.html", "..", ".", "a/../b", "brígid", "work%2F", T.replicate 65 "a" ] $ \s ->
           assertBool ("accepted " <> show s) (isLeft (mkSlug s))
-    , testCase "an invalid slug makes the project definition fail" $
-        assertBool "uppercase slug accepted" (isLeft (Projects.brigid <$> mkSlug "Brigid"))
     , testCase "output paths reject traversal, absolute and non-canonical spellings" $
         forM_ [ "", "/etc/passwd", "../x", "a/../../x", "a/./b", "./a", "a//b", "a/", "..", "."
               , ".hidden", "a/.git/config", "a\\b", "a b", "a?b", "a#b", "ü" ] $ \p ->
@@ -138,18 +141,19 @@ manifestTests :: TestTree
 manifestTests =
   testGroup "manifest"
     [ testCase "the site's manifest is valid and sorted" $
-        case mkManifest (map pageRoute (sitePages theSite)) (siteAssets theSite) of
+        case mkManifest (map pageRoute (sitePages theSite)) (siteAssets theSite) (siteMedia theSite) of
           Left errs -> assertFailure (show errs)
           Right m -> do
             let paths = map entryOutput (manifestEntries m)
             paths @?= sort paths
-            length paths @?= length allRoutes + length allAssets
+            length paths @?= length allRoutes + length allAssets + length (siteMedia theSite)
+            map outputText [ p | (_, p) <- manifestMedia m ] @?= ["media/projects/brigid/card.svg"]
     , testCase "two pages with the same route are rejected" $
-        assertCollision (mkManifest [Home, About, Home] [])
+        assertCollision (mkManifest [Home, About, Home] [] [])
     , testCase "two project pages with the same slug are rejected" $
-        assertCollision (mkManifest [brigidRoute, WorkDetail (slug "brigid")] [])
+        assertCollision (mkManifest [brigidRoute, WorkDetail (slug "brigid")] [] [])
     , testCase "assets differing only in case collide" $
-        assertCollision (mkManifest [] [mkAsset "fonts/OFL-cinzel.txt", mkAsset "fonts/ofl-cinzel.txt"])
+        assertCollision (mkManifest [] [mkAsset "fonts/OFL-cinzel.txt", mkAsset "fonts/ofl-cinzel.txt"] [])
     , testCase "a page and an asset with the same destination collide" $ do
         let entry p src = Entry (either (error . show) id (mkOutputPath p)) src
         assertCollision $
@@ -168,12 +172,12 @@ manifestTests =
           Left [FileUsedAsDirectory _ _] -> pure ()
           other -> assertFailure ("expected a file/directory conflict, got " <> show other)
     , testCase "path errors and collisions are reported together" $
-        case mkManifest [Home, Home] [mkAsset "../x"] of
+        case mkManifest [Home, Home] [mkAsset "../x"] [] of
           Left [InvalidAssetPath _ _, OutputCollision _] -> pure ()
           other -> assertFailure ("expected both problems, got " <> show other)
     , testCase "unsafe asset paths are rejected before any file is touched" $
         forM_ ["../README.md", "/etc/passwd", "images/../../x", "images//x.svg", ".env"] $ \p ->
-          case mkManifest [] [mkAsset p] of
+          case mkManifest [] [mkAsset p] [] of
             Left [InvalidAssetPath _ _] -> pure ()
             other -> assertFailure (p <> ": expected InvalidAssetPath, got " <> show other)
     ]
@@ -255,9 +259,11 @@ renderTests =
         assertBool "about page" ("about__tree" `T.isInfixOf` htmlOf About)
         forM_ [WorkIndex, brigidRoute, NotFound] $ \r ->
           assertBool (show r <> " has no tree") (not ("about__tree" `T.isInfixOf` htmlOf r))
-    , testCase "the Brigid page has its facts, source link and a way back to Work" $ do
+    , testCase "the Brigid page has its content, source link and a way back to Work" $ do
         let html = htmlOf brigidRoute
-        forM_ ["href=\"https://github.com/AugmenTab/brigid\"", "href=\"/work/\"", "<dl class=\"project__facts\"", "BSD-3-Clause", "Haskell"] $ \frag ->
+        forM_ [ "href=\"https://github.com/AugmenTab/brigid\"", "href=\"/work/\"", "BSD-3-Clause", "Haskell"
+              , "<pre class=\"code-block\"><code class=\"language-haskell\">"
+              , "src=\"/media/projects/brigid/card.svg\" alt=\"Gold line drawing" ] $ \frag ->
           assertBool (T.unpack frag) (frag `T.isInfixOf` html)
     , testCase "project pages have the project sidebar beside the content" $ do
         let html = htmlOf brigidRoute
@@ -273,9 +279,9 @@ renderTests =
             sidebar = fst (T.breakOn "</nav>" (snd (T.breakOn "<nav class=\"project-nav\"" html)))
             sectionList = snd (T.breakOn "project-nav__sections" sidebar)
             links = [ T.drop 1 h | h <- attributeValues "href" sectionList ]
-            sectionIds = [ i | (_, rest) <- T.breakOnAll "<section class=\"project__section\" id=\"" html
-                             , let i = T.takeWhile (/= '"') (T.drop (T.length "<section class=\"project__section\" id=\"") rest) ]
-        links @?= ["overview", "technical-details", "resources"]
+            sectionIds = [ i | (_, rest) <- T.breakOnAll "<h2 class=\"project__section-title\" id=\"" html
+                             , let i = T.takeWhile (/= '"') (T.drop (T.length "<h2 class=\"project__section-title\" id=\"") rest) ]
+        links @?= ["overview", "technical-approach", "current-capabilities", "limitations-and-status", "resources"]
         links @?= sectionIds
         forM_ links $ \l -> count ("id=\"" <> l <> "\"") html @?= 1
     , testCase "non-project pages have no project sidebar" $
@@ -297,7 +303,7 @@ validationTests :: TestTree
 validationTests =
   testGroup "output validation"
     [ testCase "the real site's pages and links validate" $ do
-        m <- either (assertFailure . show) pure (mkManifest (map pageRoute (sitePages theSite)) (siteAssets theSite))
+        m <- either (assertFailure . show) pure (mkManifest (map pageRoute (sitePages theSite)) (siteAssets theSite) (siteMedia theSite))
         validatePages m [ (route, TE.decodeUtf8 (LBS.toStrict html)) | (route, _, html) <- renderSite theSite m ] @?= []
     , testCase "links to missing pages, missing fragments and relative URLs are caught" $ do
         let bad =
@@ -312,14 +318,26 @@ validationTests =
                     ]
                 ]
             pages = [stubPage Home [], stubPage WorkIndex [], bad]
-        m <- either (assertFailure . show) pure (mkManifest (map pageRoute pages) allAssets)
+        m <- either (assertFailure . show) pure (mkManifest (map pageRoute pages) allAssets [])
         let problems = validatePages m [ (route, TE.decodeUtf8 (LBS.toStrict html)) | (route, _, html) <- renderSite (withPages pages) m ]
         sort [ url | BrokenLink _ url _ <- problems ] @?= sort ["/nowhere/", "/about/#missing", "work/", "/assets/missing.png", "#nope"]
+    , testCase "an attribute value that breaks out of its quotes is caught" $ do
+        -- Brigid does not escape '"' in attribute values: reproduce the
+        -- injection directly and check that the build's validator stops it.
+        let injected = stubPage About [ E.p [ A.title "x\" onmouseover=\"alert(1)" ] [ E.text "x" ] ]
+            pages = [stubPage Home [], stubPage WorkIndex [], injected]
+        m <- either (assertFailure . show) pure (mkManifest (map pageRoute pages) allAssets [])
+        let problems = validatePages m [ (route, TE.decodeUtf8 (LBS.toStrict html)) | (route, _, html) <- renderSite (withPages pages) m ]
+        [ r | ActiveContent r _ <- problems ] @?= [About]
+    , testCase "harmless look-alikes in text and attribute values are not flagged" $ do
+        activeContent "<p class=\"a\">x onclick=y &#60;script&#62;</p><a href=\"/a?on=1\">z</a>" @?= []
+        activeContent "<img src=\"/x.svg\" alt=\"\" onerror=\"alert(1)\"/>" @?= ["img src=\"/x.svg\" alt=\"\" onerror=\"alert(1)\"/"]
+        length (activeContent "<script>x</script><iframe src=\"/\"></iframe>") @?= 2
     , testCase "a page without exactly one h1 is caught" $ do
         let noH1 = (stubPage About []) { pageMain = [] }
             twoH1 = stubPage WorkIndex [ E.h1 [] [ E.text "again" ] ]
             pages = [stubPage Home [], noH1, twoH1]
-        m <- either (assertFailure . show) pure (mkManifest (map pageRoute pages) allAssets)
+        m <- either (assertFailure . show) pure (mkManifest (map pageRoute pages) allAssets [])
         let problems = validatePages m [ (route, TE.decodeUtf8 (LBS.toStrict html)) | (route, _, html) <- renderSite (withPages pages) m ]
         sort [ (r, n) | HeadingCount r n <- problems ] @?= [(WorkIndex, 2), (About, 0)]
     ]
@@ -588,9 +606,14 @@ readTree root = do
   files <- listTree root
   Map.fromList <$> forM files (\f -> (,) f <$> BS.readFile (root </> f))
 
+-- | Copy the assets and the content files the real site uses (its published
+-- media included) into a temporary source tree.
 copyAssets :: FilePath -> FilePath -> IO ()
-copyAssets from to =
+copyAssets from to = do
   forM_ (allAssets :: [Asset]) $ \asset -> do
     let target = to </> "assets" </> assetPath asset
     Dir.createDirectoryIfMissing True (takeDirectory target)
     Dir.copyFile (from </> "assets" </> assetPath asset) target
+  forM_ ["content/projects/brigid/project.json", "content/projects/brigid/body.md", "content/projects/brigid/card.svg"] $ \file -> do
+    Dir.createDirectoryIfMissing True (takeDirectory (to </> file))
+    Dir.copyFile (from </> file) (to </> file)

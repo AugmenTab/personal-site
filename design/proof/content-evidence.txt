@@ -1,0 +1,148 @@
+ Container personal-site-site-build-run-9e04e2b07535 Creating 
+ Container personal-site-site-build-run-9e04e2b07535 Created 
+## site check (real content)
+  404.html                                            page /404.html
+  about/index.html                                    page /about/
+  assets/brand/favicon.svg                            asset assets/brand/favicon.svg
+  assets/brand/monogram-ornate.svg                    asset assets/brand/monogram-ornate.svg
+  assets/brand/monogram-simple.svg                    asset assets/brand/monogram-simple.svg
+  assets/fonts/OFL-cinzel.txt                         asset assets/fonts/OFL-cinzel.txt
+  assets/fonts/OFL-eb-garamond.txt                    asset assets/fonts/OFL-eb-garamond.txt
+  assets/fonts/OFL-jetbrains-mono.txt                 asset assets/fonts/OFL-jetbrains-mono.txt
+  assets/fonts/cinzel-latin-400-normal.woff2          asset assets/fonts/cinzel-latin-400-normal.woff2
+  assets/fonts/cinzel-latin-600-normal.woff2          asset assets/fonts/cinzel-latin-600-normal.woff2
+  assets/fonts/eb-garamond-latin-400-italic.woff2     asset assets/fonts/eb-garamond-latin-400-italic.woff2
+  assets/fonts/eb-garamond-latin-400-normal.woff2     asset assets/fonts/eb-garamond-latin-400-normal.woff2
+  assets/fonts/eb-garamond-latin-500-normal.woff2     asset assets/fonts/eb-garamond-latin-500-normal.woff2
+  assets/fonts/jetbrains-mono-latin-400-normal.woff2  asset assets/fonts/jetbrains-mono-latin-400-normal.woff2
+  assets/images/about-tree.webp                       asset assets/images/about-tree.webp
+  assets/images/black-emblem.svg                      asset assets/images/black-emblem.svg
+  assets/images/hero-plate-centre.webp                asset assets/images/hero-plate-centre.webp
+  assets/images/hero-plate-left.webp                  asset assets/images/hero-plate-left.webp
+  assets/images/hero-plate-right.webp                 asset assets/images/hero-plate-right.webp
+  assets/images/ornament-corner.svg                   asset assets/images/ornament-corner.svg
+  assets/images/ornament-frame.svg                    asset assets/images/ornament-frame.svg
+  assets/images/ornament-rule.svg                     asset assets/images/ornament-rule.svg
+  assets/images/texture-grain.svg                     asset assets/images/texture-grain.svg
+  assets/styles/site.css                              asset assets/styles/site.css
+  index.html                                          page /
+  media/projects/brigid/card.svg                      media content/projects/brigid/card.svg
+  work/brigid/index.html                              page /work/brigid/
+  work/index.html                                     page /work/
+OK: 5 pages and 23 files validated; nothing written.
+exit=0
+
+## determinism: two builds into dist, one into another directory
+Wrote 5 pages (19804 bytes of HTML) and 23 assets and media files to dist/.
+Wrote 5 pages (19804 bytes of HTML) and 23 assets and media files to dist/.
+Wrote 5 pages (19804 bytes of HTML) and 23 assets and media files to /tmp/evidence-out/.
+tree hash: first=a4e7522968ffe545 second=a4e7522968ffe545 other-dir=a4e7522968ffe545
+DETERMINISTIC: identical
+
+## generated files
+   150 .personal-site-output
+  1806 404.html
+  2278 about/index.html
+  1819 assets/brand/favicon.svg
+  5167 assets/brand/monogram-ornate.svg
+  1994 assets/brand/monogram-simple.svg
+  4382 assets/fonts/OFL-cinzel.txt
+  4396 assets/fonts/OFL-eb-garamond.txt
+  4397 assets/fonts/OFL-jetbrains-mono.txt
+ 13732 assets/fonts/cinzel-latin-400-normal.woff2
+ 14776 assets/fonts/cinzel-latin-600-normal.woff2
+ 22208 assets/fonts/eb-garamond-latin-400-italic.woff2
+ 21720 assets/fonts/eb-garamond-latin-400-normal.woff2
+ 23104 assets/fonts/eb-garamond-latin-500-normal.woff2
+ 21088 assets/fonts/jetbrains-mono-latin-400-normal.woff2
+210202 assets/images/about-tree.webp
+   778 assets/images/black-emblem.svg
+ 31766 assets/images/hero-plate-centre.webp
+ 41018 assets/images/hero-plate-left.webp
+ 39980 assets/images/hero-plate-right.webp
+   927 assets/images/ornament-corner.svg
+  1329 assets/images/ornament-frame.svg
+   520 assets/images/ornament-rule.svg
+   562 assets/images/texture-grain.svg
+ 42512 assets/styles/site.css
+  6758 index.html
+  2694 media/projects/brigid/card.svg
+  6404 work/brigid/index.html
+  2558 work/index.html
+531025 total
+
+## no content sources in the output
+none (.md / .json)
+
+## content validation failures (temporary copies)
+### unknown status, misspelled field and missing title together
+Build failed: invalid content:
+content/projects/brigid/project.json:
+  unknown field "titel" (allowed: slug, title, summary, category, development_status, publication_status, technologies, featured_order, links, body, showcase)
+  missing required field "title"
+  field "development_status": invalid value "complete-ish"; expected one of: implemented, in_development, proposed
+
+exit=1
+### body reference to a missing file
+Build failed: invalid content:
+content/projects/brigid/project.json:
+  field "body": referenced file "overview.md" does not exist
+
+exit=1
+### malformed JSON
+Build failed: invalid content:
+content/projects/brigid/project.json:
+  invalid JSON: Unexpected end-of-input, expecting key literal
+
+exit=1
+### raw HTML and a javascript: link in Markdown
+Build failed: invalid content:
+content/projects/brigid/body.md:
+  line 65: raw HTML is not allowed in Markdown content: "<script>alert(1)</script>"
+  line 67: link "javascript:alert(1)" is not allowed: use https://…, a site path starting with /, or a #fragment
+
+exit=1
+### a level-1 heading and an image without alt text
+Build failed: invalid content:
+content/projects/brigid/body.md:
+  line 65: a level-1 heading (#): the page already has its title; start sections at ##
+  line 67: image "card.svg" has no alt text; describe the image in ![…]
+
+exit=1
+### showcase pointing outside the project (traversal) and a symlink escape
+Build failed: invalid content:
+content/projects/brigid/project.json:
+  field "showcase": field "src": "../../../assets/images/black-emblem.svg" contains the unsafe segment ".." (allowed: letters, digits, '.', '_', '-'; no '.', '..' or leading dot)
+
+exit=1
+Build failed: invalid content:
+content/projects/brigid/project.json:
+  field "showcase" "card.svg" resolves to /tmp/secret.svg, outside its permitted directory (symlink escape)
+
+exit=1
+### a straight double quote in attribute-bound text
+Build failed: invalid content:
+content/projects/brigid/project.json:
+  field "showcase": field "alt": must not contain a straight double quote ("); use typographic quotes (“ ”) instead
+
+exit=1
+
+## publication: a draft project and draft article are absent
+no draft or writing files in the output
+
+## publication: one published article creates the Writing section
+Wrote 7 pages (23930 bytes of HTML) and 23 assets and media files to out/.
+out/writing/index.html
+out/writing/notes/index.html
+href="/writing/">Writing</a>
+
+## a content error preserves the previous output
+Build failed: invalid content:
+content/projects/brigid/body.md:
+  line 65: raw HTML is not allowed in Markdown content: "<b onclick=x>"
+  line 65: raw HTML is not allowed in Markdown content: "</b>"
+
+exit=1
+before=a4e7522968ffe545 after=a4e7522968ffe545
+PRIOR OUTPUT PRESERVED
+no staging or backup left behind

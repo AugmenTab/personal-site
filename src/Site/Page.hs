@@ -14,6 +14,7 @@ import Ogma qualified
 import Brigid.HTML.Elements qualified as E
 
 import Site.Assets (Asset)
+import Site.Content.Types (MediaFile)
 import Site.Routes (Route)
 
 data SiteConfig =
@@ -21,6 +22,9 @@ data SiteConfig =
     { siteName :: T.Text
       -- ^ Used in page titles and the footer.
     , siteLanguage :: Ogma.BCP_47
+    , siteHasWriting :: Bool
+      -- ^ Whether published writing exists; only then does the navigation
+      -- link to it.
     }
 
 -- | How the shell frames a page's @<main>@.
@@ -48,6 +52,8 @@ data Site =
     { siteConfig :: SiteConfig
     , sitePages :: [Page]
     , siteAssets :: [Asset]
+    , siteMedia :: [MediaFile]
+      -- ^ Media of published content only; drafts' files are never listed.
     }
 
 -- | A title of the form @"Work — Tyler Baum"@.

@@ -19,6 +19,7 @@ module Site.Manifest
   , manifestEntries
   , manifestPages
   , manifestAssets
+  , manifestMedia
   , lookupOutput
   , describeSource
   ) where
@@ -27,15 +28,19 @@ import Data.List (inits, intercalate, sortOn)
 import Data.Map.Strict qualified as Map
 import Data.Maybe (mapMaybe)
 import Data.Text qualified as T
+import System.FilePath ((</>))
 
 import Site.Assets (Asset, assetOutput, assetPath)
-import Site.Path (OutputPath, PathError, collisionKey, outputText)
+import Site.Content.Types (MediaFile (..), mediaOutput)
+import Site.Path (OutputPath, PathError, collisionKey, outputFilePath, outputText)
 import Site.Routes (Route, routeOutput, routePath)
 
 data Source
   = PageSource Route
   | AssetSource Asset
-  deriving (Eq, Ord, Show)
+  | MediaSource MediaFile
+    -- ^ A published content item's media file.
+  deriving (Eq, Show)
 
 data Entry =
   Entry
@@ -52,6 +57,7 @@ newtype Manifest = Manifest [Entry]
 data ManifestError
   = InvalidRouteOutput Route PathError
   | InvalidAssetPath Asset PathError
+  | InvalidMediaPath MediaFile String
   | OutputCollision [Entry]
     -- ^ Outputs that would be the same file (case-insensitively).
   | FileUsedAsDirectory Entry Entry
@@ -65,6 +71,8 @@ instance Show ManifestError where
         "route " <> T.unpack (routePath route) <> " has an invalid output path: " <> show pathErr
       InvalidAssetPath asset pathErr ->
         "asset assets/" <> assetPath asset <> " has an invalid path: " <> show pathErr
+      InvalidMediaPath m why ->
+        "media " <> mediaRoot m </> outputFilePath (mediaPath m) <> " has an invalid output path: " <> why
       OutputCollision entries ->
         "output collision: " <> intercalate ", " (map describe entries)
           <> " would all be written to the same file"
@@ -79,10 +87,11 @@ describeSource source =
   case source of
     PageSource route -> "page " <> T.unpack (routePath route)
     AssetSource asset -> "asset assets/" <> assetPath asset
+    MediaSource m -> "media " <> mediaRoot m </> outputFilePath (mediaPath m)
 
--- | The manifest for a set of page routes and assets.
-mkManifest :: [Route] -> [Asset] -> Either [ManifestError] Manifest
-mkManifest routes assets =
+-- | The manifest for a set of page routes, assets and published media.
+mkManifest :: [Route] -> [Asset] -> [MediaFile] -> Either [ManifestError] Manifest
+mkManifest routes assets media =
   -- Report every problem at once: invalid paths, and collisions among the
   -- entries whose paths are valid.
   case (pathErrors, fromEntries entries) of
@@ -92,12 +101,15 @@ mkManifest routes assets =
   where
     pageResults = [ (route, routeOutput route) | route <- routes ]
     assetResults = [ (asset, assetOutput asset) | asset <- assets ]
+    mediaResults = [ (m, mediaOutput (mediaOwner m) (mediaPath m)) | m <- media ]
     pathErrors =
       [ InvalidRouteOutput route e | (route, Left e) <- pageResults ]
         <> [ InvalidAssetPath asset e | (asset, Left e) <- assetResults ]
+        <> [ InvalidMediaPath m e | (m, Left e) <- mediaResults ]
     entries =
       [ Entry path (PageSource route) | (route, Right path) <- pageResults ]
         <> [ Entry path (AssetSource asset) | (asset, Right path) <- assetResults ]
+        <> [ Entry path (MediaSource m) | (m, Right path) <- mediaResults ]
 
 -- | Check a list of entries for collisions and sort it into a manifest.
 fromEntries :: [Entry] -> Either [ManifestError] Manifest
@@ -129,6 +141,12 @@ manifestAssets = mapMaybe asset . manifestEntries
   where
     asset (Entry path (AssetSource a)) = Just (a, path)
     asset _ = Nothing
+
+manifestMedia :: Manifest -> [(MediaFile, OutputPath)]
+manifestMedia = mapMaybe media . manifestEntries
+  where
+    media (Entry path (MediaSource m)) = Just (m, path)
+    media _ = Nothing
 
 -- | Exact (case-sensitive) lookup, as a static host on Linux resolves URLs.
 lookupOutput :: OutputPath -> Manifest -> Maybe Entry

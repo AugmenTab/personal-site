@@ -14,6 +14,10 @@ library
       Site.Assets
       Site.Build
       Site.Components
+      Site.Content.Load
+      Site.Content.Markdown
+      Site.Content.Render
+      Site.Content.Types
       Site.Definition
       Site.Layout
       Site.Manifest
@@ -22,9 +26,10 @@ library
       Site.Pages.Home
       Site.Pages.NotFound
       Site.Pages.Work
+      Site.Pages.Writing
       Site.Path
-      Site.Projects
       Site.Routes
+      Site.Source
       Site.Validate
   other-modules:
       Paths_personal_site
@@ -34,15 +39,19 @@ library
       OverloadedStrings
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints
   build-depends:
-      base
+      aeson
+    , base
     , brigid
     , bytestring
+    , commonmark
     , containers
     , directory
     , filepath
     , integer-types
     , non-empty-text
     , ogma
+    , parsec
+    , scientific
     , text
   default-language: GHC2021
 
@@ -56,16 +65,20 @@ executable site
       OverloadedStrings
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints
   build-depends:
-      base
+      aeson
+    , base
     , brigid
     , bytestring
+    , commonmark
     , containers
     , directory
     , filepath
     , integer-types
     , non-empty-text
     , ogma
+    , parsec
     , personal-site
+    , scientific
     , text
   default-language: GHC2021
 
@@ -73,6 +86,7 @@ test-suite site-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      ContentTests
       Paths_personal_site
   hs-source-dirs:
       test
@@ -80,16 +94,20 @@ test-suite site-test
       OverloadedStrings
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints
   build-depends:
-      base
+      aeson
+    , base
     , brigid
     , bytestring
+    , commonmark
     , containers
     , directory
     , filepath
     , integer-types
     , non-empty-text
     , ogma
+    , parsec
     , personal-site
+    , scientific
     , tasty
     , tasty-hunit
     , temporary

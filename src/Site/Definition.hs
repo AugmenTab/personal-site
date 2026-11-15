@@ -1,48 +1,53 @@
--- | The site: every page and asset, listed explicitly.
+-- | The site: every page and file, derived from the loaded content.
 --
--- To add a page in Phase 01: add a 'Route' constructor (and its URL in
--- 'Site.Routes.routePath'), write a @Site.Pages.*@ module returning a
--- 'Page', and list it here. The build rejects duplicate or colliding outputs
--- and links to anything that is not generated.
+-- Publication filtering happens here and only here. Draft projects and
+-- articles produce no route, card, navigation entry or media file. The
+-- writing section exists only when at least one article is published.
+-- Fixed pages (home, about, 404) and the asset list are explicit.
 module Site.Definition
-  ( site
+  ( siteFrom
   , siteConfiguration
   ) where
 
 import Ogma qualified
 
 import Site.Assets (allAssets)
+import Site.Content.Types
 import Site.Page (Site (..), SiteConfig (..))
 import Site.Pages.About qualified as About
 import Site.Pages.Home qualified as Home
 import Site.Pages.NotFound qualified as NotFound
 import Site.Pages.Work qualified as Work
-import Site.Projects qualified as Projects
-import Site.Routes (RouteError, mkSlug)
+import Site.Pages.Writing qualified as Writing
 
-siteConfiguration :: SiteConfig
-siteConfiguration =
+siteConfiguration :: Content -> SiteConfig
+siteConfiguration content =
   SiteConfig
     { siteName = "Tyler Baum"
     , siteLanguage = Ogma.simpleBCP_47 Ogma.English
+    , siteHasWriting = not (null (publishedArticles content))
     }
 
--- | 'Left' if a slug is invalid.
-site :: Either RouteError Site
-site = do
-  brigid <- Projects.brigid <$> mkSlug "brigid"
-  let config = siteConfiguration
-      projects = [brigid]
-  pure
-    Site
-      { siteConfig = config
-      , sitePages =
-          [ Home.page config projects
-          , Work.indexPage config projects
-          ]
-            <> map (Work.projectPage config) projects
-            <> [ About.page config
-               , NotFound.page config
-               ]
-      , siteAssets = allAssets
-      }
+siteFrom :: Content -> Site
+siteFrom content =
+  Site
+    { siteConfig = config
+    , sitePages =
+        [ Home.page config (featuredProjects content)
+        , Work.indexPage config projects
+        ]
+          <> map (Work.projectPage config) projects
+          <> writingPages
+          <> [ About.page config
+             , NotFound.page config
+             ]
+    , siteAssets = allAssets
+    , siteMedia = concatMap projectMedia projects <> concatMap articleMedia articles
+    }
+  where
+    config = siteConfiguration content
+    projects = publishedProjects content
+    articles = publishedArticles content
+    writingPages
+      | null articles = []
+      | otherwise = Writing.indexPage config articles : map (Writing.articlePage config) articles
