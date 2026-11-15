@@ -1,0 +1,240 @@
+Phase 03 — command evidence (verbatim output, captured 2026-11-15 at HEAD dfcc9ec)
+Brigid pin: AugmenTab/brigid@e0f4d45f4b91a1a381c64845861237d06b3b0803
+
+================================================================================
+$ docker compose run --rm site-build stack test
+================================================================================
+personal-site
+  routes
+    route URLs and output files:                                                                    OK
+    the site defines exactly the required routes:                                                   OK (0.05s)
+    valid slugs are accepted unchanged:                                                             OK
+    invalid or non-canonical slugs are rejected:                                                    OK
+    output paths reject traversal, absolute and non-canonical spellings:                            OK
+    accepted output paths cannot escape the output root:                                            OK
+    URL paths map to output files by one rule:                                                      OK
+    every route's output agrees with its URL:                                                       OK
+  manifest
+    the site's manifest is valid and sorted:                                                        OK
+    two pages with the same route are rejected:                                                     OK
+    two project pages with the same slug are rejected:                                              OK
+    assets differing only in case collide:                                                          OK
+    a page and an asset with the same destination collide:                                          OK
+    a file cannot also be needed as a directory:                                                    OK
+    path errors and collisions are reported together:                                               OK
+    unsafe asset paths are rejected before any file is touched:                                     OK
+  Brigid render
+    every page is a complete HTML document:                                                         OK
+    titles and the single h1 of each page:                                                          OK
+    every page has the skip link, header nav, main and footer landmarks:                            OK
+    shared navigation links to routes, marking only the current page:                               OK
+    the homepage keeps its approved major sections and same-page CTAs:                              OK
+    every <img> has an alt attribute:                                                               OK
+    pages are static: no scripts, forms or controls:                                                OK
+    the monogram appears once per page, inside the navigation medallion:                            OK
+    the tree emblem is in About content only:                                                       OK
+    the Brigid page has its content, source link and a way back to Work:                            OK
+    project pages have the project sidebar beside the content:                                      OK
+    every sidebar section link has a section, and every section a link:                             OK
+    non-project pages have no project sidebar:                                                      OK
+    cards on Home and Work link to the project page:                                                OK
+    the 404 page links back to the homepage:                                                        OK
+    rendering is deterministic:                                                                     OK
+  output validation
+    the real site's pages and links validate:                                                       OK
+    links to missing pages, missing fragments and relative URLs are caught:                         OK
+    an attribute value cannot break out of its quotes (Brigid escapes; the validator still checks): OK
+    harmless look-alikes in text and attribute values are not flagged:                              OK
+    a page without exactly one h1 is caught:                                                        OK
+  build
+    a clean build writes exactly the manifest's files:                                              OK (0.01s)
+    repeated builds produce byte-identical trees:                                                   OK (0.02s)
+    site check validates without writing anything:                                                  OK
+    fails clearly when a required asset is missing, keeping prior output:                           OK (0.01s)
+    a missing asset on a first build writes no output:                                              OK
+    fails when a stylesheet references an unlisted file:                                            OK
+    duplicate routes fail the build, keeping prior output:                                          OK
+    an unsafe asset path fails the build:                                                           OK
+    an asset symlinked outside assets/ is rejected:                                                 OK
+    an asset that is a directory is rejected:                                                       OK
+    a page with a broken internal link fails the build, keeping prior output:                       OK (0.01s)
+    refuses output directories that would destroy sources:                                          OK (0.02s)
+    an existing empty output directory is accepted:                                                 OK
+    a generator-managed directory can be rebuilt:                                                   OK (0.01s)
+    a foreign directory is refused even when it contains index.html:                                OK
+    a malformed, misplaced or symlinked marker cannot authorize replacement:                        OK (0.02s)
+    an interrupted earlier promotion stops the build:                                               OK
+    a failed promotion restores the previous output:                                                OK
+    cssReferences ignores data URIs and absolute URLs:                                              OK
+  content (Phase 02)
+    metadata validation
+      the real project content loads and is published:                                              OK
+      a missing required field:                                                                     OK
+      a field of the wrong JSON type:                                                               OK
+      an unknown status value names the allowed values:                                             OK
+      an unknown (misspelled) field is rejected:                                                    OK
+      null is not a way to omit a field:                                                            OK
+      a missing body reference, and a body that does not exist:                                     OK
+      malformed JSON is reported with the parser's position:                                        OK
+      invalid directory slugs and slug/directory mismatches:                                        OK
+      two projects claiming one slug cannot both load:                                              OK
+      duplicate featured order among published projects:                                            OK
+      an unsupported showcase kind, and an unrendered kind on a published project:                  OK (0.01s)
+      missing showcase properties:                                                                  OK
+      unsafe and broken media references:                                                           OK (0.02s)
+      attribute-bound text may not contain a straight double quote:                                 OK
+      external links must be https:                                                                 OK
+      independent errors are all reported in one run:                                               OK
+    markdown rendering
+      paragraphs, sections and nested headings:                                                     OK
+      nested lists, ordered lists and blockquotes:                                                  OK
+      emphasis, strong, links and inline code:                                                      OK
+      fenced code is escaped text with a validated language class:                                  OK
+      escaped characters and entities become plain text:                                            OK
+      images resolve to the item's published media, with alt text:                                  OK
+      images need alt text:                                                                         OK
+      duplicate and reserved headings get unique ids:                                               OK
+      heading ids handle punctuation, inline formatting, non-ASCII and empty text:                  OK
+      an empty document renders no sections and no sidebar list:                                    OK
+      non-ASCII text survives intact:                                                               OK
+      heading policy: no #, no skipped levels, top-level only, no links:                            OK
+      links inside emphasis are rejected (Brigid does not allow <a> in <em>):                       OK
+      errors carry line numbers:                                                                    OK
+    adversarial markdown
+      raw HTML is rejected, inline and block:                                                       OK (0.02s)
+      dangerous and obfuscated link schemes are rejected:                                           OK (0.05s)
+      dangerous image sources are rejected:                                                         OK (0.02s)
+      attribute-escaping attempts cannot break out of attributes:                                   OK (0.02s)
+      HTML inside code is inert text:                                                               OK
+      malformed link destinations are not links:                                                    OK
+    filesystem boundaries
+      body paths cannot traverse or be absolute:                                                    OK (0.01s)
+      symlinked bodies, media and directories cannot escape:                                        OK
+      a content file cannot be published as media:                                                  OK
+      stray files and dot-files in content/projects:                                                OK
+      no content directory means no projects, not an error:                                         OK
+      content slugs can never claim a fixed route:                                                  OK
+    publication
+      published projects get a route, a card and media; drafts get nothing:                         OK (0.01s)
+      draft articles stay absent and no Writing section exists:                                     OK
+      one published article creates the Writing routes and nav entry:                               OK
+      the real site has no Writing section:                                                         OK
+      Work index order: featured by position, then by title, never by directory:                    OK
+      built output contains no Markdown or JSON sources:                                            OK
+    content build reliability
+      content errors, bad Markdown and malformed JSON preserve the previous output:                 OK (0.01s)
+      an invalid published project cannot partially publish:                                        OK
+      repeated content builds are byte-identical:                                                   OK (0.02s)
+  homepage (Phase 03)
+    real content
+      Black leads the teaser; Selected Work is the other featured projects, in order:               OK
+      the homepage renders the cards in featured order, linking to generated pages:                 OK
+      the Black teaser links to the published Black page:                                           OK
+      contact links are the verified destinations only:                                             OK
+      the real site has no Writing preview:                                                         OK
+    Selected Work
+      cards follow featured order, never directory order:                                           OK
+      drafts and unfeatured projects never appear in Selected Work:                                 OK
+      the teaser's project is not repeated as a card:                                               OK
+      no featured projects: no Selected Work, and the primary CTA leads to /work/:                  OK
+      with Selected Work, the primary CTA is the in-page anchor:                                    OK
+    Black teaser
+      no simulated interactive controls or compiler output:                                         OK
+      the excerpt is the verified program, unaltered:                                               OK
+      the old unverified excerpt and unsupported claims are gone:                                   OK
+      without a published Black record: no link, an honest status:                                  OK
+      a draft Black record is not linked:                                                           OK
+    Writing preview
+      no published articles: no section, heading or link:                                           OK
+      one published article: one entry, linked, with its date:                                      OK
+      several: the newest three, newest first, undated last; drafts never:                          OK
+      an undated article shows no invented date:                                                    OK
+    structure
+      sections appear in the required order:                                                        OK
+      one h1, and heading levels never skip:                                                        OK
+      every section is labelled by its heading:                                                     OK
+      the philosophy section is complete and calm: no images, no frames:                            OK
+      draft copy is marked for owner review:                                                        OK
+      the tree emblem appears once on the homepage, in About:                                       OK
+    homepage build reliability
+      a missing project asset prevents publication and keeps the previous output:                   OK (0.01s)
+      invalid homepage content (duplicate featured order) prevents publication:                     OK
+      repeated homepage builds are byte-identical and leak no sources:                              OK (0.02s)
+
+All 136 tests passed (0.76s)
+
+personal-site> Test suite site-test passed
+
+================================================================================
+$ docker compose run --rm site-build stack exec -- site check
+================================================================================
+  404.html                                            page /404.html
+  about/index.html                                    page /about/
+  assets/brand/favicon.svg                            asset assets/brand/favicon.svg
+  assets/brand/monogram-ornate.svg                    asset assets/brand/monogram-ornate.svg
+  assets/brand/monogram-simple.svg                    asset assets/brand/monogram-simple.svg
+  assets/fonts/OFL-cinzel.txt                         asset assets/fonts/OFL-cinzel.txt
+  assets/fonts/OFL-eb-garamond.txt                    asset assets/fonts/OFL-eb-garamond.txt
+  assets/fonts/OFL-jetbrains-mono.txt                 asset assets/fonts/OFL-jetbrains-mono.txt
+  assets/fonts/cinzel-latin-400-normal.woff2          asset assets/fonts/cinzel-latin-400-normal.woff2
+  assets/fonts/cinzel-latin-600-normal.woff2          asset assets/fonts/cinzel-latin-600-normal.woff2
+  assets/fonts/eb-garamond-latin-400-italic.woff2     asset assets/fonts/eb-garamond-latin-400-italic.woff2
+  assets/fonts/eb-garamond-latin-400-normal.woff2     asset assets/fonts/eb-garamond-latin-400-normal.woff2
+  assets/fonts/eb-garamond-latin-500-normal.woff2     asset assets/fonts/eb-garamond-latin-500-normal.woff2
+  assets/fonts/jetbrains-mono-latin-400-normal.woff2  asset assets/fonts/jetbrains-mono-latin-400-normal.woff2
+  assets/images/about-tree.webp                       asset assets/images/about-tree.webp
+  assets/images/black-emblem.svg                      asset assets/images/black-emblem.svg
+  assets/images/hero-plate-centre.webp                asset assets/images/hero-plate-centre.webp
+  assets/images/hero-plate-left.webp                  asset assets/images/hero-plate-left.webp
+  assets/images/hero-plate-right.webp                 asset assets/images/hero-plate-right.webp
+  assets/images/ornament-corner.svg                   asset assets/images/ornament-corner.svg
+  assets/images/ornament-frame.svg                    asset assets/images/ornament-frame.svg
+  assets/images/ornament-rule.svg                     asset assets/images/ornament-rule.svg
+  assets/images/texture-grain.svg                     asset assets/images/texture-grain.svg
+  assets/styles/site.css                              asset assets/styles/site.css
+  index.html                                          page /
+  media/projects/black/card.svg                       media content/projects/black/card.svg
+  media/projects/brigid/card.svg                      media content/projects/brigid/card.svg
+  media/projects/lockdown/card.svg                    media content/projects/lockdown/card.svg
+  work/black/index.html                               page /work/black/
+  work/brigid/index.html                              page /work/brigid/
+  work/index.html                                     page /work/
+  work/lockdown/index.html                            page /work/lockdown/
+OK: 7 pages and 25 files validated; nothing written.
+
+================================================================================
+$ docker compose run --rm site-build
+================================================================================
+Wrote 7 pages (39812 bytes of HTML) and 25 assets and media files to dist/.
+
+================================================================================
+$ docker compose --profile tools run --rm screenshots
+================================================================================
+Result in design/proof/checks.txt: "failures": []
+(all 8 pages at 1440/768/390; crawl of 7 pages, 18 internal URLs, 29 fragment
+links, no problems; no-JS walk; project sidebars on all three project pages;
+reduced motion; homepage keyboard walk; phase03 block at desktop, tablet,
+mobile and 1920 wide)
+
+================================================================================
+$ docker compose --profile tools run --rm art python3 tools/art/regression.py --hero-band
+================================================================================
+region: hero band, rows 0-415
+mean |dL| = 0.00 (limit 1.5)
+worst tile = 0.00 at x=0, y=0 (limit 12.0)
+diff image: design/proof/regression-diff-hero-band.png
+PASS
+
+================================================================================
+$ docker compose --profile tools run --rm art python3 tools/art/regression.py
+================================================================================
+region: full first view
+mean |dL| = 3.97 (limit 1.5)
+worst tile = 53.08 at x=256, y=640 (limit 12.0)
+diff image: design/proof/regression-diff.png
+FAIL: inspect the diff against the approved reference
+
+Expected: the Black teaser (below y=421) changed by design: a verified program
+and corrected copy. (At the first submission this read 3.93; the round-1
+text-wrap refinements moved a few teaser words.) The hero band above
+re-verifies that nothing above the teaser changed.
