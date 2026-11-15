@@ -1,102 +1,45 @@
 {-# LANGUAGE DataKinds #-}
 
--- | The Phase 00 visual proof: one page rendered with Brigid.
+-- | The homepage: the approved Phase 00 design, ported into the shared shell.
 --
--- Header + navigation, the cinematic hero, the transition into Selected Work,
--- one finished project card, and the About/Contact anchor the calls to action
--- point at. All copy is real HTML text; artwork is decorative and hidden from
--- assistive technology.
+-- The cinematic stage (hero over the reconstructed artwork, and the static
+-- Black teaser), Selected Work, and the About/Contact section. All copy is
+-- real HTML text; artwork is decorative and hidden from assistive technology.
 --
 -- Copy marked DRAFT is placeholder editorial text awaiting owner review.
-module Site.Proof
-  ( homePage
-  , renderHomePage
+module Site.Pages.Home
+  ( page
   ) where
 
-import Data.ByteString.Lazy qualified as LBS
 import Data.List.NonEmpty qualified as NEL
-import Data.NonEmptyText qualified as NET
 import Data.Text qualified as T
 import Integer (Positive)
-import Ogma qualified
 
 import Brigid.HTML.Attributes qualified as A
 import Brigid.HTML.Elements qualified as E
-import Brigid.HTML.Elements.Safe qualified as Safe
-import Brigid.HTML.Render.ByteString (renderLazyHTML)
 import Brigid.HTML.Types qualified as HTML
 import Brigid.Types qualified as B
 
 import Site.Assets qualified as Asset
+import Site.Components (HeadingLevel (..), decorativeImage, projectCard, sectionHeading)
+import Site.Page (Layout (..), Page (..), SiteConfig)
+import Site.Pages.About (aboutEmblem, aboutLede, contactId, contactLinks)
+import Site.Projects (Project)
+import Site.Routes (Route (Home), elementId)
 
-renderHomePage :: LBS.ByteString
-renderHomePage = renderLazyHTML homePage
-
-homePage :: E.HTML
-homePage =
-  E.html [ A.lang (Just (Ogma.simpleBCP_47 Ogma.English)) ]
-    [ E.head [] headContent
-    , E.body [ A.class_ "page" ]
-        [ E.a [ A.class_ "skip-link", A.href mainId ] [ E.text "Skip to content" ]
-        , siteHeader
-        , E.main [ A.id mainId ]
-            [ stage
-            , selectedWork
-            , aboutSection
-            ]
-        , siteFooter
+page :: SiteConfig -> [Project] -> Page
+page _config projects =
+  Page
+    { pageRoute = Home
+    , pageTitle = "Tyler Baum — Software Engineer"
+    , pageDescription = "Tyler Baum builds precise systems: programming languages, libraries, and tools."
+    , pageLayout = Stage
+    , pageMain =
+        [ stage
+        , selectedWork projects
+        , aboutSection
         ]
-    ]
-
-headContent :: [E.ChildHTML E.Head E.Html]
-headContent =
-  [ Safe.meta Safe.Charset
-  , E.meta [ A.name HTML.Viewport, A.content "width=device-width, initial-scale=1" ]
-  , E.title [] [ E.text "Tyler Baum — Software Engineer" ]
-  , E.meta
-      [ A.name HTML.Description
-      , A.content "Tyler Baum builds precise systems: programming languages, libraries, and tools."
-      ]
-  , Safe.meta . Safe.Name . Safe.ColorScheme . Safe.Palettes $ NEL.singleton Safe.Dark
-  , E.link
-      [ A.rel HTML.Rel_Icon
-      , A.href (Asset.assetUrl Asset.favicon)
-      , A.type_ (HTML.mkRawTypeOption "image/svg+xml")
-      ]
-  , E.link
-      [ A.rel HTML.Rel_Stylesheet
-      , A.href (Asset.assetUrl Asset.stylesheet)
-      ]
-  ]
-
---------------------------------------------------------------------------------
--- Header
-
-siteHeader :: E.ChildHTML E.Body grandparent
-siteHeader =
-  E.header [ A.class_ "site-header" ]
-    [ E.nav [ A.class_ "site-nav", A.aria_label "Primary" ]
-        [ E.ul [ A.class_ "site-nav__list site-nav__list--start" ]
-            [ navItem True topId "Home"
-            , navItem False selectedWorkId "Work"
-            ]
-        , E.a [ A.class_ "site-nav__mark", A.href topId, A.aria_label "Tyler Baum — home" ]
-            [ decorativeImage "site-nav__mark-img" Asset.monogramSimple 66 42 ]
-        , E.ul [ A.class_ "site-nav__list site-nav__list--end" ]
-            [ navItem False aboutId "About"
-            , navItem False contactId "Contact"
-            ]
-        ]
-    ]
-
-navItem :: Bool -> B.Id -> T.Text -> E.ChildHTML E.UnorderedList grandparent
-navItem current target label =
-  E.li [ A.class_ "site-nav__item" ]
-    [ E.a ( [ A.class_ "site-nav__link", A.href target ]
-            <> [ A.aria_current HTML.CurrentPage | current ]
-          )
-        [ E.text label ]
-    ]
+    }
 
 --------------------------------------------------------------------------------
 -- Hero
@@ -149,7 +92,8 @@ hero =
             , E.li [] [ E.text "Audio technology" ]
             , E.li [] [ E.text "Simulation" ]
             ]
-        , E.div [ A.class_ "hero__actions" ]
+        , -- Same-page anchors: both targets are sections of this page.
+          E.div [ A.class_ "hero__actions" ]
             [ E.a [ A.class_ "button button--primary", A.href selectedWorkId ]
                 [ E.span [ A.class_ "button__label" ] [ E.text "Explore selected work" ] ]
             , E.a [ A.class_ "button button--secondary", A.href aboutId ]
@@ -232,42 +176,12 @@ codeLine toks =
 --------------------------------------------------------------------------------
 -- Selected Work
 
-selectedWork :: E.ChildHTML E.Main grandparent
-selectedWork =
+selectedWork :: [Project] -> E.ChildHTML E.Main grandparent
+selectedWork projects =
   E.section [ A.class_ "work", A.id selectedWorkId, A.aria_labelledby (NEL.singleton workTitleId) ]
-    [ E.h2 [ A.class_ "section-title", A.id workTitleId ]
-        [ E.span [ A.class_ "section-title__text" ] [ E.text "Selected Work" ] ]
+    [ sectionHeading [] workTitleId "Selected Work"
     , E.ul [ A.class_ "work__list" ]
-        [ E.li [ A.class_ "work__item" ] [ brigidCard ] ]
-    ]
-
-brigidCard :: E.ChildHTML E.ListItem grandparent
-brigidCard =
-  E.article [ A.class_ "project-card", A.aria_labelledby (NEL.singleton brigidTitleId) ]
-    [ E.div [ A.class_ "project-card__visual", A.aria_hidden True ]
-        [ decorativeImage "project-card__art" Asset.cardBrigid 360 360 ]
-    , E.div [ A.class_ "project-card__body" ]
-        [ E.p [ A.class_ "project-card__kicker" ] [ E.text "Haskell library · In development" ]
-        , E.h3 [ A.class_ "project-card__title", A.id brigidTitleId ] [ E.text "Brigid" ]
-        , E.p [ A.class_ "project-card__summary" ]
-            [ E.text "Type-safe, (mostly) spec-compliant HTML for Haskell. This page is rendered with it." ]
-        , E.div [ A.class_ "project-card__footer" ]
-            [ E.ul [ A.class_ "project-card__tags", A.aria_label "Topics" ]
-                [ E.li [] [ E.text "Haskell" ]
-                , E.li [] [ E.text "HTML" ]
-                , E.li [] [ E.text "Type safety" ]
-                ]
-            , -- The card's single link; CSS stretches its hit area over the card.
-              E.a
-                [ A.class_ "project-card__link"
-                , A.href (B.mkRawURL "https://github.com/AugmenTab/brigid")
-                ]
-                [ E.text "View source"
-                , E.span [ A.class_ "visually-hidden" ] [ E.text " of Brigid on GitHub" ]
-                , E.span [ A.class_ "project-card__arrow", A.aria_hidden True ] [ E.text "→" ]
-                ]
-            ]
-        ]
+        (map (\project -> E.li [ A.class_ "work__item" ] [ projectCard Level3 project ]) projects)
     ]
 
 --------------------------------------------------------------------------------
@@ -276,82 +190,28 @@ brigidCard =
 aboutSection :: E.ChildHTML E.Main grandparent
 aboutSection =
   E.section [ A.class_ "about", A.id aboutId, A.aria_labelledby (NEL.singleton aboutTitleId) ]
-    [ E.h2 [ A.class_ "section-title section-title--quiet", A.id aboutTitleId ]
-        [ E.span [ A.class_ "section-title__text" ] [ E.text "About" ] ]
+    [ sectionHeading ["section-title--quiet"] aboutTitleId "About"
     , E.div [ A.class_ "about__body" ]
-        [ -- The tree-and-eclipse emblem: a symbolic accompaniment to the
-          -- biography (Baum = tree). Decorative; the monogram remains the
-          -- personal signature.
-          E.div [ A.class_ "about__emblem", A.aria_hidden True ]
-            [ E.img
-                [ A.class_ "about__tree"
-                , A.src (Asset.assetUrl Asset.aboutTree)
-                , A.alt ""
-                , A.width (680 :: Positive)
-                , A.height (696 :: Positive)
-                , A.loading HTML.Lazy
-                , A.decoding HTML.DecodeAsync
-                ]
-            ]
+        [ aboutEmblem
         , E.div [ A.class_ "about__text" ]
-            [ -- DRAFT biography.
-              E.p [ A.class_ "about__lede" ]
-                [ E.text "I design programming languages and build the libraries and tools around them, with a bias toward correctness that stays practical." ]
+            [ aboutLede
             , E.p [ A.class_ "about__note" ]
                 [ E.text "This page is an early design preview of a portfolio in progress." ]
             , E.h3 [ A.class_ "about__subhead", A.id contactId ] [ E.text "Contact" ]
-            , E.ul [ A.class_ "about__links" ]
-                [ E.li []
-                    [ E.a [ A.href (B.mkRawURL "https://github.com/AugmenTab") ]
-                        [ E.text "GitHub" ]
-                    ]
-                ]
+            , contactLinks
             ]
         ]
     ]
 
 --------------------------------------------------------------------------------
--- Footer
+-- Ids
 
-siteFooter :: E.ChildHTML E.Body grandparent
-siteFooter =
-  E.footer [ A.class_ "site-footer" ]
-    [ E.span [ A.class_ "site-footer__ornament", A.aria_hidden True ] []
-    , E.p [] [ E.text "Tyler Baum" ]
-    ]
-
---------------------------------------------------------------------------------
--- Helpers
-
-decorativeImage :: E.ValidChild E.Image parent grandparent
-                => HTML.Class -> Asset.Asset -> Positive -> Positive -> E.ChildHTML parent grandparent
-decorativeImage cls asset w h =
-  E.img
-    [ A.class_ cls
-    , A.src (Asset.assetUrl asset)
-    , A.alt ""
-    , A.width w
-    , A.height h
-    , A.decoding HTML.DecodeAsync
-    ]
-
-mainId, topId, heroTitleId, blackId, blackTitleId, selectedWorkId, workTitleId, brigidTitleId, aboutId, aboutTitleId, contactId :: B.Id
-mainId = elementId "main"
+topId, heroTitleId, blackId, blackTitleId, selectedWorkId, workTitleId, aboutId, aboutTitleId :: B.Id
 topId = elementId "top"
 heroTitleId = elementId "hero-title"
 blackId = elementId "black"
 blackTitleId = elementId "black-title"
 selectedWorkId = elementId "selected-work"
 workTitleId = elementId "work-title"
-brigidTitleId = elementId "brigid-title"
 aboutId = elementId "about"
 aboutTitleId = elementId "about-title"
-contactId = elementId "contact"
-
--- | Element ids are compile-time constants; an empty one is a programming
--- error that the smoke tests would surface immediately.
-elementId :: T.Text -> B.Id
-elementId txt =
-  case NET.fromText txt of
-    Just net -> B.Id net
-    Nothing -> error "elementId: empty id"

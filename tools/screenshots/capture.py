@@ -1,4 +1,4 @@
-"""Capture Phase 00 proof screenshots and run basic browser checks.
+"""Capture proof screenshots and run browser checks on every generated page.
 
 Development tool only; runs in the pinned Playwright container against the
 static preview service:
@@ -6,17 +6,35 @@ static preview service:
     docker compose up -d preview
     docker compose --profile tools run --rm screenshots
 
-Writes PNGs and checks.txt to design/proof/.
+Homepage captures keep their Phase 00 names in design/proof/ (the visual
+regression check compares desktop-first-view.png with design/regression/).
+Interior pages are captured into design/proof/pages/. Results, including
+the crawl-based link check and the no-JavaScript navigation walk, go to
+design/proof/checks.txt. Exits 1 if any check fails.
 """
 
 import json
 import os
 import sys
+from urllib.parse import urldefrag, urljoin, urlparse
 
 from playwright.sync_api import sync_playwright
 
 BASE = os.environ.get("PREVIEW_URL", "http://localhost:8080/")
 OUT = "design/proof"
+PAGES_OUT = f"{OUT}/pages"
+
+# Every generated page, by capture name. The 404 document is also requested
+# at a deep, non-existent path, where the preview server serves it (as a
+# static host would) to prove its root-absolute URLs resolve anywhere.
+PAGES = {
+    "home": "/",
+    "work": "/work/",
+    "project-brigid": "/work/brigid/",
+    "about": "/about/",
+    "404": "/404.html",
+    "404-deep": "/no/such/page/",
+}
 
 VIEWPORTS = {
     "desktop": {"width": 1440, "height": 900},
@@ -47,8 +65,15 @@ CHECKS_JS = """
 """
 
 
+# Capture only: the site uses smooth scrolling, so a programmatic scroll (or
+# the scroll that follows keyboard focus) is still animating when a
+# screenshot is taken, and captures varied from run to run. Scrolling is made
+# instant for captures; nothing static on the page depends on it.
+INSTANT_SCROLL_JS = "() => { document.documentElement.style.scrollBehavior = 'auto'; }"
+
 LOAD_ALL_JS = """
 async () => {
+  document.documentElement.style.scrollBehavior = 'auto';
   // Load lazy images now so full-page captures include them (capture only;
   // the page itself keeps loading="lazy").
   document.querySelectorAll('img[loading="lazy"]').forEach(i => { i.loading = 'eager'; });
@@ -63,10 +88,242 @@ async () => {
 """
 
 
-def ready(page):
-    page.goto(BASE, wait_until="networkidle")
+def ready(page, path="/"):
+    response = page.goto(urljoin(BASE, path), wait_until="networkidle")
     page.evaluate("document.fonts.ready")
     page.evaluate(LOAD_ALL_JS)
+    return response
+
+
+def watch(page, expected_404=None):
+    """Collect HTTP errors and console errors/warnings for a page.
+
+    expected_404 is the URL of a document deliberately requested at a missing
+    path: its own 404 status (and Chromium's console report of it) is the
+    point of the test, not a failure. Any other 4xx/5xx still counts."""
+    bad = []
+
+    def on_response(r):
+        if r.status >= 400 and r.url != expected_404:
+            bad.append(f"{r.status} {r.url}")
+
+    def on_console(m):
+        if m.type in ("error", "warning") and m.location.get("url") != expected_404:
+            bad.append(f"console.{m.type}: {m.text}")
+
+    page.on("response", on_response)
+    page.on("console", on_console)
+    return bad
+
+
+def same_site(url):
+    return urlparse(url).netloc == urlparse(BASE).netloc
+
+
+def crawl(browser, failures):
+    """Follow every internal link from the homepage (plus the 404 page).
+
+    Each internal href/src must answer 200, and each #fragment must name an
+    element on its target page. Returns the report for checks.txt."""
+    page = browser.new_page()
+    queue = [urljoin(BASE, "/"), urljoin(BASE, "/404.html")]
+    seen = set()
+    status = {}       # internal URL (no fragment) -> HTTP status
+    ids = {}          # crawled page URL -> element ids on it
+    fragments = []    # (source page, target page, fragment)
+    problems = []
+    while queue:
+        url = queue.pop(0)
+        if url in seen:
+            continue
+        seen.add(url)
+        response = page.goto(url, wait_until="networkidle")
+        if response is None or response.status != 200:
+            problems.append(f"{url}: HTTP {response.status if response else 'no response'}")
+            continue
+        ids[url] = set(page.evaluate("() => [...document.querySelectorAll('[id]')].map(e => e.id)"))
+        refs = page.evaluate("""() => [
+            ...[...document.querySelectorAll('a[href]')].map(a => ['a', a.href]),
+            ...[...document.querySelectorAll('img[src]')].map(i => ['img', i.src]),
+            ...[...document.querySelectorAll('link[href]')].map(l => ['link', l.href]),
+        ]""")
+        for kind, ref in refs:
+            if not same_site(ref):
+                continue
+            target, fragment = urldefrag(ref)
+            if target not in status:
+                status[target] = page.request.get(target).status
+            if status[target] != 200:
+                problems.append(f"{url}: {kind} {ref} -> HTTP {status[target]}")
+            if kind == "a":
+                if fragment:
+                    fragments.append((url, target, fragment))
+                queue.append(target)
+    for source, target, fragment in fragments:
+        if fragment not in ids.get(target, set()):
+            problems.append(f"{source}: #{fragment} not found on {target}")
+    page.close()
+    if problems:
+        failures.append(f"link check: {problems}")
+    return {
+        "pagesCrawled": sorted(urlparse(u).path for u in seen),
+        "internalUrlsChecked": len(status),
+        "fragmentLinksChecked": len(set(fragments)),
+        "problems": problems,
+    }
+
+
+def no_js_walk(browser, failures):
+    """Navigate the site by clicking real links with JavaScript disabled."""
+    context = browser.new_context(viewport=VIEWPORTS["desktop"], java_script_enabled=False)
+    page = context.new_page()
+    page.goto(urljoin(BASE, "/"), wait_until="networkidle")
+    steps = [
+        ("nav Work", "nav >> text=Work", "/work/"),
+        ("Brigid card", ".project-card__link", "/work/brigid/"),
+        ("sidebar All projects", ".project-nav__back", "/work/"),
+        ("nav About", "nav >> text=About", "/about/"),
+        ("nav Contact", "nav >> text=Contact", "/about/#contact"),
+        ("monogram", ".site-nav__mark", "/"),
+        ("hero CTA", ".hero__actions .button--primary", "/#selected-work"),
+        ("nav Home", "nav >> text=Home", "/"),
+    ]
+    walk = []
+    for label, selector, expected in steps:
+        page.click(selector)
+        page.wait_for_load_state("networkidle")
+        parsed = urlparse(page.url)
+        got = parsed.path + (f"#{parsed.fragment}" if parsed.fragment else "")
+        walk.append(f"{label} -> {got}")
+        if got != expected:
+            failures.append(f"no-JS navigation: {label} went to {got}, expected {expected}")
+    page.goto(urljoin(BASE, "/404.html"), wait_until="networkidle")
+    page.click(".not-found__action a")
+    page.wait_for_load_state("networkidle")
+    walk.append(f"404 home button -> {urlparse(page.url).path}")
+    if urlparse(page.url).path != "/":
+        failures.append("no-JS navigation: 404 button did not reach /")
+    page.screenshot(path=f"{OUT}/no-javascript.png", full_page=False)
+    context.close()
+    return walk
+
+
+PROJECT_PAGES = {"project-brigid": "/work/brigid/"}
+
+
+def project_sidebar_checks(browser, failures):
+    """The project sidebar on every project page, at every viewport:
+
+    - it exists, with All projects, the current project and section links;
+    - every section link names an element on the page, and clicking it with
+      JavaScript disabled moves to that section, which ends up in view and
+      not under the sidebar;
+    - on desktop it sits in its own column (no overlap with the content)
+      and stays in view while the page scrolls (sticky);
+    - keyboard: Tab reaches the sidebar links in order, each visibly
+      focused.
+    """
+    report = {}
+    os.makedirs(PAGES_OUT, exist_ok=True)
+    for page_name, path in PROJECT_PAGES.items():
+        report[page_name] = {}
+        for vp_name, viewport in VIEWPORTS.items():
+            context = browser.new_context(viewport=viewport, java_script_enabled=False)
+            page = context.new_page()
+            page.goto(urljoin(BASE, path), wait_until="networkidle")
+            # Playwright's own scroll-into-view never settles under smooth
+            # scrolling; see INSTANT_SCROLL_JS.
+            page.evaluate(INSTANT_SCROLL_JS)
+            links = page.eval_on_selector_all(
+                ".project-nav__sections a", "els => els.map(a => a.getAttribute('href'))")
+            entry = {"sectionLinks": links, "clicks": []}
+            if not page.query_selector(".project-nav__back[href='/work/']"):
+                failures.append(f"{page_name}/{vp_name}: sidebar has no All projects link")
+            if not page.query_selector(".project-nav__current[aria-current='page']"):
+                failures.append(f"{page_name}/{vp_name}: sidebar has no current project")
+            if not links:
+                failures.append(f"{page_name}/{vp_name}: sidebar has no section links")
+            for href in links:
+                page.click(f".project-nav__sections a[href='{href}']")
+                page.wait_for_timeout(100)
+                state = page.evaluate(
+                    """(id) => { const t = document.getElementById(id); if (!t) return null;
+                       const r = t.getBoundingClientRect();
+                       const n = document.querySelector('.project-nav').getBoundingClientRect();
+                       const sideBySide = n.right <= r.left;
+                       return { hash: location.hash, top: Math.round(r.top),
+                                inView: r.top >= 0 && r.top < innerHeight,
+                                underSidebar: !sideBySide && r.top < n.bottom && n.bottom > 0 && n.top < innerHeight && getComputedStyle(document.querySelector('.project-nav')).position !== 'static' }; }""",
+                    href[1:])
+                entry["clicks"].append({href: state})
+                if state is None:
+                    failures.append(f"{page_name}/{vp_name}: {href} has no target")
+                elif state["hash"] != href or not state["inView"] or state["underSidebar"]:
+                    failures.append(f"{page_name}/{vp_name}: {href} navigation problem {state}")
+            if vp_name == "desktop":
+                geometry = page.evaluate(
+                    """() => { const n = document.querySelector('.project-nav').getBoundingClientRect();
+                       const c = document.querySelector('.project').getBoundingClientRect();
+                       window.scrollTo(0, document.body.scrollHeight);
+                       const after = document.querySelector('.project-nav').getBoundingClientRect();
+                       return { navRight: Math.round(n.right), contentLeft: Math.round(c.left),
+                                stickyTopAfterScroll: Math.round(after.top),
+                                position: getComputedStyle(document.querySelector('.project-nav')).position }; }""")
+                entry["desktopGeometry"] = geometry
+                if geometry["navRight"] > geometry["contentLeft"]:
+                    failures.append(f"{page_name}: sidebar overlaps the content {geometry}")
+                if geometry["position"] != "sticky":
+                    failures.append(f"{page_name}: sidebar is not sticky on desktop")
+            context.close()
+
+            # Keyboard order through the sidebar (JavaScript on, default motion).
+            page = browser.new_page(viewport=viewport)
+            page.goto(urljoin(BASE, path), wait_until="networkidle")
+            page.evaluate(INSTANT_SCROLL_JS)
+            page.focus(".project-nav__back")
+            stops = [page.evaluate("() => document.activeElement.getAttribute('href')")]
+            for _ in range(1 + len(links)):
+                page.keyboard.press("Tab")
+                stops.append(page.evaluate(
+                    "() => { const e = document.activeElement; const s = getComputedStyle(e);"
+                    " return e.getAttribute('href') + (s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) > 0 ? '' : ' (no outline)'); }"))
+            expected = ["/work/", path] + links
+            entry["keyboardStops"] = stops
+            if stops != expected:
+                failures.append(f"{page_name}/{vp_name}: sidebar keyboard order {stops}, expected {expected}")
+            if vp_name == "desktop":
+                page.screenshot(path=f"{PAGES_OUT}/{page_name}-sidebar-focus.png", full_page=False)
+            page.close()
+            report[page_name][vp_name] = entry
+    return report
+
+
+def focus_checks(browser, failures):
+    """On every page, the first Tab focuses the skip link and activating it
+    moves to <main>; record the first few focus stops."""
+    report = {}
+    for name, path in PAGES.items():
+        page = browser.new_page(viewport=VIEWPORTS["desktop"])
+        page.goto(urljoin(BASE, path), wait_until="networkidle")
+        order = []
+        for _ in range(7):
+            page.keyboard.press("Tab")
+            order.append(page.evaluate(
+                "() => { const e = document.activeElement;"
+                " return `${e.tagName.toLowerCase()} \"${(e.innerText || e.getAttribute('aria-label') || '').trim().replace(/\\s+/g,' ')}\" -> ${e.getAttribute('href')}`; }"))
+        page.goto(urljoin(BASE, path), wait_until="networkidle")
+        page.keyboard.press("Tab")
+        skip = page.evaluate("() => document.activeElement.classList.contains('skip-link')")
+        page.keyboard.press("Enter")
+        landed = page.evaluate("() => location.hash")
+        visible = page.evaluate("() => { const r = document.activeElement.getBoundingClientRect(); return r.width > 0 && r.height > 0; }")
+        if not skip:
+            failures.append(f"{name}: first Tab did not focus the skip link")
+        if landed != "#main":
+            failures.append(f"{name}: skip link went to {landed!r}")
+        report[name] = {"firstTabIsSkipLink": skip, "skipLinkTarget": landed, "focusOrder": order, "focusVisible": visible}
+        page.close()
+    return report
 
 
 def main() -> int:
@@ -75,27 +332,49 @@ def main() -> int:
     with sync_playwright() as p:
         browser = p.chromium.launch()
 
-        for name, viewport in VIEWPORTS.items():
-            page = browser.new_page(viewport=viewport, device_scale_factor=1)
-            bad = []
-            page.on("response", lambda r, bad=bad: bad.append(f"{r.status} {r.url}") if r.status >= 400 else None)
-            page.on("console", lambda m, bad=bad: bad.append(f"console.{m.type}: {m.text}") if m.type in ("error", "warning") else None)
-            ready(page)
-            page.evaluate("document.fonts.ready")
-            page.screenshot(path=f"{OUT}/{name}.png", full_page=True)
-            page.screenshot(path=f"{OUT}/{name}-first-view.png", full_page=False)
-            checks = page.evaluate(CHECKS_JS)
-            checks["httpErrorsAndConsole"] = bad
-            report[name] = checks
-            if checks["horizontalOverflow"]:
-                failures.append(f"{name}: horizontal overflow ({checks['scrollWidth']} > {checks['clientWidth']})")
-            if checks["brokenFragmentLinks"]:
-                failures.append(f"{name}: broken fragment links {checks['brokenFragmentLinks']}")
-            if any(not i["loaded"] for i in checks["images"]):
-                failures.append(f"{name}: image(s) failed to load")
-            if bad:
-                failures.append(f"{name}: http/console problems {bad}")
-            page.close()
+        os.makedirs(PAGES_OUT, exist_ok=True)
+        report["pages"] = {}
+        for page_name, path in PAGES.items():
+            for name, viewport in VIEWPORTS.items():
+                page = browser.new_page(viewport=viewport, device_scale_factor=1)
+                bad = watch(page, urljoin(BASE, path) if page_name == "404-deep" else None)
+                response = ready(page, path)
+                page.evaluate("document.fonts.ready")
+                label = name if page_name == "home" else f"{page_name}/{name}"
+                if page_name == "home":
+                    # Phase 00 names: the regression check reads these.
+                    page.screenshot(path=f"{OUT}/{name}.png", full_page=True)
+                    page.screenshot(path=f"{OUT}/{name}-first-view.png", full_page=False)
+                else:
+                    page.screenshot(path=f"{PAGES_OUT}/{page_name}-{name}.png", full_page=True)
+                checks = page.evaluate(CHECKS_JS)
+                checks["httpStatus"] = response.status if response else None
+                checks["httpErrorsAndConsole"] = bad
+                if page_name == "home":
+                    report[name] = checks
+                else:
+                    report["pages"].setdefault(page_name, {})[name] = {
+                        k: checks[k] for k in ("httpStatus", "horizontalOverflow", "headings", "brokenFragmentLinks", "httpErrorsAndConsole")
+                    } | {"imagesLoaded": all(i["loaded"] for i in checks["images"])}
+                expected_status = 404 if page_name == "404-deep" else 200
+                if checks["httpStatus"] != expected_status:
+                    failures.append(f"{label}: HTTP {checks['httpStatus']}, expected {expected_status}")
+                if checks["horizontalOverflow"]:
+                    failures.append(f"{label}: horizontal overflow ({checks['scrollWidth']} > {checks['clientWidth']})")
+                if checks["brokenFragmentLinks"]:
+                    failures.append(f"{label}: broken fragment links {checks['brokenFragmentLinks']}")
+                if any(not i["loaded"] for i in checks["images"]):
+                    failures.append(f"{label}: image(s) failed to load")
+                if sum(1 for h in checks["headings"] if h.startswith("h1:")) != 1:
+                    failures.append(f"{label}: expected exactly one h1, got {checks['headings']}")
+                if bad:
+                    failures.append(f"{label}: http/console problems {bad}")
+                page.close()
+
+        report["linkCheck"] = crawl(browser, failures)
+        report["noJavaScriptNavigation"] = no_js_walk(browser, failures)
+        report["focus"] = focus_checks(browser, failures)
+        report["projectSidebar"] = project_sidebar_checks(browser, failures)
 
         # Branding close-ups at desktop: the About composition (tree emblem)
         # and the nav medallion + divider beneath the name.
@@ -105,11 +384,17 @@ def main() -> int:
         page.screenshot(path=f"{OUT}/branding-nav-divider.png",
                         clip={"x": 360, "y": 0, "width": 720, "height": 300})
         page.locator("#about").screenshot(path=f"{OUT}/about-section.png")
-        report["monogramImages"] = page.evaluate(
-            "() => [...document.images].filter(i => /monogram/.test(i.src)).map(i => i.closest('nav') ? 'nav' : 'elsewhere')")
-        if report["monogramImages"] != ["nav"]:
-            failures.append(f"monogram must appear once, in the nav: {report['monogramImages']}")
         page.close()
+        report["monogramImages"] = {}
+        for page_name, path in PAGES.items():
+            page = browser.new_page(viewport=VIEWPORTS["desktop"])
+            page.goto(urljoin(BASE, path), wait_until="networkidle")
+            placement = page.evaluate(
+                "() => [...document.images].filter(i => /monogram/.test(i.src)).map(i => i.closest('nav') ? 'nav' : 'elsewhere')")
+            report["monogramImages"][page_name] = placement
+            if placement != ["nav"]:
+                failures.append(f"{page_name}: monogram must appear once, in the nav: {placement}")
+            page.close()
         page = browser.new_page(viewport=VIEWPORTS["mobile"])
         ready(page)
         page.evaluate("document.fonts.ready")
@@ -120,6 +405,7 @@ def main() -> int:
         page = browser.new_page(viewport=VIEWPORTS["desktop"])
         page.goto(BASE, wait_until="networkidle")
         page.evaluate("document.fonts.ready")
+        page.evaluate(INSTANT_SCROLL_JS)
         order = []
         for _ in range(12):
             page.keyboard.press("Tab")
@@ -130,37 +416,38 @@ def main() -> int:
         # Focus the primary call to action for the focus-state capture.
         page.goto(BASE, wait_until="networkidle")
         page.evaluate("document.fonts.ready")
+        page.evaluate(INSTANT_SCROLL_JS)
         # skip link, Home, Work, monogram, About, Contact, primary CTA
         for _ in range(7):
             page.keyboard.press("Tab")
+        page.wait_for_timeout(500)  # let focus/hover transitions (<= 200ms) finish
         page.screenshot(path=f"{OUT}/keyboard-focus.png", full_page=False)
         # Then (past the secondary CTA) the project card link.
         page.keyboard.press("Tab")
         page.keyboard.press("Tab")
         page.evaluate("document.activeElement.closest('article').scrollIntoView({block: 'center', behavior: 'instant'})")
+        page.wait_for_timeout(500)
         page.screenshot(path=f"{OUT}/keyboard-focus-card.png", full_page=False)
         page.close()
 
-        # Reduced motion: confirm animations are disabled.
+        # Reduced motion: confirm animations and smooth scrolling are off.
         context = browser.new_context(viewport=VIEWPORTS["desktop"], reduced_motion="reduce")
-        page = context.new_page()
-        page.goto(BASE, wait_until="networkidle")
-        page.evaluate("document.fonts.ready")
-        report["reducedMotion"] = page.evaluate(
-            "() => ({ runningAnimations: document.getAnimations().length,"
-            " scrollBehavior: getComputedStyle(document.documentElement).scrollBehavior })")
-        if report["reducedMotion"]["runningAnimations"] != 0:
-            failures.append("reduced motion: animations still running")
-        if report["reducedMotion"]["scrollBehavior"] != "auto":
-            failures.append("reduced motion: smooth scrolling still enabled")
-        page.screenshot(path=f"{OUT}/reduced-motion.png", full_page=False)
-        context.close()
-
-        # No JavaScript: the page must be fully usable (it ships none, but check).
-        context = browser.new_context(viewport=VIEWPORTS["desktop"], java_script_enabled=False)
-        page = context.new_page()
-        page.goto(BASE, wait_until="networkidle")
-        page.screenshot(path=f"{OUT}/no-javascript.png", full_page=False)
+        report["reducedMotion"] = {}
+        for page_name, path in PAGES.items():
+            page = context.new_page()
+            page.goto(urljoin(BASE, path), wait_until="networkidle")
+            page.evaluate("document.fonts.ready")
+            result = page.evaluate(
+                "() => ({ runningAnimations: document.getAnimations().length,"
+                " scrollBehavior: getComputedStyle(document.documentElement).scrollBehavior })")
+            report["reducedMotion"][page_name] = result
+            if result["runningAnimations"] != 0:
+                failures.append(f"{page_name}: reduced motion: animations still running")
+            if result["scrollBehavior"] != "auto":
+                failures.append(f"{page_name}: reduced motion: smooth scrolling still enabled")
+            if page_name == "home":
+                page.screenshot(path=f"{OUT}/reduced-motion.png", full_page=False)
+            page.close()
         context.close()
 
         browser.close()
@@ -172,11 +459,12 @@ def main() -> int:
     # The container runs as root; hand the evidence to whoever owns the
     # bind-mounted proof directory (matters on Linux hosts only).
     st = os.stat(OUT)
-    for name in os.listdir(OUT):
-        try:
-            os.chown(os.path.join(OUT, name), st.st_uid, st.st_gid)
-        except PermissionError:
-            pass
+    for directory in (OUT, PAGES_OUT):
+        for name in [""] + os.listdir(directory):
+            try:
+                os.chown(os.path.join(directory, name), st.st_uid, st.st_gid)
+            except PermissionError:
+                pass
     print(json.dumps(report, indent=2))
     return 1 if failures else 0
 

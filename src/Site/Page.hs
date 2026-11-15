@@ -1,0 +1,55 @@
+-- | The small vocabulary the generator works in: site-wide settings, a page
+-- (route, metadata and @<main>@ content), and the site as a whole.
+module Site.Page
+  ( SiteConfig (..)
+  , Page (..)
+  , Layout (..)
+  , Site (..)
+  , sectionTitle
+  ) where
+
+import Data.Text qualified as T
+import Ogma qualified
+
+import Brigid.HTML.Elements qualified as E
+
+import Site.Assets (Asset)
+import Site.Routes (Route)
+
+data SiteConfig =
+  SiteConfig
+    { siteName :: T.Text
+      -- ^ Used in page titles and the footer.
+    , siteLanguage :: Ogma.BCP_47
+    }
+
+-- | How the shell frames a page's @<main>@.
+data Layout
+  = Stage
+    -- ^ The homepage: content starts under the header, over the hero art.
+  | Interior
+    -- ^ Every other page: content is pushed below the header.
+  deriving (Eq, Show)
+
+data Page =
+  Page
+    { pageRoute :: Route
+    , pageTitle :: T.Text
+      -- ^ The complete @<title>@ text.
+    , pageDescription :: T.Text
+      -- ^ The @<meta name="description">@ text.
+    , pageLayout :: Layout
+    , pageMain :: [E.ChildHTML E.Main E.Body]
+      -- ^ Contents of @<main>@. Must contain the page's single @<h1>@.
+    }
+
+data Site =
+  Site
+    { siteConfig :: SiteConfig
+    , sitePages :: [Page]
+    , siteAssets :: [Asset]
+    }
+
+-- | A title of the form @"Work — Tyler Baum"@.
+sectionTitle :: SiteConfig -> T.Text -> T.Text
+sectionTitle config section = section <> " — " <> siteName config

@@ -4,6 +4,7 @@
 # Generated output
 dist/
 dist.tmp/
+dist.old/
 
 # Haskell build caches (the Stack root lives in a Docker named volume)
 .stack-work/

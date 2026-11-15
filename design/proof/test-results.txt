@@ -1,0 +1,71 @@
+ Container personal-site-site-build-run-0da56247d00e Creating 
+ Container personal-site-site-build-run-0da56247d00e Created 
+personal-site> test (suite: site-test, args: --color never)
+
+personal-site
+  routes
+    route URLs and output files:                                              OK
+    the site defines exactly the required routes:                             OK
+    valid slugs are accepted unchanged:                                       OK
+    invalid or non-canonical slugs are rejected:                              OK
+    an invalid slug makes the project definition fail:                        OK
+    output paths reject traversal, absolute and non-canonical spellings:      OK
+    accepted output paths cannot escape the output root:                      OK
+    URL paths map to output files by one rule:                                OK
+    every route's output agrees with its URL:                                 OK
+  manifest
+    the site's manifest is valid and sorted:                                  OK
+    two pages with the same route are rejected:                               OK
+    two project pages with the same slug are rejected:                        OK
+    assets differing only in case collide:                                    OK
+    a page and an asset with the same destination collide:                    OK
+    a file cannot also be needed as a directory:                              OK
+    path errors and collisions are reported together:                         OK
+    unsafe asset paths are rejected before any file is touched:               OK
+  Brigid render
+    every page is a complete HTML document:                                   OK (0.07s)
+    titles and the single h1 of each page:                                    OK
+    every page has the skip link, header nav, main and footer landmarks:      OK
+    shared navigation links to routes, marking only the current page:         OK
+    the homepage keeps its approved major sections and same-page CTAs:        OK
+    every <img> has an alt attribute:                                         OK
+    pages are static: no scripts, forms or controls:                          OK
+    the monogram appears once per page, inside the navigation medallion:      OK
+    the tree emblem is in About content only:                                 OK (0.04s)
+    the Brigid page has its facts, source link and a way back to Work:        OK
+    project pages have the project sidebar beside the content:                OK
+    every sidebar section link has a section, and every section a link:       OK
+    non-project pages have no project sidebar:                                OK
+    cards on Home and Work link to the project page:                          OK
+    the 404 page links back to the homepage:                                  OK
+    rendering is deterministic:                                               OK
+  output validation
+    the real site's pages and links validate:                                 OK
+    links to missing pages, missing fragments and relative URLs are caught:   OK
+    a page without exactly one h1 is caught:                                  OK
+  build
+    a clean build writes exactly the manifest's files:                        OK (0.03s)
+    repeated builds produce byte-identical trees:                             OK (0.03s)
+    site check validates without writing anything:                            OK
+    fails clearly when a required asset is missing, keeping prior output:     OK (0.01s)
+    a missing asset on a first build writes no output:                        OK
+    fails when a stylesheet references an unlisted file:                      OK
+    duplicate routes fail the build, keeping prior output:                    OK
+    an unsafe asset path fails the build:                                     OK
+    an asset symlinked outside assets/ is rejected:                           OK
+    an asset that is a directory is rejected:                                 OK
+    a page with a broken internal link fails the build, keeping prior output: OK
+    refuses output directories that would destroy sources:                    OK (0.01s)
+    an existing empty output directory is accepted:                           OK
+    a generator-managed directory can be rebuilt:                             OK (0.01s)
+    a foreign directory is refused even when it contains index.html:          OK
+    a malformed, misplaced or symlinked marker cannot authorize replacement:  OK
+    an interrupted earlier promotion stops the build:                         OK
+    a failed promotion restores the previous output:                          OK
+    cssReferences ignores data URIs and absolute URLs:                        OK
+
+All 55 tests passed (0.31s)
+
+
+
+personal-site> Test suite site-test passed

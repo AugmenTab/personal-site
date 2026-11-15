@@ -1,4 +1,181 @@
 {
+  "pages": {
+    "work": {
+      "desktop": {
+        "httpStatus": 200,
+        "horizontalOverflow": false,
+        "headings": [
+          "h1: Work",
+          "h2: Brigid"
+        ],
+        "brokenFragmentLinks": [],
+        "httpErrorsAndConsole": [],
+        "imagesLoaded": true
+      },
+      "tablet": {
+        "httpStatus": 200,
+        "horizontalOverflow": false,
+        "headings": [
+          "h1: Work",
+          "h2: Brigid"
+        ],
+        "brokenFragmentLinks": [],
+        "httpErrorsAndConsole": [],
+        "imagesLoaded": true
+      },
+      "mobile": {
+        "httpStatus": 200,
+        "horizontalOverflow": false,
+        "headings": [
+          "h1: Work",
+          "h2: Brigid"
+        ],
+        "brokenFragmentLinks": [],
+        "httpErrorsAndConsole": [],
+        "imagesLoaded": true
+      }
+    },
+    "project-brigid": {
+      "desktop": {
+        "httpStatus": 200,
+        "horizontalOverflow": false,
+        "headings": [
+          "h1: Brigid",
+          "h2: Overview",
+          "h2: Technical details",
+          "h2: Resources"
+        ],
+        "brokenFragmentLinks": [],
+        "httpErrorsAndConsole": [],
+        "imagesLoaded": true
+      },
+      "tablet": {
+        "httpStatus": 200,
+        "horizontalOverflow": false,
+        "headings": [
+          "h1: Brigid",
+          "h2: Overview",
+          "h2: Technical details",
+          "h2: Resources"
+        ],
+        "brokenFragmentLinks": [],
+        "httpErrorsAndConsole": [],
+        "imagesLoaded": true
+      },
+      "mobile": {
+        "httpStatus": 200,
+        "horizontalOverflow": false,
+        "headings": [
+          "h1: Brigid",
+          "h2: Overview",
+          "h2: Technical details",
+          "h2: Resources"
+        ],
+        "brokenFragmentLinks": [],
+        "httpErrorsAndConsole": [],
+        "imagesLoaded": true
+      }
+    },
+    "about": {
+      "desktop": {
+        "httpStatus": 200,
+        "horizontalOverflow": false,
+        "headings": [
+          "h1: About",
+          "h2: Contact"
+        ],
+        "brokenFragmentLinks": [],
+        "httpErrorsAndConsole": [],
+        "imagesLoaded": true
+      },
+      "tablet": {
+        "httpStatus": 200,
+        "horizontalOverflow": false,
+        "headings": [
+          "h1: About",
+          "h2: Contact"
+        ],
+        "brokenFragmentLinks": [],
+        "httpErrorsAndConsole": [],
+        "imagesLoaded": true
+      },
+      "mobile": {
+        "httpStatus": 200,
+        "horizontalOverflow": false,
+        "headings": [
+          "h1: About",
+          "h2: Contact"
+        ],
+        "brokenFragmentLinks": [],
+        "httpErrorsAndConsole": [],
+        "imagesLoaded": true
+      }
+    },
+    "404": {
+      "desktop": {
+        "httpStatus": 200,
+        "horizontalOverflow": false,
+        "headings": [
+          "h1: Page not found"
+        ],
+        "brokenFragmentLinks": [],
+        "httpErrorsAndConsole": [],
+        "imagesLoaded": true
+      },
+      "tablet": {
+        "httpStatus": 200,
+        "horizontalOverflow": false,
+        "headings": [
+          "h1: Page not found"
+        ],
+        "brokenFragmentLinks": [],
+        "httpErrorsAndConsole": [],
+        "imagesLoaded": true
+      },
+      "mobile": {
+        "httpStatus": 200,
+        "horizontalOverflow": false,
+        "headings": [
+          "h1: Page not found"
+        ],
+        "brokenFragmentLinks": [],
+        "httpErrorsAndConsole": [],
+        "imagesLoaded": true
+      }
+    },
+    "404-deep": {
+      "desktop": {
+        "httpStatus": 404,
+        "horizontalOverflow": false,
+        "headings": [
+          "h1: Page not found"
+        ],
+        "brokenFragmentLinks": [],
+        "httpErrorsAndConsole": [],
+        "imagesLoaded": true
+      },
+      "tablet": {
+        "httpStatus": 404,
+        "horizontalOverflow": false,
+        "headings": [
+          "h1: Page not found"
+        ],
+        "brokenFragmentLinks": [],
+        "httpErrorsAndConsole": [],
+        "imagesLoaded": true
+      },
+      "mobile": {
+        "httpStatus": 404,
+        "horizontalOverflow": false,
+        "headings": [
+          "h1: Page not found"
+        ],
+        "brokenFragmentLinks": [],
+        "httpErrorsAndConsole": [],
+        "imagesLoaded": true
+      }
+    }
+  },
   "desktop": {
     "scrollWidth": 1440,
     "clientWidth": 1440,
@@ -13,37 +190,37 @@
     ],
     "images": [
       {
-        "src": "assets/brand/monogram-simple.svg",
+        "src": "/assets/brand/monogram-simple.svg",
         "alt": "",
         "loaded": true
       },
       {
-        "src": "assets/images/hero-plate-centre.webp",
+        "src": "/assets/images/hero-plate-centre.webp",
         "alt": "",
         "loaded": true
       },
       {
-        "src": "assets/images/hero-plate-left.webp",
+        "src": "/assets/images/hero-plate-left.webp",
         "alt": "",
         "loaded": true
       },
       {
-        "src": "assets/images/hero-plate-right.webp",
+        "src": "/assets/images/hero-plate-right.webp",
         "alt": "",
         "loaded": true
       },
       {
-        "src": "assets/images/black-emblem.svg",
+        "src": "/assets/images/black-emblem.svg",
         "alt": "",
         "loaded": true
       },
       {
-        "src": "assets/images/card-brigid.svg",
+        "src": "/assets/images/card-brigid.svg",
         "alt": "",
         "loaded": true
       },
       {
-        "src": "assets/images/about-tree.webp",
+        "src": "/assets/images/about-tree.webp",
         "alt": "",
         "loaded": true
       }
@@ -55,6 +232,7 @@
       "EB Garamond 400 italic",
       "JetBrains Mono 400 normal"
     ],
+    "httpStatus": 200,
     "httpErrorsAndConsole": []
   },
   "tablet": {
@@ -71,37 +249,37 @@
     ],
     "images": [
       {
-        "src": "assets/brand/monogram-simple.svg",
+        "src": "/assets/brand/monogram-simple.svg",
         "alt": "",
         "loaded": true
       },
       {
-        "src": "assets/images/hero-plate-centre.webp",
+        "src": "/assets/images/hero-plate-centre.webp",
         "alt": "",
         "loaded": true
       },
       {
-        "src": "assets/images/hero-plate-left.webp",
+        "src": "/assets/images/hero-plate-left.webp",
         "alt": "",
         "loaded": true
       },
       {
-        "src": "assets/images/hero-plate-right.webp",
+        "src": "/assets/images/hero-plate-right.webp",
         "alt": "",
         "loaded": true
       },
       {
-        "src": "assets/images/black-emblem.svg",
+        "src": "/assets/images/black-emblem.svg",
         "alt": "",
         "loaded": true
       },
       {
-        "src": "assets/images/card-brigid.svg",
+        "src": "/assets/images/card-brigid.svg",
         "alt": "",
         "loaded": true
       },
       {
-        "src": "assets/images/about-tree.webp",
+        "src": "/assets/images/about-tree.webp",
         "alt": "",
         "loaded": true
       }
@@ -113,6 +291,7 @@
       "EB Garamond 400 italic",
       "JetBrains Mono 400 normal"
     ],
+    "httpStatus": 200,
     "httpErrorsAndConsole": []
   },
   "mobile": {
@@ -129,37 +308,37 @@
     ],
     "images": [
       {
-        "src": "assets/brand/monogram-simple.svg",
+        "src": "/assets/brand/monogram-simple.svg",
         "alt": "",
         "loaded": true
       },
       {
-        "src": "assets/images/hero-plate-centre.webp",
+        "src": "/assets/images/hero-plate-centre.webp",
         "alt": "",
         "loaded": true
       },
       {
-        "src": "assets/images/hero-plate-left.webp",
+        "src": "/assets/images/hero-plate-left.webp",
         "alt": "",
         "loaded": true
       },
       {
-        "src": "assets/images/hero-plate-right.webp",
+        "src": "/assets/images/hero-plate-right.webp",
         "alt": "",
         "loaded": true
       },
       {
-        "src": "assets/images/black-emblem.svg",
+        "src": "/assets/images/black-emblem.svg",
         "alt": "",
         "loaded": true
       },
       {
-        "src": "assets/images/card-brigid.svg",
+        "src": "/assets/images/card-brigid.svg",
         "alt": "",
         "loaded": true
       },
       {
-        "src": "assets/images/about-tree.webp",
+        "src": "/assets/images/about-tree.webp",
         "alt": "",
         "loaded": true
       }
@@ -171,28 +350,307 @@
       "EB Garamond 400 italic",
       "JetBrains Mono 400 normal"
     ],
+    "httpStatus": 200,
     "httpErrorsAndConsole": []
   },
-  "monogramImages": [
-    "nav"
+  "linkCheck": {
+    "pagesCrawled": [
+      "/",
+      "/404.html",
+      "/about/",
+      "/work/",
+      "/work/brigid/"
+    ],
+    "internalUrlsChecked": 14,
+    "fragmentLinksChecked": 15,
+    "problems": []
+  },
+  "noJavaScriptNavigation": [
+    "nav Work -> /work/",
+    "Brigid card -> /work/brigid/",
+    "sidebar All projects -> /work/",
+    "nav About -> /about/",
+    "nav Contact -> /about/#contact",
+    "monogram -> /",
+    "hero CTA -> /#selected-work",
+    "nav Home -> /",
+    "404 home button -> /"
   ],
+  "focus": {
+    "home": {
+      "firstTabIsSkipLink": true,
+      "skipLinkTarget": "#main",
+      "focusOrder": [
+        "a \"SKIP TO CONTENT\" -> #main",
+        "a \"HOME\" -> /",
+        "a \"WORK\" -> /work/",
+        "a \"Tyler Baum \u2014 home\" -> /",
+        "a \"ABOUT\" -> /about/",
+        "a \"CONTACT\" -> /about/#contact",
+        "a \"EXPLORE SELECTED WORK\" -> #selected-work"
+      ],
+      "focusVisible": true
+    },
+    "work": {
+      "firstTabIsSkipLink": true,
+      "skipLinkTarget": "#main",
+      "focusOrder": [
+        "a \"SKIP TO CONTENT\" -> #main",
+        "a \"HOME\" -> /",
+        "a \"WORK\" -> /work/",
+        "a \"Tyler Baum \u2014 home\" -> /",
+        "a \"ABOUT\" -> /about/",
+        "a \"CONTACT\" -> /about/#contact",
+        "a \"VIEW PROJECT : BRIGID \u2192\" -> /work/brigid/"
+      ],
+      "focusVisible": true
+    },
+    "project-brigid": {
+      "firstTabIsSkipLink": true,
+      "skipLinkTarget": "#main",
+      "focusOrder": [
+        "a \"SKIP TO CONTENT\" -> #main",
+        "a \"HOME\" -> /",
+        "a \"WORK\" -> /work/",
+        "a \"Tyler Baum \u2014 home\" -> /",
+        "a \"ABOUT\" -> /about/",
+        "a \"CONTACT\" -> /about/#contact",
+        "a \"\u2190 ALL PROJECTS\" -> /work/"
+      ],
+      "focusVisible": true
+    },
+    "about": {
+      "firstTabIsSkipLink": true,
+      "skipLinkTarget": "#main",
+      "focusOrder": [
+        "a \"SKIP TO CONTENT\" -> #main",
+        "a \"HOME\" -> /",
+        "a \"WORK\" -> /work/",
+        "a \"Tyler Baum \u2014 home\" -> /",
+        "a \"ABOUT\" -> /about/",
+        "a \"CONTACT\" -> /about/#contact",
+        "a \"GitHub\" -> https://github.com/AugmenTab"
+      ],
+      "focusVisible": true
+    },
+    "404": {
+      "firstTabIsSkipLink": true,
+      "skipLinkTarget": "#main",
+      "focusOrder": [
+        "a \"SKIP TO CONTENT\" -> #main",
+        "a \"HOME\" -> /",
+        "a \"WORK\" -> /work/",
+        "a \"Tyler Baum \u2014 home\" -> /",
+        "a \"ABOUT\" -> /about/",
+        "a \"CONTACT\" -> /about/#contact",
+        "a \"RETURN TO THE HOMEPAGE\" -> /"
+      ],
+      "focusVisible": true
+    },
+    "404-deep": {
+      "firstTabIsSkipLink": true,
+      "skipLinkTarget": "#main",
+      "focusOrder": [
+        "a \"SKIP TO CONTENT\" -> #main",
+        "a \"HOME\" -> /",
+        "a \"WORK\" -> /work/",
+        "a \"Tyler Baum \u2014 home\" -> /",
+        "a \"ABOUT\" -> /about/",
+        "a \"CONTACT\" -> /about/#contact",
+        "a \"RETURN TO THE HOMEPAGE\" -> /"
+      ],
+      "focusVisible": true
+    }
+  },
+  "projectSidebar": {
+    "project-brigid": {
+      "desktop": {
+        "sectionLinks": [
+          "#overview",
+          "#technical-details",
+          "#resources"
+        ],
+        "clicks": [
+          {
+            "#overview": {
+              "hash": "#overview",
+              "top": 24,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#technical-details": {
+              "hash": "#technical-details",
+              "top": 266,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#resources": {
+              "hash": "#resources",
+              "top": 569,
+              "inView": true,
+              "underSidebar": false
+            }
+          }
+        ],
+        "desktopGeometry": {
+          "navRight": 376,
+          "contentLeft": 434,
+          "stickyTopAfterScroll": 24,
+          "position": "sticky"
+        },
+        "keyboardStops": [
+          "/work/",
+          "/work/brigid/",
+          "#overview",
+          "#technical-details",
+          "#resources"
+        ]
+      },
+      "tablet": {
+        "sectionLinks": [
+          "#overview",
+          "#technical-details",
+          "#resources"
+        ],
+        "clicks": [
+          {
+            "#overview": {
+              "hash": "#overview",
+              "top": 55,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#technical-details": {
+              "hash": "#technical-details",
+              "top": 413,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#resources": {
+              "hash": "#resources",
+              "top": 693,
+              "inView": true,
+              "underSidebar": false
+            }
+          }
+        ],
+        "keyboardStops": [
+          "/work/",
+          "/work/brigid/",
+          "#overview",
+          "#technical-details",
+          "#resources"
+        ]
+      },
+      "mobile": {
+        "sectionLinks": [
+          "#overview",
+          "#technical-details",
+          "#resources"
+        ],
+        "clicks": [
+          {
+            "#overview": {
+              "hash": "#overview",
+              "top": 25,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#technical-details": {
+              "hash": "#technical-details",
+              "top": 102,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#resources": {
+              "hash": "#resources",
+              "top": 513,
+              "inView": true,
+              "underSidebar": false
+            }
+          }
+        ],
+        "keyboardStops": [
+          "/work/",
+          "/work/brigid/",
+          "#overview",
+          "#technical-details",
+          "#resources"
+        ]
+      }
+    }
+  },
+  "monogramImages": {
+    "home": [
+      "nav"
+    ],
+    "work": [
+      "nav"
+    ],
+    "project-brigid": [
+      "nav"
+    ],
+    "about": [
+      "nav"
+    ],
+    "404": [
+      "nav"
+    ],
+    "404-deep": [
+      "nav"
+    ]
+  },
   "keyboardFocusOrder": [
     "a \"SKIP TO CONTENT\" -> #main",
-    "a \"HOME\" -> #top",
-    "a \"WORK\" -> #selected-work",
-    "a \"Tyler Baum \u2014 home\" -> #top",
-    "a \"ABOUT\" -> #about",
-    "a \"CONTACT\" -> #contact",
+    "a \"HOME\" -> /",
+    "a \"WORK\" -> /work/",
+    "a \"Tyler Baum \u2014 home\" -> /",
+    "a \"ABOUT\" -> /about/",
+    "a \"CONTACT\" -> /about/#contact",
     "a \"EXPLORE SELECTED WORK\" -> #selected-work",
     "a \"ABOUT & CONTACT\" -> #about",
-    "a \"VIEW SOURCE OF BRIGID ON GITHUB \u2192\" -> https://github.com/AugmenTab/brigid",
+    "a \"VIEW PROJECT : BRIGID \u2192\" -> /work/brigid/",
     "a \"GitHub\" -> https://github.com/AugmenTab",
-    "body \"SKIP TO CONTENT HOME WORK ABOUT CONTACT SOFTWARE ENGINEER TYLER BAUM Building precise systems for ambitious ideas. LANGUAGE DESIGN SYSTEMS ENGINEERING AUDIO TECHNOLOGY SIMULATION EXPLORE SELECTED WORK ABOUT & CONTACT FEATURED PROJECT \u00b7 PROGRAMMING LANGUAGE BLACK A modern, correctness-focused programming language for ambitious systems. Strong static guarantees Effect and resource safety A foundation for AI-native development PROJECT PAGE AND PLAYGROUND IN PREPARATION Main Black \u00b7 experimental module Main type Vec2 = { x : F64, y : F64 } fn length(v : Vec2) : F64 = sqrt(v.x * v.x + v.y * v.y) fn main() : IO Unit = let v = { x = 3.0, y = 4.0 } print(length(v)) Illustrative excerpt; syntax may change. Nothing is compiled or run on this page. SELECTED WORK HASKELL LIBRARY \u00b7 IN DEVELOPMENT BRIGID Type-safe, (mostly) spec-compliant HTML for Haskell. This page is rendered with it. HASKELL HTML TYPE SAFETY VIEW SOURCE OF BRIGID ON GITHUB \u2192 ABOUT I design programming languages and build the libraries and tools around them, with a bias toward correctness that stays practical. This page is an early design preview of a portfolio in progress. CONTACT GitHub TYLER BAUM\" -> null",
+    "body \"SKIP TO CONTENT HOME WORK ABOUT CONTACT SOFTWARE ENGINEER TYLER BAUM Building precise systems for ambitious ideas. LANGUAGE DESIGN SYSTEMS ENGINEERING AUDIO TECHNOLOGY SIMULATION EXPLORE SELECTED WORK ABOUT & CONTACT FEATURED PROJECT \u00b7 PROGRAMMING LANGUAGE BLACK A modern, correctness-focused programming language for ambitious systems. Strong static guarantees Effect and resource safety A foundation for AI-native development PROJECT PAGE AND PLAYGROUND IN PREPARATION Main Black \u00b7 experimental module Main type Vec2 = { x : F64, y : F64 } fn length(v : Vec2) : F64 = sqrt(v.x * v.x + v.y * v.y) fn main() : IO Unit = let v = { x = 3.0, y = 4.0 } print(length(v)) Illustrative excerpt; syntax may change. Nothing is compiled or run on this page. SELECTED WORK HASKELL LIBRARY \u00b7 IN DEVELOPMENT BRIGID Type-safe, (mostly) spec-compliant HTML for Haskell. This page is rendered with it. HASKELL HTML TYPE SAFETY VIEW PROJECT : BRIGID \u2192 ABOUT I design programming languages and build the libraries and tools around them, with a bias toward correctness that stays practical. This page is an early design preview of a portfolio in progress. CONTACT GitHub TYLER BAUM\" -> null",
     "a \"SKIP TO CONTENT\" -> #main"
   ],
   "reducedMotion": {
-    "runningAnimations": 0,
-    "scrollBehavior": "auto"
+    "home": {
+      "runningAnimations": 0,
+      "scrollBehavior": "auto"
+    },
+    "work": {
+      "runningAnimations": 0,
+      "scrollBehavior": "auto"
+    },
+    "project-brigid": {
+      "runningAnimations": 0,
+      "scrollBehavior": "auto"
+    },
+    "about": {
+      "runningAnimations": 0,
+      "scrollBehavior": "auto"
+    },
+    "404": {
+      "runningAnimations": 0,
+      "scrollBehavior": "auto"
+    },
+    "404-deep": {
+      "runningAnimations": 0,
+      "scrollBehavior": "auto"
+    }
   },
   "failures": []
 }

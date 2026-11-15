@@ -1,6 +1,6 @@
 name: personal-site
 version: 0.0.0.0
-synopsis: Static generator for a personal technical folio (Phase 00 visual proof)
+synopsis: Small static-site generator for a personal technical folio
 
 language: GHC2021
 
@@ -20,6 +20,7 @@ dependencies:
   - base
   - brigid
   - bytestring
+  - containers
   - directory
   - filepath
   - integer-types

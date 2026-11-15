@@ -1,0 +1,107 @@
+ Container personal-site-site-build-run-6bada46f68de Creating 
+ Container personal-site-site-build-run-6bada46f68de Created 
+## site check
+  404.html                                            page /404.html
+  about/index.html                                    page /about/
+  assets/brand/favicon.svg                            asset assets/brand/favicon.svg
+  assets/brand/monogram-ornate.svg                    asset assets/brand/monogram-ornate.svg
+  assets/brand/monogram-simple.svg                    asset assets/brand/monogram-simple.svg
+  assets/fonts/OFL-cinzel.txt                         asset assets/fonts/OFL-cinzel.txt
+  assets/fonts/OFL-eb-garamond.txt                    asset assets/fonts/OFL-eb-garamond.txt
+  assets/fonts/OFL-jetbrains-mono.txt                 asset assets/fonts/OFL-jetbrains-mono.txt
+  assets/fonts/cinzel-latin-400-normal.woff2          asset assets/fonts/cinzel-latin-400-normal.woff2
+  assets/fonts/cinzel-latin-600-normal.woff2          asset assets/fonts/cinzel-latin-600-normal.woff2
+  assets/fonts/eb-garamond-latin-400-italic.woff2     asset assets/fonts/eb-garamond-latin-400-italic.woff2
+  assets/fonts/eb-garamond-latin-400-normal.woff2     asset assets/fonts/eb-garamond-latin-400-normal.woff2
+  assets/fonts/eb-garamond-latin-500-normal.woff2     asset assets/fonts/eb-garamond-latin-500-normal.woff2
+  assets/fonts/jetbrains-mono-latin-400-normal.woff2  asset assets/fonts/jetbrains-mono-latin-400-normal.woff2
+  assets/images/about-tree.webp                       asset assets/images/about-tree.webp
+  assets/images/black-emblem.svg                      asset assets/images/black-emblem.svg
+  assets/images/card-brigid.svg                       asset assets/images/card-brigid.svg
+  assets/images/hero-plate-centre.webp                asset assets/images/hero-plate-centre.webp
+  assets/images/hero-plate-left.webp                  asset assets/images/hero-plate-left.webp
+  assets/images/hero-plate-right.webp                 asset assets/images/hero-plate-right.webp
+  assets/images/ornament-corner.svg                   asset assets/images/ornament-corner.svg
+  assets/images/ornament-frame.svg                    asset assets/images/ornament-frame.svg
+  assets/images/ornament-rule.svg                     asset assets/images/ornament-rule.svg
+  assets/images/texture-grain.svg                     asset assets/images/texture-grain.svg
+  assets/styles/site.css                              asset assets/styles/site.css
+  index.html                                          page /
+  work/brigid/index.html                              page /work/brigid/
+  work/index.html                                     page /work/
+OK: 5 pages and 23 assets validated; nothing written.
+exit=0
+
+## determinism: two builds into dist, one into another directory
+Wrote 5 pages (17248 bytes of HTML) and 23 assets to dist/.
+Wrote 5 pages (17248 bytes of HTML) and 23 assets to dist/.
+Wrote 5 pages (17248 bytes of HTML) and 23 assets to /tmp/evidence-out/.
+tree hash: first=02376c9824c302ca second=02376c9824c302ca other-dir=02376c9824c302ca
+DETERMINISTIC: identical
+
+## generated files
+   150 .personal-site-output
+  1806 404.html
+  2278 about/index.html
+  1819 assets/brand/favicon.svg
+  5167 assets/brand/monogram-ornate.svg
+  1994 assets/brand/monogram-simple.svg
+  4382 assets/fonts/OFL-cinzel.txt
+  4396 assets/fonts/OFL-eb-garamond.txt
+  4397 assets/fonts/OFL-jetbrains-mono.txt
+ 13732 assets/fonts/cinzel-latin-400-normal.woff2
+ 14776 assets/fonts/cinzel-latin-600-normal.woff2
+ 22208 assets/fonts/eb-garamond-latin-400-italic.woff2
+ 21720 assets/fonts/eb-garamond-latin-400-normal.woff2
+ 23104 assets/fonts/eb-garamond-latin-500-normal.woff2
+ 21088 assets/fonts/jetbrains-mono-latin-400-normal.woff2
+210202 assets/images/about-tree.webp
+   778 assets/images/black-emblem.svg
+  2694 assets/images/card-brigid.svg
+ 31766 assets/images/hero-plate-centre.webp
+ 41018 assets/images/hero-plate-left.webp
+ 39980 assets/images/hero-plate-right.webp
+   927 assets/images/ornament-corner.svg
+  1329 assets/images/ornament-frame.svg
+   520 assets/images/ornament-rule.svg
+   562 assets/images/texture-grain.svg
+ 38190 assets/styles/site.css
+  6757 index.html
+  3850 work/brigid/index.html
+  2557 work/index.html
+524147 total
+
+## ownership marker (dist/.personal-site-output)
+personal-site generated output, format 1
+This directory is managed by `site build`, which replaces its entire contents.
+Do not keep other files here.
+
+## missing asset: assets/images/card-brigid.svg moved aside
+Build failed: required asset(s) missing from the source tree:
+  - assets/images/card-brigid.svg
+Restore the file(s), or remove them from Site.Assets.allAssets.
+exit=1
+dist tree hash after failed build: 02376c9824c302ca
+PRIOR OUTPUT PRESERVED
+no dist.tmp / dist.old left behind
+
+## output-directory ownership
+Wrote 5 pages (17248 bytes of HTML) and 23 assets to /tmp/own/empty/.
+empty existing directory: exit=0
+Build failed: refusing to write to "/tmp/own/foreign": it is not empty and is not a directory this generator manages (no .personal-site-output marker). Use an empty or new directory, or remove this one yourself
+foreign directory with index.html: exit=1
+foreign notes.txt still: keep me
+Build failed: refusing to write to "/tmp/own/bad-marker": it is not empty and is not a directory this generator manages (.personal-site-output has unexpected contents). Use an empty or new directory, or remove this one yourself
+malformed marker: exit=1
+Build failed: refusing to write to "/tmp/own/linked": it is not empty and is not a directory this generator manages (.personal-site-output is not a regular file). Use an empty or new directory, or remove this one yourself
+symlinked marker: exit=1
+Wrote 5 pages (17248 bytes of HTML) and 23 assets to /tmp/own/empty/.
+rebuild of a generator-managed directory: exit=0
+
+## unsafe output directories
+Build failed: refusing to write to ".": it contains the source tree
+exit=1
+Build failed: refusing to write to "assets/out": it is inside the assets directory
+exit=1
+Build failed: refusing to write to "src": it is not empty and is not a directory this generator manages (no .personal-site-output marker). Use an empty or new directory, or remove this one yourself
+exit=1

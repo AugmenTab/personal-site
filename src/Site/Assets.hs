@@ -1,13 +1,15 @@
--- | The explicit list of static files the page needs.
+-- | The explicit list of static files the site needs.
 --
--- Every file shipped to @dist/assets/@ is named here. The page refers to
--- assets only through these values, and the build refuses to run if any
--- listed file is missing or if a stylesheet references a file that is not
--- listed (see "Site.Build").
+-- Every file shipped to @dist/assets/@ is named here. Pages refer to assets
+-- only through these values, and the build refuses to run if any listed file
+-- is missing, unsafe, or resolves outside @assets/@, or if a stylesheet
+-- references a file that is not listed (see "Site.Build").
 module Site.Assets
   ( Asset
+  , mkAsset
   , assetPath
   , assetUrl
+  , assetOutput
   , allAssets
     -- * Assets referenced from the HTML
   , stylesheet
@@ -26,17 +28,33 @@ import Data.Text qualified as T
 
 import Brigid.Types qualified as B
 
+import Site.Path (OutputPath, PathError, mkOutputPath)
+
 -- | A file under the source @assets/@ directory, identified by its path
--- relative to that directory (always with forward slashes).
+-- relative to that directory (always with forward slashes). The path is
+-- validated by 'assetOutput' when the manifest is built, before any file is
+-- read or written.
 newtype Asset = Asset FilePath
   deriving (Eq, Ord, Show)
+
+-- | Name an asset. Unvalidated: the build rejects unsafe paths (see
+-- 'assetOutput') before touching the filesystem.
+mkAsset :: FilePath -> Asset
+mkAsset = Asset
 
 assetPath :: Asset -> FilePath
 assetPath (Asset path) = path
 
--- | Page-relative URL of the asset in the generated site.
+-- | Root-absolute URL of the asset in the generated site (see "Site.Routes"
+-- for why URLs are root-absolute).
 assetUrl :: Asset -> B.RawURL
-assetUrl asset = B.mkRawURL (T.pack ("assets/" <> assetPath asset))
+assetUrl asset = B.mkRawURL (T.pack ("/assets/" <> assetPath asset))
+
+-- | Where the asset is written, relative to the output root. The same
+-- validation also guards the source side: a path that is a valid output path
+-- cannot climb out of @assets/@ either.
+assetOutput :: Asset -> Either PathError OutputPath
+assetOutput asset = mkOutputPath ("assets/" <> assetPath asset)
 
 stylesheet, favicon, monogramSimple, displayFont :: Asset
 stylesheet = Asset "styles/site.css"
