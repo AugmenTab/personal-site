@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 16" width="48" height="16">
+  <!-- Rule terminal: the ornament that caps a thin gold rule next to a title.
+       Points right; mirror in CSS for the other side. -->
+  <g fill="none" stroke="#C2A46A">
+    <path d="M0 8H30" stroke-width="1"/>
+    <path d="M0 5H22M0 11H22" stroke-width="0.6" stroke-opacity="0.6"/>
+    <path d="M30 8l7 -6l7 6l-7 6z" stroke-width="1.1" fill="#0B0B0D"/>
+  </g>
+  <path d="M37 5.5l2.5 2.5l-2.5 2.5l-2.5 -2.5z" fill="#C2A46A"/>
+</svg>

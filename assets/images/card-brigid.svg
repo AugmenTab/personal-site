@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 360" width="360" height="360">
+  <!-- Project card art for Brigid: engraved-line Deco gateway under a small
+       eclipse, flanked by faint angle-bracket chevrons (a nod to markup).
+       Decorative only. -->
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#EBD3A0"/>
+      <stop offset="1" stop-color="#9C7F48"/>
+    </linearGradient>
+    <radialGradient id="bg" cx="0.5" cy="0.28" r="0.75">
+      <stop offset="0" stop-color="#2A1A12"/>
+      <stop offset="0.6" stop-color="#120F10"/>
+      <stop offset="1" stop-color="#0B0B0D"/>
+    </radialGradient>
+  </defs>
+  <rect width="360" height="360" fill="url(#bg)"/>
+
+  <g fill="none" stroke="url(#g)" stroke-linecap="round" stroke-linejoin="round">
+    <!-- eclipse and rays -->
+    <circle cx="180" cy="74" r="20" stroke-width="1.6"/>
+    <circle cx="180" cy="74" r="20" fill="#0B0B0D" stroke="none"/>
+    <circle cx="180" cy="74" r="20" stroke-width="1.6"/>
+    <g stroke-width="0.9" opacity="0.8">
+      <path d="M180 48V22M180 100V112M154 74H128M206 74H232M162 56L146 40M198 56L214 40M162 92L152 102M198 92L208 102M171 50L165 32M189 50L195 32M156 65L138 58M204 65L222 58"/>
+    </g>
+
+    <!-- stepped tower -->
+    <path stroke-width="1.5" d="M180 108V122M168 300V150H174V134H186V150H192V300"/>
+    <path stroke-width="1.2" d="M150 300V178H158V164H168M212 300H210V178H202V164H192"/>
+    <path stroke-width="1" opacity="0.8" d="M126 300V206H136V194H150M234 300V206H224V194H210"/>
+    <path stroke-width="0.8" opacity="0.6" d="M104 300V232H114V222H126M256 300V232H246V222H234"/>
+    <!-- fluting -->
+    <path stroke-width="0.7" opacity="0.5" d="M178 156V300M182 156V300M156 184V300M204 184V300M131 212V300M229 212V300"/>
+
+    <!-- nested pointed arches -->
+    <path stroke-width="1.5" d="M154 300V258C154 238 168 226 180 218C192 226 206 238 206 258V300"/>
+    <path stroke-width="1" opacity="0.75" d="M162 300V262C162 248 172 238 180 232C188 238 198 248 198 262V300"/>
+    <path stroke-width="0.8" opacity="0.55" d="M170 300V266C170 258 176 251 180 247C184 251 190 258 190 266V300"/>
+
+    <!-- floor in perspective -->
+    <path stroke-width="1.2" d="M60 300H300"/>
+    <path stroke-width="0.7" opacity="0.45" d="M180 300L60 340M180 300L120 340M180 300L240 340M180 300L300 340M80 316H280M68 330H292"/>
+
+    <!-- markup chevrons -->
+    <path stroke-width="1.2" opacity="0.5" d="M84 150L64 170L84 190M276 150L296 170L276 190"/>
+
+    <!-- frame -->
+    <rect x="16" y="16" width="328" height="328" stroke-width="1" opacity="0.55"/>
+    <rect x="22" y="22" width="316" height="316" stroke-width="0.6" opacity="0.35"/>
+  </g>
+</svg>

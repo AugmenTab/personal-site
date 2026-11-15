@@ -1,0 +1,82 @@
+name: personal-site
+
+services:
+  # One-shot build: compiles the Haskell generator and renders dist/.
+  #   docker compose build site-build
+  #   docker compose run --rm site-build              # build the site
+  #   docker compose run --rm site-build stack test   # smoke tests
+  site-build:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: personal-site-build:local
+    working_dir: /work
+    volumes:
+      - type: bind
+        source: .
+        target: /work
+      - type: volume
+        source: stack-root
+        target: /stack-root
+
+  # Static preview of dist/ at http://localhost:8080/ (no Haskell, no backend).
+  #   docker compose up preview
+  preview:
+    image: nginx:1.27.3-alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - type: bind
+        source: ./dist
+        target: /usr/share/nginx/html
+        read_only: true
+        bind:
+          # Fail loudly if the site has not been built yet, rather than
+          # creating an empty root-owned dist/ on the host.
+          create_host_path: false
+
+  # Development-only screenshot capture (not part of the site build).
+  #   docker compose --profile tools run --rm screenshots
+  screenshots:
+    profiles: ["tools"]
+    build:
+      context: ./tools
+    image: personal-site-tools:local
+    depends_on:
+      - preview
+    working_dir: /work
+    environment:
+      PREVIEW_URL: http://preview/
+    volumes:
+      - type: bind
+        source: ./tools/screenshots
+        target: /work/tools/screenshots
+        read_only: true
+      - type: bind
+        source: ./design/proof
+        target: /work/design/proof
+    command: ["python3", "tools/screenshots/capture.py"]
+
+  # Development-only art tooling: reconstructs the hero plates from the
+  # owner's approved render, prepares the About emblem, and renders comparison
+  # sheets. Outputs are committed source assets; the site build never runs it.
+  #   docker compose --profile tools run --rm art python3 tools/art/reconstruct.py
+  #   docker compose --profile tools run --rm art python3 tools/art/monogram_sheet.py
+  art:
+    profiles: ["tools"]
+    build:
+      context: ./tools
+    image: personal-site-tools:local
+    working_dir: /work
+    environment:
+      PYTHONDONTWRITEBYTECODE: "1"
+    volumes:
+      - type: bind
+        source: .
+        target: /work
+    command: ["python3", "tools/art/compare.py"]
+
+volumes:
+  # Persistent Stack root (GHC package DBs, snapshot and Brigid builds).
+  # Created automatically by Compose; remove with `docker compose down -v`.
+  stack-root:

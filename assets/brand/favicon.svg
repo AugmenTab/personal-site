@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Favicon: the simplified monogram (assets/brand/monogram-simple.svg,
+       geometry from design/monogram.svg) on a void tile. At 16 px the
+       crossing gap is below one pixel; the mark still reads by silhouette. -->
+  <defs>
+    <path id="s" d="M503 512C488 490 460 477 425 476C340 478 240 530 232 605C228 670 290 703 360 703C420 703 490 672 550 648C640 608 730 553 812 506C840 496 870 490 895 490C925 492 946 515 944 540C942 600 890 650 812 692L720 726C700 740 670 750 645 752L600 760L556 770L556 778C557 788 565 792 590 792C680 780 760 740 849 700C930 660 1000 600 1012 535C1022 490 975 466 930 466C890 466 850 478 812 490C725 536 640 582 550 627C500 650 450 668 410 668C360 668 325 640 312 600C305 560 330 520 370 509C390 503 410 508 418 520C424 532 428 540 431 543C455 532 480 522 503 512Z"/>
+    <clipPath id="z"><polygon points="520,300 860,300 860,590 520,700"/></clipPath>
+    <mask id="g" maskUnits="userSpaceOnUse" x="0" y="0" width="1254" height="1254">
+      <rect width="1254" height="1254" fill="#fff"/>
+      <g clip-path="url(#z)">
+        <use href="#s" stroke="#000" stroke-width="40" stroke-linejoin="round" transform="translate(2 6)"/>
+      </g>
+    </mask>
+  </defs>
+  <rect width="64" height="64" rx="10" fill="#0B0B0D"/>
+  <rect x="2" y="2" width="60" height="60" rx="8" fill="none" stroke="#C2A46A" stroke-opacity="0.45" stroke-width="1.5"/>
+  <g transform="translate(32 32.5) scale(0.0685) translate(-621 -541)" fill="#D8BD82" stroke="#D8BD82" stroke-linejoin="round">
+    <g mask="url(#g)" stroke-width="8">
+      <path d="M555 390L642 356L642 780C630 790 605 793 585 792L555 778Z"/>
+      <path d="M720 335L812 294L808 720L720 728Z"/>
+    </g>
+    <use href="#s" stroke-width="14"/>
+  </g>
+</svg>

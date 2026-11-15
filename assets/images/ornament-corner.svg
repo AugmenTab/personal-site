@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="160" height="160">
+  <!-- Art Deco corner fan (top-left orientation; mirror in CSS for others). -->
+  <g fill="none" stroke="#C2A46A" stroke-linecap="round">
+    <path d="M6 154V6H154" stroke-width="1.6" stroke-opacity="0.8"/>
+    <path d="M14 140V14H140" stroke-width="0.8" stroke-opacity="0.55"/>
+    <path d="M14 96A82 82 0 0 1 96 14" stroke-width="1.2" stroke-opacity="0.7"/>
+    <path d="M14 70A56 56 0 0 1 70 14" stroke-width="0.8" stroke-opacity="0.55"/>
+    <path d="M14 46A32 32 0 0 1 46 14" stroke-width="0.8" stroke-opacity="0.55"/>
+    <g stroke-width="0.7" stroke-opacity="0.5">
+      <path d="M14 14L72 72M14 14L36 90M14 14L90 36M14 14L20 100M14 14L100 20"/>
+    </g>
+  </g>
+  <path d="M6 154l-4 6h8zM154 6l6 -4v8z" fill="#C2A46A" opacity="0.7"/>
+  <path d="M14 14m-5 0l5 -5l5 5l-5 5z" fill="#7A0E14" stroke="#C2A46A" stroke-width="1"/>
+</svg>

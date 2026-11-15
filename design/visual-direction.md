@@ -1,0 +1,173 @@
+# Visual direction — Phase 00
+
+Dark Art Deco noir. The opening is dramatic and everything after it is calmer.
+The site borrows the *Eclipsing Eden* brand's style and ornament. It does not
+use the setting's subjects.
+
+## Reference provenance
+
+Everything in `design/references/` is a non-production reference. It is never
+copied to `dist/`. The files were curated from the owner-supplied Phase 00
+kit (`portfolio-phase00-reference-kit.zip`, kept in the git-ignored `.local/`)
+and downscaled to JPEG so the repository stays small.
+
+| File | Source in kit | Role |
+| --- | --- | --- |
+| `homepage-render-02.jpg` | `01_approved_visuals/homepage-render-02.png` | **Authoritative homepage composition** (approved second render) |
+| `project-render-03.jpg` | `01_approved_visuals/project-render-03.png` (owner-corrected) | Dossier continuity for Phase 01+ only; not implemented here |
+| `monogram-original-handwritten.png` | `02_monogram/original-handwritten.png` | Monogram letterform relationships and crossing topology (precedence 2 since remediation 1) |
+| `monogram-first-gold-adaptation.jpg` | `02_monogram/first-gold-adaptation.png` | **Primary monogram visual target** (precedence 1 since remediation 1) |
+| `brand-boards/color-palette.jpg` | `source_boards/679c1c17…` | Palette values |
+| `brand-boards/typography-direction.jpg` | `source_boards/29646e3f…` | Sharp engraved display serif with Deco geometry |
+| `brand-boards/ornament-system.jpg` | `source_boards/9b0e056d…` | Dividers, corners, cartouches, textures |
+| `brand-boards/corner-ornaments.jpg` | `source_boards/9d212681…461` | Corner vocabulary (the "B. Art-Deco" fan is used) |
+| `brand-boards/cartouche-frame.jpg` | `source_boards/946ab278…` | Cartouche and medallion framing |
+| `brand-boards/emblem-eclipse-architecture.jpg` | `source_boards/81bfa298…` | Eclipse over stepped architecture |
+| `brand-boards/eclipse-ring-skyline.jpg` | `source_boards/f42612e0…` | Eclipse with sunburst, great ring, distant skyline |
+| `eclipsing-eden-style-guide.md` | `03_eclipsing_eden_branding/style-guide.md` | Rendering and colour principles |
+
+The kit's other boards were deliberately left out: the bullet emblem, the
+apple-and-serpent emblem, the overgrown garden gate, and the parchment and map
+"corner in context" sheet. Each leans on a prop or setting subject. The kit
+contained no playable-race art.
+
+**Addition in remediation 2.** The tree-and-eclipse emblem board
+(`source_boards/f42612e0…`) is approved by the owner as a personal symbol,
+because *Baum* means tree. Only the standalone emblem is used; the wordmark
+and border are excluded.
+
+## Hero artwork: reconstructed from the approved render
+
+The approved second render is the **visual specification**, not inspiration
+(remediation 2). Two earlier approaches were rejected: procedural SVG in
+Phase 00, and procedurally painted raster in remediation 1. The hero
+artwork is now the render's own, reconstructed for a live page.
+
+`tools/art/reconstruct.py` works from the full-resolution kit render. It
+removes everything the page draws itself:
+- the nav, its rule and the medallion;
+- the name, divider, thesis and disciplines;
+- the Black panel and the Selected Work rule.
+
+Thin text is inpainted with grain matched to the render. The medallion's
+footprint is interpolated around the eclipse centre, because the rays are
+radial. The region the panel hid is synthesised as columns fading into dark
+ground.
+
+The script then cuts the 1586×800 artwork into three overlapping, feathered
+plates, which together ship 116 KB:
+
+| Plate | Render x-range |
+| --- | --- |
+| `hero-plate-left.webp` | 0–640 |
+| `hero-plate-centre.webp` | 470–1116 |
+| `hero-plate-right.webp` | 946–1586 |
+
+**How the plates are placed:**
+- **≥1100 px.** The plates tile back into the render exactly. The header
+  and hero text are registered to the render's positions at 1440×900.
+- **<1100 px.** The composition keeps 1100 px scale and is centre-cropped.
+- **Grain.** The stage sits above the page grain (the render carries its
+  own), and the grain fades back in at the stage's foot.
+
+Text and controls remain real HTML; the page is never a flattened
+screenshot. SVG is kept for ornament, frames, the monogram and the card line
+art.
+
+**Evidence:**
+- `design/proof/hero-mask.png` shows what was removed.
+- `design/proof/compare/` holds the registered comparisons.
+
+## Adopted motifs
+
+- **Eclipse, clouds, architecture.** Exactly as in the approved render:
+  - an oxblood disc with a gold-white upper corona, fine rays and great arcs;
+  - blood-lit cumulus banks either side;
+  - two distinct, monumental, rim-lit Art Deco clusters with arched
+    gateways, running off the page edges.
+- **Sharp engraved serif.** Cinzel for display, set in tracked capitals.
+- **Aged-gold linework.** Hairline rules, diamond terminals, Deco corner fans,
+  stepped-corner frames (`ornament-frame.svg` as a 9-slice border image) and
+  chamfered cartouche buttons.
+  - Beneath the name: a rule of tapering hairlines, short gold bars, and a
+    diamond with a blood-red core.
+- **Restrained accents.** Blood for the primary call to action and the
+  current-page underline. Verdigris for project status.
+- **Bone/parchment text** on void.
+- **Texture.** One light warm grain over the page body.
+
+## Branding hierarchy
+
+| Element | Role | Where |
+| --- | --- | --- |
+| **Monogram** | Personal signature | The navigation medallion **only** (and the favicon). It is not repeated under the name or in the footer. |
+| **Tree-and-eclipse emblem** | Symbolic emblem | The About section, once, beside the biography. Never in the hero or nav. |
+| **Eclipse, architecture, Art Deco ornament** | Atmospheric visual language | The hero, frames, rules and dividers |
+
+
+## Excluded motifs
+
+Lore art, characters and races. Heavy occult props (bullets, serpents,
+apples, blood drips, sigils). Floating runes and decorative "magic". Faux
+terminals or RPG-codex interfaces. Constant framing: in the body only the
+Black teaser and the project card get full frames. The render's interactive
+compiler controls and fabricated "Compiled successfully" output: the Black
+teaser is static, with no buttons and no output.
+
+## Tokens
+
+All tokens are in `assets/styles/site.css` §2.
+
+| Token | Value | Use |
+| --- | --- | --- |
+| `--void` | `#0B0B0D` | page background |
+| `--aged-gold` / `--gold` | `#C2A46A` | linework, ornament |
+| `--bone` | `#E7E2D2` | primary text (15.6:1 on void) |
+| `--blood` | `#7A0E14` | primary CTA fill, accents |
+| `--verdigris` | `#51796B` | status (`--verdigris-bright #74A595` for small text) |
+| `--surface-1` / `--surface-2` | `#121013` / `#1A1619` | card surfaces |
+| `--text-muted` / `--text-faint` | `#BBB4A2` / `#8F8878` | secondary text (9.5:1 / 5.6:1) |
+| `--text-gold` | `#D2B77E` | small gold text and links (9.8:1) |
+| `--gold-bright` | `#E2C88C` | hover and **focus ring** |
+| `--gold-line` / `--gold-hairline` | gold at 60% / 28% | rules and borders |
+
+The palette's exact hex values are kept as tokens. Small text uses the
+lighter functional variants so readability wins, as the PRD allows.
+
+## Typography
+
+| Role | Face | Licence | Fallbacks |
+| --- | --- | --- | --- |
+| Display | Cinzel 400/600 | SIL OFL 1.1 | Trajan Pro, Cormorant SC, Times New Roman, serif |
+| Body | EB Garamond 400, 400 italic, 500 | SIL OFL 1.1 | Garamond, Iowan Old Style, Palatino, Georgia |
+| Code | JetBrains Mono 400 (used by the Black teaser excerpt) | SIL OFL 1.1 | ui-monospace, SF Mono, Menlo, Consolas |
+
+The fonts are self-hosted Latin subsets from Fontsource 5.1.0 (about 135 KB in
+total), with `font-display: swap`. Licence files ship next to the fonts in
+`dist/assets/fonts/`. Body text is 19 px because Garamond reads small.
+
+## Composition and responsive rules
+
+- **Geometry.** A `.stage` wrapper holds the three plates behind both the
+  hero and the Black teaser. `--plate-w` is `max(100vw, 1100px)`; positions
+  and the hero text offset are fractions of it, so the layout stays
+  registered to the render at any width at or above 1100 px.
+- **Desktop (>=1100 px).**
+  - One-row nav on the render's header line, with the medallion on the rule.
+  - Name, rule-and-diamond divider, thesis and disciplines on the render's lines.
+  - Then the two CTAs, then the framed Black teaser inside the first view.
+- **Tablet (641-1099 px).** A centre crop at 1100 px scale; CSS corner fans
+  stand in for the render's (now off-screen). The role line moves into the
+  dark disc. Disciplines form a 2x2 grid below 900 px and the teaser and
+  About stack.
+- **Mobile (<=640 px).** The medallion gets its own row; the plates start
+  below the nav with a feathered edge; the name stacks across the disc;
+  CTAs, teaser, card and About stack.
+
+## Motion
+
+No ambient animation (the earlier sky "breath" was removed: it pulsed
+against the plate seams). Interaction transitions (nav underline, card
+arrow, button fill) last up to 200 ms. With `prefers-reduced-motion:
+reduce` all transitions are off and smooth scrolling is disabled. The page
+ships no JavaScript.

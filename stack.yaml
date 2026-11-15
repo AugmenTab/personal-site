@@ -1,0 +1,31 @@
+# Toolchain: GHC 9.10.3 from the pinned Docker image (system-ghc is enabled
+# globally in that image). The resolver and the extra-deps below mirror
+# Brigid's own `stack-ghc-9.10.yaml` at the pinned Brigid commit.
+resolver: lts-24.12
+
+packages:
+  - .
+
+# Required by Brigid's dependency set on GHC 9.10 (as in Brigid's own config).
+allow-newer: true
+
+extra-deps:
+  # Brigid — core library ONLY (no brigid-generation, benchmarks, or test data).
+  - github: AugmenTab/brigid
+    commit: 9344bfb561d5a9637f691ac7e734186667df4a61
+    subdirs:
+      - brigid
+
+  # Brigid's own non-snapshot dependencies, pinned exactly as Brigid pins them.
+  - github: flipstone/beeline
+    commit: ad51a5197ba71b44f27fd760c6c241ac67f0a52f
+    subdirs:
+      - beeline-http-client
+      - beeline-params
+      - beeline-routing
+  - integer-types-0.1.4.1@sha256:4b56a906d054c41ac64578f46435947e11a69314b831c74543384da8e7061502,2254
+  - libphonenumber-0.1.3.0@sha256:4ba994791928c8cf0925af34ee2043eba3501bdab762ee787f2f1dcda6da2b90,4116
+  - github: AugmenTab/ogma
+    commit: 55ed9161f679d6b9ddddf1f86ba36b1ad7572c75
+  - github: flipstone/shrubbery
+    commit: 11cb7d675d3f7d786fdb061a43f118866eb95a31

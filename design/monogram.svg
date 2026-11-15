@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Monogram master (editable vector), revision 2.
+
+  Visual target: the FIRST gold Art Deco adaptation
+  (design/references/monogram-first-gold-adaptation.jpg). Letterform
+  relationships and crossing topology: the original handwritten mark
+  (design/references/monogram-original-handwritten.png).
+
+  Coordinates are in the gold adaptation's 1254 px pixel space, so the
+  reference can be laid underneath at 0,0 (tools/art/overlay.py).
+
+  Layers (bottom to top):
+    #stems  - the two upright strokes with broad-nib, upward-slanted tops.
+              Masked by #crossing-gap so a sliver of background separates them
+              from the band where it passes over them.
+    #swoop  - one continuous ribbon: the calligraphic "c" with its hooked
+              terminal, the band that thins as it rises IN FRONT of both
+              stems, the loop on the right, and the slender return stroke
+              that runs back beneath the stems, closing the U-shaped counter
+              and ending in the foot of the first stem.
+
+  Node plan (swoop, clockwise from the c terminal):
+    terminal tip -> arm crest -> bowl (left) -> bowl foot -> band lower edge
+    -> loop counter (top, right, foot) -> [hidden in stem-b] -> U counter
+    floor -> [hidden in stem-t] -> stem-t foot -> return stroke underside
+    -> loop outer (right, crest) -> band upper edge -> c counter -> beak.
+
+  The gap applies only inside #crossing-zone, so the return stroke stays
+  fused to the stems' feet. No ornament lives in this file: frames, rings
+  and stars are separate (assets/brand/monogram-ornate.svg).
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="200 270 840 550" width="840" height="550">
+  <title>Monogram master</title>
+  <defs>
+    <path id="swoop-shape" d="
+      M 503 512
+      C 488 490 460 477 425 476
+      C 340 478 240 530 232 605
+      C 228 670 290 703 360 703
+      C 420 703 490 672 550 648
+      C 640 608 730 553 812 506
+      C 840 496 870 490 895 490
+      C 925 492 946 515 944 540
+      C 942 600 890 650 812 692
+      L 720 726
+      C 700 740 670 750 645 752
+      L 600 760
+      L 556 770
+      L 556 778
+      C 557 788 565 792 590 792
+      C 680 780 760 740 849 700
+      C 930 660 1000 600 1012 535
+      C 1022 490 975 466 930 466
+      C 890 466 850 478 812 490
+      C 725 536 640 582 550 627
+      C 500 650 450 668 410 668
+      C 360 668 325 640 312 600
+      C 305 560 330 520 370 509
+      C 390 503 410 508 418 520
+      C 424 532 428 540 431 543
+      C 455 532 480 522 503 512
+      Z"/>
+
+    <clipPath id="crossing-zone">
+      <polygon points="520,300 860,300 860,590 520,700"/>
+    </clipPath>
+
+    <mask id="crossing-gap" maskUnits="userSpaceOnUse" x="0" y="0" width="1254" height="1254">
+      <rect x="0" y="0" width="1254" height="1254" fill="#fff"/>
+      <!-- Offset slightly down-right: reads as the band's cast shadow, as in
+           the gold adaptation, rather than an even outline. -->
+      <g clip-path="url(#crossing-zone)">
+        <use href="#swoop-shape" fill="#000" stroke="#000" stroke-width="12"
+             stroke-linejoin="round" transform="translate(2 5)"/>
+      </g>
+    </mask>
+  </defs>
+
+  <g id="monogram" fill="#C2A46A">
+    <g id="stems" mask="url(#crossing-gap)">
+      <path id="stem-t" d="M 555 390 L 642 356 L 642 780 C 630 790 605 793 585 792 L 555 778 Z"/>
+      <path id="stem-b" d="M 720 335 L 812 294 L 808 720 L 720 728 Z"/>
+    </g>
+    <g id="swoop">
+      <use href="#swoop-shape"/>
+    </g>
+  </g>
+</svg>

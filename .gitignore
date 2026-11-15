@@ -1,0 +1,17 @@
+# Local, never-committed reference material and plans
+.local/
+
+# Generated output
+dist/
+dist.tmp/
+
+# Haskell build caches (the Stack root lives in a Docker named volume)
+.stack-work/
+.stack-root/
+
+# Scratch screenshots (curated proof screenshots live in design/proof/)
+*.scratch.png
+
+.DS_Store
+__pycache__/
+design/proof/regression-diff.png

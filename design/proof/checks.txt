@@ -1,0 +1,198 @@
+{
+  "desktop": {
+    "scrollWidth": 1440,
+    "clientWidth": 1440,
+    "horizontalOverflow": false,
+    "headings": [
+      "h1: Tyler Baum",
+      "h2: Black",
+      "h2: Selected Work",
+      "h3: Brigid",
+      "h2: About",
+      "h3: Contact"
+    ],
+    "images": [
+      {
+        "src": "assets/brand/monogram-simple.svg",
+        "alt": "",
+        "loaded": true
+      },
+      {
+        "src": "assets/images/hero-plate-centre.webp",
+        "alt": "",
+        "loaded": true
+      },
+      {
+        "src": "assets/images/hero-plate-left.webp",
+        "alt": "",
+        "loaded": true
+      },
+      {
+        "src": "assets/images/hero-plate-right.webp",
+        "alt": "",
+        "loaded": true
+      },
+      {
+        "src": "assets/images/black-emblem.svg",
+        "alt": "",
+        "loaded": true
+      },
+      {
+        "src": "assets/images/card-brigid.svg",
+        "alt": "",
+        "loaded": true
+      },
+      {
+        "src": "assets/images/about-tree.webp",
+        "alt": "",
+        "loaded": true
+      }
+    ],
+    "brokenFragmentLinks": [],
+    "fontsLoaded": [
+      "Cinzel 400 normal",
+      "EB Garamond 400 normal",
+      "EB Garamond 400 italic",
+      "JetBrains Mono 400 normal"
+    ],
+    "httpErrorsAndConsole": []
+  },
+  "tablet": {
+    "scrollWidth": 768,
+    "clientWidth": 768,
+    "horizontalOverflow": false,
+    "headings": [
+      "h1: Tyler Baum",
+      "h2: Black",
+      "h2: Selected Work",
+      "h3: Brigid",
+      "h2: About",
+      "h3: Contact"
+    ],
+    "images": [
+      {
+        "src": "assets/brand/monogram-simple.svg",
+        "alt": "",
+        "loaded": true
+      },
+      {
+        "src": "assets/images/hero-plate-centre.webp",
+        "alt": "",
+        "loaded": true
+      },
+      {
+        "src": "assets/images/hero-plate-left.webp",
+        "alt": "",
+        "loaded": true
+      },
+      {
+        "src": "assets/images/hero-plate-right.webp",
+        "alt": "",
+        "loaded": true
+      },
+      {
+        "src": "assets/images/black-emblem.svg",
+        "alt": "",
+        "loaded": true
+      },
+      {
+        "src": "assets/images/card-brigid.svg",
+        "alt": "",
+        "loaded": true
+      },
+      {
+        "src": "assets/images/about-tree.webp",
+        "alt": "",
+        "loaded": true
+      }
+    ],
+    "brokenFragmentLinks": [],
+    "fontsLoaded": [
+      "Cinzel 400 normal",
+      "EB Garamond 400 normal",
+      "EB Garamond 400 italic",
+      "JetBrains Mono 400 normal"
+    ],
+    "httpErrorsAndConsole": []
+  },
+  "mobile": {
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "horizontalOverflow": false,
+    "headings": [
+      "h1: Tyler Baum",
+      "h2: Black",
+      "h2: Selected Work",
+      "h3: Brigid",
+      "h2: About",
+      "h3: Contact"
+    ],
+    "images": [
+      {
+        "src": "assets/brand/monogram-simple.svg",
+        "alt": "",
+        "loaded": true
+      },
+      {
+        "src": "assets/images/hero-plate-centre.webp",
+        "alt": "",
+        "loaded": true
+      },
+      {
+        "src": "assets/images/hero-plate-left.webp",
+        "alt": "",
+        "loaded": true
+      },
+      {
+        "src": "assets/images/hero-plate-right.webp",
+        "alt": "",
+        "loaded": true
+      },
+      {
+        "src": "assets/images/black-emblem.svg",
+        "alt": "",
+        "loaded": true
+      },
+      {
+        "src": "assets/images/card-brigid.svg",
+        "alt": "",
+        "loaded": true
+      },
+      {
+        "src": "assets/images/about-tree.webp",
+        "alt": "",
+        "loaded": true
+      }
+    ],
+    "brokenFragmentLinks": [],
+    "fontsLoaded": [
+      "Cinzel 400 normal",
+      "EB Garamond 400 normal",
+      "EB Garamond 400 italic",
+      "JetBrains Mono 400 normal"
+    ],
+    "httpErrorsAndConsole": []
+  },
+  "monogramImages": [
+    "nav"
+  ],
+  "keyboardFocusOrder": [
+    "a \"SKIP TO CONTENT\" -> #main",
+    "a \"HOME\" -> #top",
+    "a \"WORK\" -> #selected-work",
+    "a \"Tyler Baum \u2014 home\" -> #top",
+    "a \"ABOUT\" -> #about",
+    "a \"CONTACT\" -> #contact",
+    "a \"EXPLORE SELECTED WORK\" -> #selected-work",
+    "a \"ABOUT & CONTACT\" -> #about",
+    "a \"VIEW SOURCE OF BRIGID ON GITHUB \u2192\" -> https://github.com/AugmenTab/brigid",
+    "a \"GitHub\" -> https://github.com/AugmenTab",
+    "body \"SKIP TO CONTENT HOME WORK ABOUT CONTACT SOFTWARE ENGINEER TYLER BAUM Building precise systems for ambitious ideas. LANGUAGE DESIGN SYSTEMS ENGINEERING AUDIO TECHNOLOGY SIMULATION EXPLORE SELECTED WORK ABOUT & CONTACT FEATURED PROJECT \u00b7 PROGRAMMING LANGUAGE BLACK A modern, correctness-focused programming language for ambitious systems. Strong static guarantees Effect and resource safety A foundation for AI-native development PROJECT PAGE AND PLAYGROUND IN PREPARATION Main Black \u00b7 experimental module Main type Vec2 = { x : F64, y : F64 } fn length(v : Vec2) : F64 = sqrt(v.x * v.x + v.y * v.y) fn main() : IO Unit = let v = { x = 3.0, y = 4.0 } print(length(v)) Illustrative excerpt; syntax may change. Nothing is compiled or run on this page. SELECTED WORK HASKELL LIBRARY \u00b7 IN DEVELOPMENT BRIGID Type-safe, (mostly) spec-compliant HTML for Haskell. This page is rendered with it. HASKELL HTML TYPE SAFETY VIEW SOURCE OF BRIGID ON GITHUB \u2192 ABOUT I design programming languages and build the libraries and tools around them, with a bias toward correctness that stays practical. This page is an early design preview of a portfolio in progress. CONTACT GitHub TYLER BAUM\" -> null",
+    "a \"SKIP TO CONTENT\" -> #main"
+  ],
+  "reducedMotion": {
+    "runningAnimations": 0,
+    "scrollBehavior": "auto"
+  },
+  "failures": []
+}

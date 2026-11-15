@@ -1,0 +1,48 @@
+name: personal-site
+version: 0.0.0.0
+synopsis: Static generator for a personal technical folio (Phase 00 visual proof)
+
+language: GHC2021
+
+default-extensions:
+  - OverloadedStrings
+
+ghc-options:
+  - -Wall
+  - -Wcompat
+  - -Widentities
+  - -Wincomplete-record-updates
+  - -Wincomplete-uni-patterns
+  - -Wpartial-fields
+  - -Wredundant-constraints
+
+dependencies:
+  - base
+  - brigid
+  - bytestring
+  - directory
+  - filepath
+  - integer-types
+  - non-empty-text
+  - ogma
+  - text
+
+library:
+  source-dirs: src
+
+executables:
+  site:
+    main: Main.hs
+    source-dirs: app
+    dependencies:
+      - personal-site
+
+tests:
+  site-test:
+    main: Spec.hs
+    source-dirs: test
+    dependencies:
+      - personal-site
+      - tasty
+      - tasty-hunit
+      - temporary

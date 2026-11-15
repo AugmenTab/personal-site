@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800" role="img" aria-labelledby="t">
+  <title id="t">TB monogram, ornamental</title>
+  <!-- Ornamental treatment after the first gold adaptation: hammered aged-gold
+       letterforms with a bevel lit from the upper left, inside an eclipse ring
+       with a sunburst zenith and blood-red diamond stations. The ornament is a
+       separate group (#ornament) and can be removed without touching the core
+       mark (#mark). Geometry: design/monogram.svg (unchanged). -->
+  <defs>
+    <path id="s" d="M503 512C488 490 460 477 425 476C340 478 240 530 232 605C228 670 290 703 360 703C420 703 490 672 550 648C640 608 730 553 812 506C840 496 870 490 895 490C925 492 946 515 944 540C942 600 890 650 812 692L720 726C700 740 670 750 645 752L600 760L556 770L556 778C557 788 565 792 590 792C680 780 760 740 849 700C930 660 1000 600 1012 535C1022 490 975 466 930 466C890 466 850 478 812 490C725 536 640 582 550 627C500 650 450 668 410 668C360 668 325 640 312 600C305 560 330 520 370 509C390 503 410 508 418 520C424 532 428 540 431 543C455 532 480 522 503 512Z"/>
+    <g id="stems">
+      <path d="M555 390L642 356L642 780C630 790 605 793 585 792L555 778Z"/>
+      <path d="M720 335L812 294L808 720L720 728Z"/>
+    </g>
+    <clipPath id="z"><polygon points="520,300 860,300 860,590 520,700"/></clipPath>
+    <mask id="g" maskUnits="userSpaceOnUse" x="0" y="0" width="1254" height="1254">
+      <rect width="1254" height="1254" fill="#fff"/>
+      <g clip-path="url(#z)">
+        <use href="#s" stroke="#000" stroke-width="12" stroke-linejoin="round" transform="translate(2 5)"/>
+      </g>
+    </mask>
+    <linearGradient id="gold" gradientUnits="userSpaceOnUse" x1="260" y1="300" x2="980" y2="800">
+      <stop offset="0" stop-color="#E9D29A"/>
+      <stop offset="0.4" stop-color="#C4A468"/>
+      <stop offset="0.75" stop-color="#9E7E45"/>
+      <stop offset="1" stop-color="#6E5428"/>
+    </linearGradient>
+    <linearGradient id="line" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#E2C88C"/>
+      <stop offset="1" stop-color="#8E7240"/>
+    </linearGradient>
+    <!-- Bevel + hammered texture: specular light on the blurred alpha edge,
+         then a fine fractal noise multiplied in, clipped to the letterforms. -->
+    <filter id="metal" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.28" numOctaves="3" seed="11" result="noise"/>
+      <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  0.6 0 0 0 0" result="noiseA"/>
+      <feGaussianBlur in="SourceAlpha" stdDeviation="5" result="blur"/>
+      <feSpecularLighting in="blur" surfaceScale="5" specularConstant="0.85" specularExponent="16" lighting-color="#FFEFC4" result="spec">
+        <feDistantLight azimuth="225" elevation="38"/>
+      </feSpecularLighting>
+      <feComposite in="spec" in2="SourceAlpha" operator="in" result="specIn"/>
+      <feComposite in="SourceGraphic" in2="specIn" operator="arithmetic" k1="0" k2="1" k3="0.6" k4="0" result="lit"/>
+      <feComposite in="noise" in2="lit" operator="arithmetic" k1="0.5" k2="0" k3="0.78" k4="0" result="hammered"/>
+      <feComposite in="hammered" in2="SourceAlpha" operator="in"/>
+    </filter>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="6"/>
+    </filter>
+    <g id="diamond">
+      <path d="M0 -14L7 0L0 14L-7 0Z" fill="#0B0B0D" stroke="url(#line)" stroke-width="2"/>
+      <path d="M0 -7L3.5 0L0 7L-3.5 0Z" fill="#9A1820"/>
+    </g>
+  </defs>
+
+  <rect width="800" height="800" fill="#0B0B0D"/>
+
+  <g id="ornament" fill="none" stroke="url(#line)" stroke-linecap="round">
+    <!-- eclipse ring, broken at the stations -->
+    <circle cx="400" cy="400" r="324" stroke-width="2.5" stroke-dasharray="470 38.94" stroke-dashoffset="-19.5"/>
+    <circle cx="400" cy="400" r="312" stroke-width="0.8" opacity="0.6"/>
+    <!-- sunburst + small eclipse at the zenith -->
+    <g transform="translate(400 76)" stroke-width="1.4">
+      <circle r="17" fill="#0B0B0D" stroke-width="2.5"/>
+      <path d="M0 -24V-58M0 24V40M24 0H62M-24 0H-62M17 -17L36 -36M-17 -17L-36 -36M9 -22L17 -44M-9 -22L-17 -44M22 -9L44 -17M-22 -9L-44 -17M17 17L28 28M-17 17L-28 28"/>
+    </g>
+    <!-- side and nadir stations -->
+    <path d="M40 400H62M738 400H760M400 724V760" stroke-width="1.4"/>
+  </g>
+  <use href="#diamond" x="76" y="400"/>
+  <use href="#diamond" x="724" y="400"/>
+  <use href="#diamond" x="400" y="724"/>
+
+  <g id="mark" transform="translate(400 404) scale(0.71) translate(-621 -541)">
+    <g fill="#000" opacity="0.7" transform="translate(6 10)" filter="url(#shadow)">
+      <g mask="url(#g)"><use href="#stems"/></g>
+      <use href="#s"/>
+    </g>
+    <g fill="url(#gold)" filter="url(#metal)">
+      <g mask="url(#g)">
+        <use href="#stems"/>
+        <!-- shaded side faces of the stems, as in the gold adaptation -->
+        <path fill="#6F5629" d="M624 363L642 356L642 780L624 786ZM792 303L812 294L808 720L792 722Z"/>
+      </g>
+      <use href="#s"/>
+    </g>
+  </g>
+</svg>

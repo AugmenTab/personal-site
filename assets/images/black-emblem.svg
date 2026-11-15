@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Decorative emblem for the Black teaser: three broad-nib stems rising
+       left to right (echoing the monogram's slanted stem tops), cut through
+       by a single descending stroke. Placeholder until Black has its own
+       mark. -->
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#EAD39A"/>
+      <stop offset="0.5" stop-color="#C2A46A"/>
+      <stop offset="1" stop-color="#8E7240"/>
+    </linearGradient>
+  </defs>
+  <g fill="url(#g)">
+    <path d="M10 26L17 23L17 58L10 60Z"/>
+    <path d="M23 16L30 13L30 54L23 56Z"/>
+    <path d="M36 6L43 3L43 50L36 52Z"/>
+    <path d="M6 61L54 33L57 36L9 63Z" opacity="0.9"/>
+  </g>
+</svg>
