@@ -267,11 +267,11 @@ metadataTests =
           [ ("content/projects/demo/project.json", projectJson "demo" [("showcase", Just (image "missing.svg"))])
           , ("content/projects/demo/body.md", "") ]
           "content/projects/demo/project.json" ["\"missing.svg\" does not exist"]
-    , testCase "attribute-bound text may not contain a straight double quote" $
-        expectContentError
-          [ ("content/projects/demo/project.json", projectJson "demo" [("summary", Just "Say \"hi\" onmouseover=\"x")])
+    , testCase "attribute-bound text may contain straight quotes (Brigid escapes them; see RemediationTests)" $ do
+        errs <- loadErrors
+          [ ("content/projects/demo/project.json", projectJson "demo" [("summary", Just "A \"correctness-first\" programming language.")])
           , ("content/projects/demo/body.md", "") ]
-          "content/projects/demo/project.json" ["field \"summary\": must not contain a straight double quote"]
+        errs @?= []
     , testCase "external links must be https" $
         expectContentError
           [ ("content/projects/demo/project.json", projectJson "demo" [("links", Just (Json.toJSON [Json.object ["label" .= ("x" :: T.Text), "url" .= ("javascript:alert(1)" :: T.Text)]]))])
@@ -416,13 +416,15 @@ adversarialTests =
         forM_ [ "[x](/work/\"onmouseover=\"alert(1))", "[x](</work/\" onmouseover=\"alert(1)>)", "[x](https://a.example/'onfocus='x')" ] $ \md -> do
           result <- renderDemo (T.pack md <> "\n") []
           either (const (pure ())) (\html -> assertFailure ("accepted " <> md <> ": " <> T.unpack (contentPart html))) result
-        -- Brigid does not escape '"' inside attribute values, so text bound
-        -- for an attribute (alt text) may not contain one at all...
-        refused <- renderDemo "## S\n\n![a\" onerror=\"alert(1)](d.svg)\n" [("content/projects/demo/d.svg", svg)]
-        case refused of
-          Left errs -> assertBool (concatMap show errs) ("straight double quote" `isInfixOf` concatMap show errs)
-          Right html -> assertFailure ("accepted a quote in alt text: " <> T.unpack (contentPart html))
-        -- ...while quotes in text content are harmless text.
+        -- Text bound for an attribute (alt text) may contain '"': Brigid
+        -- escapes it, so it cannot end the attribute or add a handler...
+        escaped <- renderDemo "## S\n\n![a\" onerror=\"alert(1)](d.svg)\n" [("content/projects/demo/d.svg", svg)]
+        case escaped of
+          Left errs -> assertFailure ("refused a quote in alt text: " <> concatMap show errs)
+          Right html -> do
+            assertBool (T.unpack (contentPart html)) (not ("a\" onerror" `T.isInfixOf` contentPart html))
+            assertBool (T.unpack (contentPart html)) ("alt=\"a&#34; onerror=&#34;alert(1)\"" `T.isInfixOf` contentPart html)
+        -- ...and quotes in text content are harmless text.
         result <- renderDemo "## S\n\n[b\" onclick=\"x](/work/) and \"quoted\" text\n" []
         html <- either (\e -> assertFailure (concatMap show e) >> pure "") pure result
         let body = contentPart html

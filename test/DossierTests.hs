@@ -440,8 +440,6 @@ heroTests =
           ["give either \"alt\" or \"decorative\", not both"]
         expectError (demo "## A\n" [hero [("src", "hero.webp"), ("decorative", Json.Bool False)]] <> heroFiles) json
           ["false is not allowed; describe the artwork with \"alt\" instead"]
-        expectError (demo "## A\n" [hero [("src", "hero.webp"), ("alt", "a \"quoted\" alt")]] <> heroFiles) json
-          ["straight double quote"]
         expectError (demo "## A\n" [hero [("src", "hero.webp"), ("alt", "x"), ("credit", "me")]] <> heroFiles) json
           ["unknown field \"credit\""]
         expectError (demo "## A\n" [("hero", Just "hero.webp")] <> heroFiles) json

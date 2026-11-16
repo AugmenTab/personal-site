@@ -36,6 +36,7 @@ import ContentTests (contentTests)
 import DossierTests (dossierTests)
 import HomeTests (homeTests)
 import Phase05Tests (phase05Tests)
+import RemediationTests (remediationTests)
 
 main :: IO ()
 main =
@@ -50,6 +51,7 @@ main =
       , homeTests
       , dossierTests
       , phase05Tests
+      , remediationTests
       ]
 
 --------------------------------------------------------------------------------
