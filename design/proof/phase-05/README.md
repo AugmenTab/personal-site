@@ -22,7 +22,11 @@ fixture site (`.local/fixture-site/`, :8082). Full machine-readable results:
 ## What the browser checks assert
 
 - Every page at 1920, 1440, 1280, 768, 390 and 320: no horizontal overflow,
-  images load, fragments resolve, no console or HTTP errors.
+  images load, fragments resolve, no console or HTTP errors. At 1920,
+  1280 and 320, no text element extends past the viewport (this catches
+  text clipped inside overflow-hidden boxes, which page-overflow checks
+  miss; it was added after the hero's disciplines and the teaser's
+  code-bar label were found clipped at 320px and fixed).
 - Crawl: every internal link and asset answers 200; 34 fragment links
   resolve. A no-JavaScript walk follows the nav, the cards, All projects,
   About's "Get in touch", the hero's two CTAs, Contact and the footer.

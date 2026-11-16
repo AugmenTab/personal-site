@@ -2736,6 +2736,26 @@ ul {
   }
 }
 
+/* The narrowest phones (Phase 05 fix): two columns of disciplines cannot
+   fit at 320px at a legible size, and the code bar's label was clipped.
+   Above 380px nothing here applies, so the approved hero is unchanged. */
+@media (max-width: 379px) {
+  .hero__disciplines {
+    grid-template-columns: auto;
+    gap: 0.45rem;
+  }
+
+  .feature__code-bar {
+    flex-wrap: wrap;
+    row-gap: 0;
+  }
+
+  .feature__code-tag {
+    padding-bottom: 0.45rem;
+    white-space: normal;
+  }
+}
+
 /* Code is shown exactly as written: no programming ligatures (JetBrains
    Mono would otherwise draw -> as an arrow). */
 pre,

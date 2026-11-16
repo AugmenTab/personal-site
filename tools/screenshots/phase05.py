@@ -112,6 +112,15 @@ def page_checks(browser, base, pages, ready, watch, checks_js, failures):
                 failures.append(f"{label}: broken fragment links {checks['brokenFragmentLinks']}")
             if bad:
                 failures.append(f"{label}: http/console problems {bad}")
+            # Text cut off by an overflow-hidden ancestor never shows up as
+            # page overflow, so check text elements against the viewport
+            # (scrolling code and diagram panels are allowed to extend).
+            clipped = page.evaluate("""() => [...document.querySelectorAll('h1,h2,h3,p,li,a,span,dt,dd,label,button')]
+                .filter(e => e.offsetParent !== null && e.textContent.trim() && !e.closest('pre, .artifact__viewport, .visually-hidden, .skip-link'))
+                .filter(e => { const r = e.getBoundingClientRect(); return r.width > 0 && (r.right > innerWidth + 1 || r.left < -1); })
+                .map(e => `${e.tagName.toLowerCase()}.${e.className}: ${e.textContent.trim().slice(0, 40)}`)""")
+            if clipped:
+                failures.append(f"{label}: text extends past the viewport {clipped[:5]}")
             # Only the narrow width is new evidence (work/ covers the Work
             # index at every width; the other widths are checked, not kept).
             if vp_name == "narrow" and page_name in ("home", "work", "about", "project-black"):
