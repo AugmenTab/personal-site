@@ -1,0 +1,15 @@
+module NominalRecord
+  ( main
+  )
+
+-- Spec section 7: nominality applies to structural records. Construction,
+-- projection, update and record patterns keep the nominal identity.
+nominal type Position = { x :: UInt8, y :: UInt8 }
+
+swap :: Position -> Position
+swap position = position { x = position.y, y = position.x }
+
+main :: UInt8 -> UInt8
+main v =
+  case swap (Position { x = v, y = 9 }) of
+    Position { y } -> y

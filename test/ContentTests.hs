@@ -241,7 +241,7 @@ metadataTests =
         expectContentError
           [ ("content/projects/demo/project.json", projectJson "demo" [("showcase", Just (Json.object ["kind" .= ("audio" :: T.Text), "src" .= ("a.mp3" :: T.Text), "transcript" .= ("a.txt" :: T.Text)]))])
           , ("content/projects/demo/body.md", "") ]
-          "content/projects/demo/project.json" ["kind \"audio\" is not supported for published projects yet"]
+          "content/projects/demo/project.json" ["kind \"audio\" is not supported for published projects"]
         expectContentError
           [ ("content/projects/demo/project.json", projectJson "demo" [("showcase", Just (Json.object ["kind" .= ("interactive" :: T.Text), "app" .= ("black-playground" :: T.Text)]))])
           , ("content/projects/demo/body.md", "") ]

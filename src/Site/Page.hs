@@ -33,6 +33,9 @@ data Layout
     -- ^ The homepage: content starts under the header, over the hero art.
   | Interior
     -- ^ Every other page: content is pushed below the header.
+  | Dossier
+    -- ^ A project page with a hero: the artwork starts under the header,
+    -- as the homepage stage does.
   deriving (Eq, Show)
 
 data Page =

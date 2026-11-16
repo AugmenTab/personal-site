@@ -199,3 +199,31 @@ Writing), hairlines and spacing. No additional eclipse, monogram or monument.
 | Selected Work | Two cards (Brigid, Lockdown), not the render's three (Brigid, Crest, Lockstep) | Crest and Lockstep are withheld (see the Phase 03 retrospective); the render's card copy for Brigid described a language, which Brigid is not |
 | Nav | No Writing or Résumé links | No published writing and no résumé yet; links appear only with real destinations |
 | Code ligatures | Disabled in all code | JetBrains Mono drew `->` as an arrow, altering the verified source |
+
+## Phase 04: project dossiers
+
+Each dossier is a chamber in the same building: the shell is shared and
+only the hero and the mix of section layouts differ.
+
+| Element | Treatment |
+| --- | --- |
+| Hero (optional) | Full-bleed painted banner under the header (as the homepage stage), cropped by `object-fit` with a per-project focus. Veils darken the nav band, the lower left (where the title sits) and the foot. A hairline frame with the Deco corner fans sits inside it. Title in gilded Cinzel (the homepage name's gradient), summary in italic Garamond, tags as hairline cartouches. A ruled diamond hands over to the sidebar and sections |
+| Overview | Prose, then a ruled fact strip: verdigris labels over bone values in hairline-divided columns (a two-column definition table on phones) |
+| Wide exhibit | The artifact in the card's 9-slice Deco frame at full column width; the copy below as a caption, led by a short gold rule |
+| Split | Prose (2 parts) beside the framed artifact (3 parts), side chosen per section; stacked in reading order below 1180px |
+| Grid | A hairline lattice (gold gaps between dark cells), a diamond mark per item, titles in tracked gold capitals |
+| Resources | Quiet: a hairline above, smaller muted title and text |
+| Code panels | A tab with a diamond, the file label in mono gold and the language in faint capitals; lines wrap with a hanging indent instead of scrolling |
+| Diagram (Black pipeline) | Hand-authored SVG in the palette: four chamfered chambers, verdigris numerals, a blood-red dashed evidence loop. Scrolls inside its frame on phones, with a link to the full-size file |
+
+### Visual discrepancy register (Phase 04)
+
+| Area | Difference from the brief or the approved render | Why |
+| --- | --- | --- |
+| Heroes | **Not delivered.** Black, Brigid and Lockdown use the plain header; no symbolic hero is on any committed page | `.local/heroes/` was empty throughout the phase. The banner was built and verified with stand-in art (the homepage plates composited; `design/proof/phase-04/stand-in-hero/`), which was not committed as a hero |
+| Black dossier | No interactive compiler, no AST or output panels from render 03 | No live compiler exists; the exhibit is the real pipeline and two verbatim conformance programs (one accepted, one rejected) |
+| Black "Key features" / "Design goals" (render) | Replaced by "Design principles": rules White enforces today | The render's items (effects and resource safety, AI-native tooling) are not implemented |
+| Crest | No dossier | Withheld again: the repository has not changed since Phase 03 (last push 2026-10-24) |
+| Diagram text | SVG text uses serif fallbacks (Georgia/Times), not Cinzel and EB Garamond | An SVG loaded through `<img>` cannot use the page's web fonts |
+| Phone diagram | Scrolls sideways inside its frame | At 390px the full diagram's labels would be about 6px; a legible minimum width plus a full-size link is more useful |
+| Heading rules on phones | A wrapped section title leaves its gold rule beside the last line | Pre-existing Phase 02 behaviour of `.project__section-title`; left unchanged (hidden only for the hero kicker) |

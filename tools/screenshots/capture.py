@@ -20,6 +20,8 @@ from urllib.parse import urldefrag, urljoin, urlparse
 
 from playwright.sync_api import sync_playwright
 
+from phase04 import PHASE04_OUT, phase04_captures
+
 BASE = os.environ.get("PREVIEW_URL", "http://localhost:8080/")
 OUT = "design/proof"
 PAGES_OUT = f"{OUT}/pages"
@@ -265,7 +267,7 @@ def project_sidebar_checks(browser, failures):
             if vp_name == "desktop":
                 geometry = page.evaluate(
                     """() => { const n = document.querySelector('.project-nav').getBoundingClientRect();
-                       const c = document.querySelector('.project').getBoundingClientRect();
+                       const c = (document.querySelector('.project__body') || document.querySelector('.project')).getBoundingClientRect();
                        window.scrollTo(0, document.body.scrollHeight);
                        const after = document.querySelector('.project-nav').getBoundingClientRect();
                        return { navRight: Math.round(n.right), contentLeft: Math.round(c.left),
@@ -532,6 +534,7 @@ def main() -> int:
         page.close()
 
         report["phase03"] = phase03_captures(browser, failures)
+        report["phase04"] = phase04_captures(browser, BASE, PROJECT_PAGES, VIEWPORTS, ready, failures)
 
         # Reduced motion: confirm animations and smooth scrolling are off.
         context = browser.new_context(viewport=VIEWPORTS["desktop"], reduced_motion="reduce")
@@ -562,7 +565,7 @@ def main() -> int:
     # The container runs as root; hand the evidence to whoever owns the
     # bind-mounted proof directory (matters on Linux hosts only).
     st = os.stat(OUT)
-    for directory in (OUT, PAGES_OUT, PHASE03_OUT):
+    for directory in (OUT, PAGES_OUT, PHASE03_OUT, PHASE04_OUT):
         for name in [""] + os.listdir(directory):
             try:
                 os.chown(os.path.join(directory, name), st.st_uid, st.st_gid)

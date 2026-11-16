@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 540" width="1200" height="540">
+  <!-- White's compiler pipeline, after the stage table in white/README.md
+       (AugmenTab/black@c1a45af). Hand-authored; every stage named here is
+       implemented on that commit. -->
+  <defs>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1A1619"/>
+      <stop offset="1" stop-color="#0E0C0F"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#E2C88C"/>
+      <stop offset="0.5" stop-color="#C2A46A"/>
+      <stop offset="1" stop-color="#9C8253"/>
+    </linearGradient>
+    <path id="diamond" d="M0 -5L5 0L0 5L-5 0Z"/>
+  </defs>
+
+  <rect width="1200" height="540" fill="#0B0B0D"/>
+
+  <g font-family="Cinzel, 'Trajan Pro', Georgia, 'Times New Roman', serif" fill="#BBB4A2">
+    <!-- input and output -->
+    <text x="152" y="44" font-size="15" letter-spacing="3" text-anchor="middle" fill="#8F8878">INPUT</text>
+    <text x="152" y="68" font-size="18" letter-spacing="1.5" text-anchor="middle" fill="#E7E2D2">Black source (.blk)</text>
+    <path d="M152 78V96" stroke="#C2A46A" stroke-width="1.2"/>
+    <use href="#diamond" x="152" y="100" fill="#C2A46A"/>
+
+    <text x="1022" y="44" font-size="15" letter-spacing="3" text-anchor="middle" fill="#8F8878">OUTPUT</text>
+    <text x="1022" y="68" font-size="18" letter-spacing="1.5" text-anchor="middle" fill="#E7E2D2">Native x86-64 Linux code</text>
+    <path d="M1022 96V78" stroke="#C2A46A" stroke-width="1.2"/>
+    <use href="#diamond" x="1022" y="74" fill="#C2A46A"/>
+  </g>
+
+  <!-- four chambers: chamfered panels with a gold edge -->
+  <g stroke="url(#gold)" stroke-width="1.4" fill="url(#panel)">
+    <path d="M37 106H267L280 119V401L267 414H37L24 401V119Z"/>
+    <path d="M327 106H557L570 119V401L557 414H327L314 401V119Z"/>
+    <path d="M617 106H847L860 119V401L847 414H617L604 401V119Z"/>
+    <path d="M907 106H1137L1150 119V401L1137 414H907L894 401V119Z"/>
+  </g>
+  <g stroke="#C2A46A" stroke-opacity="0.35" stroke-width="1" fill="none">
+    <path d="M40 172H264M330 172H554M620 172H844M910 172H1134"/>
+  </g>
+
+  <!-- connections between chambers -->
+  <g stroke="#C2A46A" stroke-width="1.4">
+    <path d="M281 260H307M571 260H597M861 260H887"/>
+  </g>
+  <g fill="#C2A46A">
+    <path d="M313 260l-8 -6v12z"/>
+    <path d="M603 260l-8 -6v12z"/>
+    <path d="M893 260l-8 -6v12z"/>
+  </g>
+
+  <g font-family="Cinzel, 'Trajan Pro', Georgia, 'Times New Roman', serif" text-anchor="middle">
+    <!-- numerals -->
+    <g font-size="14" letter-spacing="3" fill="#74A595">
+      <text x="152" y="134">I</text>
+      <text x="442" y="134">II</text>
+      <text x="732" y="134">III</text>
+      <text x="1022" y="134">IV</text>
+    </g>
+    <!-- chamber titles -->
+    <g font-size="20" letter-spacing="3" fill="#E2C88C">
+      <text x="152" y="160">FRONT END</text>
+      <text x="442" y="160">PROOF OF FIT</text>
+      <text x="732" y="160">CORE</text>
+      <text x="1022" y="160">BACK END</text>
+    </g>
+  </g>
+
+  <!-- stages -->
+  <g font-family="'EB Garamond', Garamond, Georgia, 'Times New Roman', serif" font-size="19" fill="#E7E2D2">
+    <g>
+      <text x="58" y="210">Parse</text>
+      <text x="58" y="246">Canonical format</text>
+      <text x="58" y="282">Resolve names</text>
+      <text x="58" y="318">Unused bindings</text>
+      <text x="58" y="354">Types and</text>
+      <text x="58" y="378">exhaustiveness</text>
+    </g>
+    <g>
+      <text x="348" y="210">Interval reasoning</text>
+      <text x="348" y="246">Every integer result</text>
+      <text x="348" y="270">fits its type</text>
+      <text x="348" y="306">Every divisor nonzero</text>
+      <text x="348" y="342">Each cast proved</text>
+      <text x="348" y="378">Contract obligations</text>
+    </g>
+    <g>
+      <text x="638" y="210">Elaborate into Core</text>
+      <text x="638" y="246">Validate Core:</text>
+      <text x="638" y="270">re-derive the evidence</text>
+      <text x="638" y="306">Bind entry points</text>
+      <text x="638" y="330">or a native boundary</text>
+    </g>
+    <g>
+      <text x="928" y="210">Emit textual LLVM IR</text>
+      <text x="928" y="246">Compile with clang-19</text>
+      <text x="928" y="282">An executable, or</text>
+      <text x="928" y="306">a shared library</text>
+      <text x="928" y="330">that a C host loads</text>
+    </g>
+  </g>
+  <g fill="#C2A46A">
+    <use href="#diamond" x="44" y="204" transform="scale(1)"/>
+    <use href="#diamond" x="44" y="240"/>
+    <use href="#diamond" x="44" y="276"/>
+    <use href="#diamond" x="44" y="312"/>
+    <use href="#diamond" x="44" y="348"/>
+    <use href="#diamond" x="334" y="204"/>
+    <use href="#diamond" x="334" y="240"/>
+    <use href="#diamond" x="334" y="300"/>
+    <use href="#diamond" x="334" y="336"/>
+    <use href="#diamond" x="334" y="372"/>
+    <use href="#diamond" x="624" y="204"/>
+    <use href="#diamond" x="624" y="240"/>
+    <use href="#diamond" x="624" y="300"/>
+    <use href="#diamond" x="914" y="204"/>
+    <use href="#diamond" x="914" y="240"/>
+    <use href="#diamond" x="914" y="276"/>
+  </g>
+
+  <!-- the evidence loop: recorded by the proof stage, re-derived by Core -->
+  <path d="M442 414V456Q442 474 460 474H714Q732 474 732 456V414" fill="none" stroke="#A3222A" stroke-width="1.4" stroke-dasharray="6 5"/>
+  <path d="M732 420l-6 9h12z" fill="#A3222A"/>
+  <text x="587" y="506" text-anchor="middle" font-family="'EB Garamond', Garamond, Georgia, 'Times New Roman', serif" font-size="18" font-style="italic" fill="#BBB4A2">Evidence is recorded by the proof stage and re-derived by Core validation, not trusted</text>
+</svg>

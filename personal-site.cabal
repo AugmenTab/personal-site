@@ -87,6 +87,7 @@ test-suite site-test
   main-is: Spec.hs
   other-modules:
       ContentTests
+      DossierTests
       HomeTests
       Paths_personal_site
   hs-source-dirs:

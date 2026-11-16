@@ -48,9 +48,19 @@
         "headings": [
           "h1: Black",
           "h2: Overview",
-          "h2: Technical approach",
-          "h2: Current capabilities",
-          "h2: Limitations and status"
+          "h2: Design principles",
+          "h3: Proved, not assumed",
+          "h3: Closed by default",
+          "h3: Trust no earlier stage",
+          "h3: One canonical form",
+          "h3: Explicit boundaries",
+          "h3: Evidence as data",
+          "h2: The compiler pipeline",
+          "h2: A program White accepts",
+          "h2: A program White rejects",
+          "h2: Language today",
+          "h2: Status and limitations",
+          "h2: Resources"
         ],
         "brokenFragmentLinks": [],
         "httpErrorsAndConsole": [],
@@ -62,9 +72,19 @@
         "headings": [
           "h1: Black",
           "h2: Overview",
-          "h2: Technical approach",
-          "h2: Current capabilities",
-          "h2: Limitations and status"
+          "h2: Design principles",
+          "h3: Proved, not assumed",
+          "h3: Closed by default",
+          "h3: Trust no earlier stage",
+          "h3: One canonical form",
+          "h3: Explicit boundaries",
+          "h3: Evidence as data",
+          "h2: The compiler pipeline",
+          "h2: A program White accepts",
+          "h2: A program White rejects",
+          "h2: Language today",
+          "h2: Status and limitations",
+          "h2: Resources"
         ],
         "brokenFragmentLinks": [],
         "httpErrorsAndConsole": [],
@@ -76,9 +96,19 @@
         "headings": [
           "h1: Black",
           "h2: Overview",
-          "h2: Technical approach",
-          "h2: Current capabilities",
-          "h2: Limitations and status"
+          "h2: Design principles",
+          "h3: Proved, not assumed",
+          "h3: Closed by default",
+          "h3: Trust no earlier stage",
+          "h3: One canonical form",
+          "h3: Explicit boundaries",
+          "h3: Evidence as data",
+          "h2: The compiler pipeline",
+          "h2: A program White accepts",
+          "h2: A program White rejects",
+          "h2: Language today",
+          "h2: Status and limitations",
+          "h2: Resources"
         ],
         "brokenFragmentLinks": [],
         "httpErrorsAndConsole": [],
@@ -92,9 +122,17 @@
         "headings": [
           "h1: Brigid",
           "h2: Overview",
-          "h2: Technical approach",
-          "h2: Current capabilities",
-          "h2: Limitations and status",
+          "h2: Motivation",
+          "h2: How the types work",
+          "h2: Caught at compile time",
+          "h2: What the types buy",
+          "h3: Valid nesting",
+          "h3: Valid attributes",
+          "h3: Escaping at the boundary",
+          "h3: Documents as values",
+          "h3: Several outputs",
+          "h3: htmx and HXML",
+          "h2: Status and limitations",
           "h2: Resources"
         ],
         "brokenFragmentLinks": [],
@@ -107,9 +145,17 @@
         "headings": [
           "h1: Brigid",
           "h2: Overview",
-          "h2: Technical approach",
-          "h2: Current capabilities",
-          "h2: Limitations and status",
+          "h2: Motivation",
+          "h2: How the types work",
+          "h2: Caught at compile time",
+          "h2: What the types buy",
+          "h3: Valid nesting",
+          "h3: Valid attributes",
+          "h3: Escaping at the boundary",
+          "h3: Documents as values",
+          "h3: Several outputs",
+          "h3: htmx and HXML",
+          "h2: Status and limitations",
           "h2: Resources"
         ],
         "brokenFragmentLinks": [],
@@ -122,9 +168,17 @@
         "headings": [
           "h1: Brigid",
           "h2: Overview",
-          "h2: Technical approach",
-          "h2: Current capabilities",
-          "h2: Limitations and status",
+          "h2: Motivation",
+          "h2: How the types work",
+          "h2: Caught at compile time",
+          "h2: What the types buy",
+          "h3: Valid nesting",
+          "h3: Valid attributes",
+          "h3: Escaping at the boundary",
+          "h3: Documents as values",
+          "h3: Several outputs",
+          "h3: htmx and HXML",
+          "h2: Status and limitations",
           "h2: Resources"
         ],
         "brokenFragmentLinks": [],
@@ -488,13 +542,14 @@
       "/",
       "/404.html",
       "/about/",
+      "/media/projects/black/pipeline.svg",
       "/work/",
       "/work/black/",
       "/work/brigid/",
       "/work/lockdown/"
     ],
-    "internalUrlsChecked": 18,
-    "fragmentLinksChecked": 29,
+    "internalUrlsChecked": 19,
+    "fragmentLinksChecked": 35,
     "problems": []
   },
   "noJavaScriptNavigation": [
@@ -627,9 +682,13 @@
       "desktop": {
         "sectionLinks": [
           "#overview",
-          "#technical-approach",
-          "#current-capabilities",
-          "#limitations-and-status"
+          "#design-principles",
+          "#the-compiler-pipeline",
+          "#a-program-white-accepts",
+          "#a-program-white-rejects",
+          "#language-today",
+          "#status-and-limitations",
+          "#resources"
         ],
         "clicks": [
           {
@@ -641,25 +700,57 @@
             }
           },
           {
-            "#technical-approach": {
-              "hash": "#technical-approach",
-              "top": 24,
-              "inView": true,
-              "underSidebar": false
-            }
-          },
-          {
-            "#current-capabilities": {
-              "hash": "#current-capabilities",
+            "#design-principles": {
+              "hash": "#design-principles",
               "top": 25,
               "inView": true,
               "underSidebar": false
             }
           },
           {
-            "#limitations-and-status": {
-              "hash": "#limitations-and-status",
-              "top": 267,
+            "#the-compiler-pipeline": {
+              "hash": "#the-compiler-pipeline",
+              "top": 25,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#a-program-white-accepts": {
+              "hash": "#a-program-white-accepts",
+              "top": 24,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#a-program-white-rejects": {
+              "hash": "#a-program-white-rejects",
+              "top": 25,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#language-today": {
+              "hash": "#language-today",
+              "top": 25,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#status-and-limitations": {
+              "hash": "#status-and-limitations",
+              "top": 175,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#resources": {
+              "hash": "#resources",
+              "top": 534,
               "inView": true,
               "underSidebar": false
             }
@@ -675,47 +766,87 @@
           "/work/",
           "/work/black/",
           "#overview",
-          "#technical-approach",
-          "#current-capabilities",
-          "#limitations-and-status"
+          "#design-principles",
+          "#the-compiler-pipeline",
+          "#a-program-white-accepts",
+          "#a-program-white-rejects",
+          "#language-today",
+          "#status-and-limitations",
+          "#resources"
         ]
       },
       "tablet": {
         "sectionLinks": [
           "#overview",
-          "#technical-approach",
-          "#current-capabilities",
-          "#limitations-and-status"
+          "#design-principles",
+          "#the-compiler-pipeline",
+          "#a-program-white-accepts",
+          "#a-program-white-rejects",
+          "#language-today",
+          "#status-and-limitations",
+          "#resources"
         ],
         "clicks": [
           {
             "#overview": {
               "hash": "#overview",
-              "top": 25,
-              "inView": true,
-              "underSidebar": false
-            }
-          },
-          {
-            "#technical-approach": {
-              "hash": "#technical-approach",
               "top": 24,
               "inView": true,
               "underSidebar": false
             }
           },
           {
-            "#current-capabilities": {
-              "hash": "#current-capabilities",
+            "#design-principles": {
+              "hash": "#design-principles",
+              "top": 24,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#the-compiler-pipeline": {
+              "hash": "#the-compiler-pipeline",
+              "top": 24,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#a-program-white-accepts": {
+              "hash": "#a-program-white-accepts",
               "top": 25,
               "inView": true,
               "underSidebar": false
             }
           },
           {
-            "#limitations-and-status": {
-              "hash": "#limitations-and-status",
-              "top": 390,
+            "#a-program-white-rejects": {
+              "hash": "#a-program-white-rejects",
+              "top": 24,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#language-today": {
+              "hash": "#language-today",
+              "top": 24,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#status-and-limitations": {
+              "hash": "#status-and-limitations",
+              "top": 299,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#resources": {
+              "hash": "#resources",
+              "top": 658,
               "inView": true,
               "underSidebar": false
             }
@@ -725,47 +856,87 @@
           "/work/",
           "/work/black/",
           "#overview",
-          "#technical-approach",
-          "#current-capabilities",
-          "#limitations-and-status"
+          "#design-principles",
+          "#the-compiler-pipeline",
+          "#a-program-white-accepts",
+          "#a-program-white-rejects",
+          "#language-today",
+          "#status-and-limitations",
+          "#resources"
         ]
       },
       "mobile": {
         "sectionLinks": [
           "#overview",
-          "#technical-approach",
-          "#current-capabilities",
-          "#limitations-and-status"
+          "#design-principles",
+          "#the-compiler-pipeline",
+          "#a-program-white-accepts",
+          "#a-program-white-rejects",
+          "#language-today",
+          "#status-and-limitations",
+          "#resources"
         ],
         "clicks": [
           {
             "#overview": {
               "hash": "#overview",
-              "top": 25,
-              "inView": true,
-              "underSidebar": false
-            }
-          },
-          {
-            "#technical-approach": {
-              "hash": "#technical-approach",
-              "top": 25,
-              "inView": true,
-              "underSidebar": false
-            }
-          },
-          {
-            "#current-capabilities": {
-              "hash": "#current-capabilities",
               "top": 24,
               "inView": true,
               "underSidebar": false
             }
           },
           {
-            "#limitations-and-status": {
-              "hash": "#limitations-and-status",
-              "top": 29,
+            "#design-principles": {
+              "hash": "#design-principles",
+              "top": 25,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#the-compiler-pipeline": {
+              "hash": "#the-compiler-pipeline",
+              "top": 24,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#a-program-white-accepts": {
+              "hash": "#a-program-white-accepts",
+              "top": 25,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#a-program-white-rejects": {
+              "hash": "#a-program-white-rejects",
+              "top": 25,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#language-today": {
+              "hash": "#language-today",
+              "top": 24,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#status-and-limitations": {
+              "hash": "#status-and-limitations",
+              "top": 24,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#resources": {
+              "hash": "#resources",
+              "top": 426,
               "inView": true,
               "underSidebar": false
             }
@@ -775,9 +946,13 @@
           "/work/",
           "/work/black/",
           "#overview",
-          "#technical-approach",
-          "#current-capabilities",
-          "#limitations-and-status"
+          "#design-principles",
+          "#the-compiler-pipeline",
+          "#a-program-white-accepts",
+          "#a-program-white-rejects",
+          "#language-today",
+          "#status-and-limitations",
+          "#resources"
         ]
       }
     },
@@ -785,9 +960,11 @@
       "desktop": {
         "sectionLinks": [
           "#overview",
-          "#technical-approach",
-          "#current-capabilities",
-          "#limitations-and-status",
+          "#motivation",
+          "#how-the-types-work",
+          "#caught-at-compile-time",
+          "#what-the-types-buy",
+          "#status-and-limitations",
           "#resources"
         ],
         "clicks": [
@@ -800,25 +977,41 @@
             }
           },
           {
-            "#technical-approach": {
-              "hash": "#technical-approach",
+            "#motivation": {
+              "hash": "#motivation",
               "top": 25,
               "inView": true,
               "underSidebar": false
             }
           },
           {
-            "#current-capabilities": {
-              "hash": "#current-capabilities",
+            "#how-the-types-work": {
+              "hash": "#how-the-types-work",
+              "top": 25,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#caught-at-compile-time": {
+              "hash": "#caught-at-compile-time",
+              "top": 25,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#what-the-types-buy": {
+              "hash": "#what-the-types-buy",
               "top": 24,
               "inView": true,
               "underSidebar": false
             }
           },
           {
-            "#limitations-and-status": {
-              "hash": "#limitations-and-status",
-              "top": 44,
+            "#status-and-limitations": {
+              "hash": "#status-and-limitations",
+              "top": 223,
               "inView": true,
               "underSidebar": false
             }
@@ -826,7 +1019,7 @@
           {
             "#resources": {
               "hash": "#resources",
-              "top": 480,
+              "top": 534,
               "inView": true,
               "underSidebar": false
             }
@@ -842,18 +1035,22 @@
           "/work/",
           "/work/brigid/",
           "#overview",
-          "#technical-approach",
-          "#current-capabilities",
-          "#limitations-and-status",
+          "#motivation",
+          "#how-the-types-work",
+          "#caught-at-compile-time",
+          "#what-the-types-buy",
+          "#status-and-limitations",
           "#resources"
         ]
       },
       "tablet": {
         "sectionLinks": [
           "#overview",
-          "#technical-approach",
-          "#current-capabilities",
-          "#limitations-and-status",
+          "#motivation",
+          "#how-the-types-work",
+          "#caught-at-compile-time",
+          "#what-the-types-buy",
+          "#status-and-limitations",
           "#resources"
         ],
         "clicks": [
@@ -866,25 +1063,41 @@
             }
           },
           {
-            "#technical-approach": {
-              "hash": "#technical-approach",
+            "#motivation": {
+              "hash": "#motivation",
               "top": 25,
               "inView": true,
               "underSidebar": false
             }
           },
           {
-            "#current-capabilities": {
-              "hash": "#current-capabilities",
+            "#how-the-types-work": {
+              "hash": "#how-the-types-work",
               "top": 24,
               "inView": true,
               "underSidebar": false
             }
           },
           {
-            "#limitations-and-status": {
-              "hash": "#limitations-and-status",
-              "top": 192,
+            "#caught-at-compile-time": {
+              "hash": "#caught-at-compile-time",
+              "top": 24,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#what-the-types-buy": {
+              "hash": "#what-the-types-buy",
+              "top": 25,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#status-and-limitations": {
+              "hash": "#status-and-limitations",
+              "top": 347,
               "inView": true,
               "underSidebar": false
             }
@@ -892,7 +1105,7 @@
           {
             "#resources": {
               "hash": "#resources",
-              "top": 604,
+              "top": 658,
               "inView": true,
               "underSidebar": false
             }
@@ -902,48 +1115,68 @@
           "/work/",
           "/work/brigid/",
           "#overview",
-          "#technical-approach",
-          "#current-capabilities",
-          "#limitations-and-status",
+          "#motivation",
+          "#how-the-types-work",
+          "#caught-at-compile-time",
+          "#what-the-types-buy",
+          "#status-and-limitations",
           "#resources"
         ]
       },
       "mobile": {
         "sectionLinks": [
           "#overview",
-          "#technical-approach",
-          "#current-capabilities",
-          "#limitations-and-status",
+          "#motivation",
+          "#how-the-types-work",
+          "#caught-at-compile-time",
+          "#what-the-types-buy",
+          "#status-and-limitations",
           "#resources"
         ],
         "clicks": [
           {
             "#overview": {
               "hash": "#overview",
+              "top": 25,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#motivation": {
+              "hash": "#motivation",
               "top": 24,
               "inView": true,
               "underSidebar": false
             }
           },
           {
-            "#technical-approach": {
-              "hash": "#technical-approach",
-              "top": 24,
+            "#how-the-types-work": {
+              "hash": "#how-the-types-work",
+              "top": 25,
               "inView": true,
               "underSidebar": false
             }
           },
           {
-            "#current-capabilities": {
-              "hash": "#current-capabilities",
-              "top": 24,
+            "#caught-at-compile-time": {
+              "hash": "#caught-at-compile-time",
+              "top": 25,
               "inView": true,
               "underSidebar": false
             }
           },
           {
-            "#limitations-and-status": {
-              "hash": "#limitations-and-status",
+            "#what-the-types-buy": {
+              "hash": "#what-the-types-buy",
+              "top": 25,
+              "inView": true,
+              "underSidebar": false
+            }
+          },
+          {
+            "#status-and-limitations": {
+              "hash": "#status-and-limitations",
               "top": 24,
               "inView": true,
               "underSidebar": false
@@ -952,7 +1185,7 @@
           {
             "#resources": {
               "hash": "#resources",
-              "top": 395,
+              "top": 426,
               "inView": true,
               "underSidebar": false
             }
@@ -962,9 +1195,11 @@
           "/work/",
           "/work/brigid/",
           "#overview",
-          "#technical-approach",
-          "#current-capabilities",
-          "#limitations-and-status",
+          "#motivation",
+          "#how-the-types-work",
+          "#caught-at-compile-time",
+          "#what-the-types-buy",
+          "#status-and-limitations",
           "#resources"
         ]
       }
@@ -1053,7 +1288,7 @@
           {
             "#current-capabilities": {
               "hash": "#current-capabilities",
-              "top": 47,
+              "top": 25,
               "inView": true,
               "underSidebar": false
             }
@@ -1329,6 +1564,536 @@
       "philosophy",
       "about"
     ]
+  },
+  "phase04": {
+    "black": {
+      "desktop": {
+        "hero": null,
+        "sections": [
+          {
+            "id": "overview",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "design-principles",
+            "layout": "grid",
+            "columns": 3,
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "the-compiler-pipeline",
+            "layout": "wide-exhibit",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "a-program-white-accepts",
+            "layout": "split",
+            "side": "end",
+            "sideBySide": true,
+            "artifactFirst": false,
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "a-program-white-rejects",
+            "layout": "split",
+            "side": "start",
+            "sideBySide": true,
+            "artifactFirst": true,
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "language-today",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "status-and-limitations",
+            "layout": "resources",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "resources",
+            "layout": "resources",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          }
+        ],
+        "sidebar": [
+          "overview",
+          "design-principles",
+          "the-compiler-pipeline",
+          "a-program-white-accepts",
+          "a-program-white-rejects",
+          "language-today",
+          "status-and-limitations",
+          "resources"
+        ],
+        "overflow": false,
+        "bodyFocusStops": [
+          "/media/projects/black/pipeline.svg",
+          "https://github.com/AugmenTab/black-vim"
+        ]
+      },
+      "tablet": {
+        "hero": null,
+        "sections": [
+          {
+            "id": "overview",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "design-principles",
+            "layout": "grid",
+            "columns": 2,
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "the-compiler-pipeline",
+            "layout": "wide-exhibit",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "a-program-white-accepts",
+            "layout": "split",
+            "side": "end",
+            "sideBySide": false,
+            "artifactFirst": false,
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "a-program-white-rejects",
+            "layout": "split",
+            "side": "start",
+            "sideBySide": false,
+            "artifactFirst": true,
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "language-today",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "status-and-limitations",
+            "layout": "resources",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "resources",
+            "layout": "resources",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          }
+        ],
+        "sidebar": [
+          "overview",
+          "design-principles",
+          "the-compiler-pipeline",
+          "a-program-white-accepts",
+          "a-program-white-rejects",
+          "language-today",
+          "status-and-limitations",
+          "resources"
+        ],
+        "overflow": false
+      },
+      "mobile": {
+        "hero": null,
+        "sections": [
+          {
+            "id": "overview",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "design-principles",
+            "layout": "grid",
+            "columns": 1,
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "the-compiler-pipeline",
+            "layout": "wide-exhibit",
+            "codeScrollsSideways": false,
+            "diagramScrolls": true
+          },
+          {
+            "id": "a-program-white-accepts",
+            "layout": "split",
+            "side": "end",
+            "sideBySide": false,
+            "artifactFirst": false,
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "a-program-white-rejects",
+            "layout": "split",
+            "side": "start",
+            "sideBySide": false,
+            "artifactFirst": true,
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "language-today",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "status-and-limitations",
+            "layout": "resources",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "resources",
+            "layout": "resources",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          }
+        ],
+        "sidebar": [
+          "overview",
+          "design-principles",
+          "the-compiler-pipeline",
+          "a-program-white-accepts",
+          "a-program-white-rejects",
+          "language-today",
+          "status-and-limitations",
+          "resources"
+        ],
+        "overflow": false
+      }
+    },
+    "brigid": {
+      "desktop": {
+        "hero": null,
+        "sections": [
+          {
+            "id": "overview",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "motivation",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "how-the-types-work",
+            "layout": "split",
+            "side": "end",
+            "sideBySide": true,
+            "artifactFirst": false,
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "caught-at-compile-time",
+            "layout": "split",
+            "side": "start",
+            "sideBySide": true,
+            "artifactFirst": true,
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "what-the-types-buy",
+            "layout": "grid",
+            "columns": 3,
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "status-and-limitations",
+            "layout": "resources",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "resources",
+            "layout": "resources",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          }
+        ],
+        "sidebar": [
+          "overview",
+          "motivation",
+          "how-the-types-work",
+          "caught-at-compile-time",
+          "what-the-types-buy",
+          "status-and-limitations",
+          "resources"
+        ],
+        "overflow": false,
+        "bodyFocusStops": [
+          "https://github.com/AugmenTab/brigid",
+          "https://github.com/AugmenTab/brigid"
+        ]
+      },
+      "tablet": {
+        "hero": null,
+        "sections": [
+          {
+            "id": "overview",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "motivation",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "how-the-types-work",
+            "layout": "split",
+            "side": "end",
+            "sideBySide": false,
+            "artifactFirst": false,
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "caught-at-compile-time",
+            "layout": "split",
+            "side": "start",
+            "sideBySide": false,
+            "artifactFirst": true,
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "what-the-types-buy",
+            "layout": "grid",
+            "columns": 2,
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "status-and-limitations",
+            "layout": "resources",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "resources",
+            "layout": "resources",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          }
+        ],
+        "sidebar": [
+          "overview",
+          "motivation",
+          "how-the-types-work",
+          "caught-at-compile-time",
+          "what-the-types-buy",
+          "status-and-limitations",
+          "resources"
+        ],
+        "overflow": false
+      },
+      "mobile": {
+        "hero": null,
+        "sections": [
+          {
+            "id": "overview",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "motivation",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "how-the-types-work",
+            "layout": "split",
+            "side": "end",
+            "sideBySide": false,
+            "artifactFirst": false,
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "caught-at-compile-time",
+            "layout": "split",
+            "side": "start",
+            "sideBySide": false,
+            "artifactFirst": true,
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "what-the-types-buy",
+            "layout": "grid",
+            "columns": 1,
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "status-and-limitations",
+            "layout": "resources",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "resources",
+            "layout": "resources",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          }
+        ],
+        "sidebar": [
+          "overview",
+          "motivation",
+          "how-the-types-work",
+          "caught-at-compile-time",
+          "what-the-types-buy",
+          "status-and-limitations",
+          "resources"
+        ],
+        "overflow": false
+      }
+    },
+    "lockdown": {
+      "desktop": {
+        "hero": null,
+        "sections": [
+          {
+            "id": "overview",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "technical-approach",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "current-capabilities",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "limitations-and-status",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          }
+        ],
+        "sidebar": [
+          "overview",
+          "technical-approach",
+          "current-capabilities",
+          "limitations-and-status"
+        ],
+        "overflow": false,
+        "bodyFocusStops": []
+      },
+      "tablet": {
+        "hero": null,
+        "sections": [
+          {
+            "id": "overview",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "technical-approach",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "current-capabilities",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "limitations-and-status",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          }
+        ],
+        "sidebar": [
+          "overview",
+          "technical-approach",
+          "current-capabilities",
+          "limitations-and-status"
+        ],
+        "overflow": false
+      },
+      "mobile": {
+        "hero": null,
+        "sections": [
+          {
+            "id": "overview",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "technical-approach",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "current-capabilities",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "limitations-and-status",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          }
+        ],
+        "sidebar": [
+          "overview",
+          "technical-approach",
+          "current-capabilities",
+          "limitations-and-status"
+        ],
+        "overflow": false
+      }
+    }
   },
   "reducedMotion": {
     "home": {

@@ -24,7 +24,7 @@ import Data.Aeson qualified as Json
 import Data.Aeson.Key qualified as Key
 import Data.Aeson.KeyMap qualified as KeyMap
 import Data.ByteString qualified as BS
-import Data.Char (isDigit)
+import Data.Char (isAsciiLower, isDigit)
 import Data.Either (partitionEithers)
 import Data.Foldable (toList)
 import Data.List (isPrefixOf, nub, sort)
@@ -36,7 +36,7 @@ import Data.Text.Encoding qualified as TE
 import System.Directory qualified as Dir
 import System.FilePath (takeExtension, (</>))
 
-import Site.Content.Markdown (Document, LinkTarget (..), MarkdownError, documentImages, linkTarget, parseDocument)
+import Site.Content.Markdown (Block (..), Document (..), Inline (..), LinkTarget (..), MarkdownError, Section (..), documentImages, inlineText, linkTarget, parseDocument)
 import Site.Content.Types
 import Site.Path (OutputPath, mkOutputPath, outputFilePath, outputText)
 import Site.Routes (Slug, mkSlug, slugText)
@@ -112,12 +112,37 @@ data ProjectMeta =
     , metaLinks :: [ExternalLink]
     , metaBody :: OutputPath
     , metaShowcase :: Maybe Showcase
+    , metaHero :: Maybe HeroMeta
+    , metaSections :: Map.Map T.Text SectionPlan
     }
+
+-- | @hero@ as written, before its file is checked.
+data HeroMeta = HeroMeta OutputPath HeroDescription HeroFocus
+
+-- | One entry of @sections@: how a @##@ section of the body is presented.
+data SectionPlan =
+  SectionPlan
+    { planLayout :: PlanLayout
+    , planSidebar :: Bool
+    }
+
+data PlanLayout
+  = PlanOverview [Fact]
+  | PlanWideExhibit ArtifactMeta
+  | PlanSplit ArtifactSide ArtifactMeta
+  | PlanGrid
+  | PlanResources
+
+-- | An artifact as written, before its file is checked (and, for code, read).
+data ArtifactMeta
+  = ImageMeta Bool OutputPath T.Text
+    -- ^ 'True' for a diagram.
+  | CodeMeta T.Text (Maybe T.Text) OutputPath
 
 projectFields :: [T.Text]
 projectFields =
   [ "slug", "title", "summary", "category", "development_status", "publication_status"
-  , "technologies", "featured_order", "links", "body", "showcase" ]
+  , "technologies", "featured_order", "links", "body", "showcase", "hero", "sections" ]
 
 -- | Strictly decode @project.json@. Every field problem is reported.
 decodeProjectMeta :: Json.Value -> Either [String] ProjectMeta
@@ -137,6 +162,8 @@ decodeProjectMeta value = do
       <*> (maybe [] id <$> optionalField obj "links" (list externalLink))
       <*> field obj "body" markdownPath
       <*> optionalField obj "showcase" showcase
+      <*> optionalField obj "hero" heroField
+      <*> (maybe Map.empty id <$> optionalField obj "sections" sectionPlans)
          )
 
 loadProject :: FilePath -> Slug -> FilePath -> IO (Either [ContentError] Project)
@@ -155,16 +182,21 @@ loadProject root slug dir = do
             case metaShowcase meta of
               Just sc | published, not (isImage sc) ->
                 [ "field \"showcase\": kind " <> show (showcaseKind sc)
-                    <> " is not supported for published projects yet (only \"image\"; other kinds arrive with Phase 04)" ]
+                    <> " is not supported for published projects (only \"image\", the card art; evidence belongs in a section artifact)" ]
               _ -> []
           showcaseMedia = [ p | Just (ImageShowcase p _) <- [metaShowcase meta] ]
+          heroMedia = [ p | Just (HeroMeta p _ _) <- [metaHero meta] ]
       body <- loadBody root dir metaFile (metaBody meta) [ "main", slugText slug <> "-title" ]
       mediaErrs <- checkMedia root dir "field \"showcase\"" showcaseMedia
+      heroErrs <- checkHero root dir heroMedia
       case body of
         Left bodyErrs ->
-          pure (Left (fileErrors metaFile (slugErrs <> showcaseErrs <> mediaErrs) <> bodyErrs))
-        Right (document, imageErrs) ->
-          case fileErrors metaFile (slugErrs <> showcaseErrs <> mediaErrs) <> imageErrs of
+          pure (Left (fileErrors metaFile (slugErrs <> showcaseErrs <> mediaErrs <> heroErrs) <> bodyErrs))
+        Right (document, imageErrs) -> do
+          (sectionErrs, bodyStructureErrs, sections) <- dossierSections root dir (metaSections meta) document
+          let bodyFile = dir </> outputFilePath (metaBody meta)
+          case fileErrors metaFile (slugErrs <> showcaseErrs <> mediaErrs <> heroErrs <> sectionErrs)
+                 <> imageErrs <> fileErrors bodyFile bodyStructureErrs of
             [] ->
               pure . Right $
                 Project
@@ -179,12 +211,169 @@ loadProject root slug dir = do
                   , projectFeatured = metaFeatured meta
                   , projectLinks = metaLinks meta
                   , projectShowcase = metaShowcase meta
+                  , projectHero = fmap (\(HeroMeta p d f) -> Hero p d f) (metaHero meta)
                   , projectBody = document
-                  , projectMedia = media owner dir (showcaseMedia <> documentImages document)
+                  , projectSections = sections
+                  , projectMedia =
+                      media owner dir
+                        (showcaseMedia <> heroMedia <> concatMap sectionImages sections <> documentImages document)
                   }
             errs -> pure (Left errs)
   where
     isImage sc = case sc of ImageShowcase _ _ -> True; _ -> False
+
+--------------------------------------------------------------------------------
+-- Dossier sections and heroes
+
+-- | The largest hero file accepted. The hero is the page's largest image
+-- and is loaded eagerly, so an unoptimized export is an error, not a
+-- silent slowdown (see README "Hero artwork").
+heroByteLimit :: Integer
+heroByteLimit = 1024 * 1024
+
+-- | The hero must be an image inside the project directory, within the
+-- size limit.
+checkHero :: FilePath -> FilePath -> [OutputPath] -> IO [String]
+checkHero root dir paths = do
+  problems <- checkMedia root dir "field \"hero\": image" paths
+  case problems of
+    _ : _ -> pure problems
+    [] ->
+      fmap catMaybes . forM paths $ \path -> do
+        size <- Dir.getFileSize (root </> dir </> outputFilePath path)
+        pure $
+          if size > heroByteLimit
+            then Just ("field \"hero\": image " <> show (outputText path) <> " is " <> show size
+                         <> " bytes; the limit is " <> show heroByteLimit <> " (re-export it with tools/art/promote_hero.py)")
+            else Nothing
+
+-- | Give every @##@ section of the body its layout. Returns errors about
+-- @project.json@, errors about the body's structure, and the sections.
+dossierSections :: FilePath -> FilePath -> Map.Map T.Text SectionPlan -> Document -> IO ([String], [String], [DossierSection])
+dossierSections root dir plans document = do
+  built <- forM (documentSections document) $ \section -> do
+    let ident = sectionId section
+        plan = Map.findWithDefault (SectionPlan (PlanOverview []) True) ident plans
+        blocks = sectionBlocks section
+        prefix = "field \"sections\": " <> show ident <> ": "
+        ok body = ([], [], Just (DossierSection ident (sectionHeading section) (planSidebar plan) body))
+        withArtifact meta k = do
+          artifact <- loadArtifact root dir meta
+          pure $ case artifact of
+            Left why -> ([prefix <> why], [], Nothing)
+            Right a -> ok (k a)
+    case planLayout plan of
+      PlanOverview facts -> pure (ok (Overview blocks facts))
+      PlanWideExhibit meta -> withArtifact meta (\a -> WideExhibit a blocks)
+      PlanSplit side meta -> withArtifact meta (\a -> Split side a blocks)
+      PlanResources -> pure (ok (Resources blocks))
+      PlanGrid ->
+        pure $ case gridItems blocks of
+          Left why -> ([], ["section " <> show ident <> " (layout \"grid\") " <> why], Nothing)
+          Right (intro, items) -> ok (Grid intro items)
+  let metaErrs = concat [ e | (e, _, _) <- built ] <> unknownErrs <> orderErrs
+      structureErrs = concat [ e | (_, e, _) <- built ]
+      sections = catMaybes [ s | (_, _, s) <- built ]
+      known = map sectionId (documentSections document)
+      unknownErrs =
+        [ "field \"sections\": " <> show k <> " is not a ## section of the body"
+            <> (if null known then " (the body has no ## sections)" else "; its sections are: " <> T.unpack (T.intercalate ", " known))
+        | k <- Map.keys plans, k `notElem` known ]
+      orderErrs = closingOrder sections
+  pure (metaErrs, structureErrs, sections)
+
+-- | Resources sections close the dossier: once one appears, every later
+-- section must also be a resources section.
+closingOrder :: [DossierSection] -> [String]
+closingOrder sections =
+  case break ((== ResourcesKind) . layoutKind . dossierBody) sections of
+    (_, closing : rest) ->
+      [ "field \"sections\": " <> show (dossierId s) <> " (layout " <> show (layoutKindName (layoutKind (dossierBody s)))
+          <> ") follows the resources section " <> show (dossierId closing)
+          <> "; resources sections close the dossier, so they must come last in the body"
+      | s <- rest, layoutKind (dossierBody s) /= ResourcesKind ]
+    _ -> []
+
+-- | A grid section: optional introductory blocks, then one bullet list whose
+-- every item is a single paragraph starting with @**Title.**@.
+gridItems :: [Block] -> Either String ([Block], [GridItem])
+gridItems blocks =
+  case break isBullets blocks of
+    (_, []) -> Left "needs a bullet list of items, each starting with **Title.**"
+    (intro, [BulletList items])
+      | length items < 2 || length items > gridItemLimit ->
+          Left ("has " <> show (length items) <> " items; a grid holds 2 to " <> show gridItemLimit)
+      | otherwise -> (,) intro <$> traverse item (zip [1 :: Int ..] items)
+    (_, _) -> Left "must end with its bullet list (one list; put any other text before it)"
+  where
+    isBullets b = case b of BulletList _ -> True; _ -> False
+    item (n, blocks') =
+      case blocks' of
+        [single] | Just (Strong title : rest) <- inlinesOf single ->
+          let titleText = dropFullStop title
+              text' = trimStart rest
+           in if T.null (T.strip (inlineText titleText))
+                then Left ("item " <> show n <> ": the **title** is empty")
+                else if T.null (T.strip (inlineText text'))
+                  then Left ("item " <> show n <> ": needs text after its **title**")
+                  else Right (GridItem titleText text')
+        _ -> Left ("item " <> show n <> ": must be one paragraph starting with **Title.**")
+    inlinesOf b = case b of Plain xs -> Just xs; Para xs -> Just xs; _ -> Nothing
+    trimStart xs =
+      case xs of
+        Str t : rest -> let t' = T.stripStart t in if T.null t' then trimStart rest else Str t' : rest
+        SoftBreak : rest -> trimStart rest
+        _ -> xs
+    dropFullStop xs =
+      case reverse xs of
+        Str t : rest | Just t' <- T.stripSuffix "." t -> reverse (if T.null t' then rest else Str t' : rest)
+        _ -> xs
+
+gridItemLimit :: Int
+gridItemLimit = 9
+
+-- | Check an artifact's file, reading a code artifact's text.
+loadArtifact :: FilePath -> FilePath -> ArtifactMeta -> IO (Either String Artifact)
+loadArtifact root dir meta =
+  case meta of
+    ImageMeta diagram path alt -> do
+      problems <- checkMedia root dir "artifact image" [path]
+      pure $ case problems of
+        [] -> Right ((if diagram then DiagramArtifact else ImageArtifact) path alt)
+        why : _ -> Left why
+    CodeMeta label language path -> do
+      problem <- sourceFileProblem (root </> dir) path
+      case problem of
+        Just p -> pure (Left ("artifact code file " <> show (outputText path) <> " " <> describeSourceProblem p))
+        Nothing -> do
+          bytes <- BS.readFile (root </> dir </> outputFilePath path)
+          pure $
+            if BS.length bytes > codeByteLimit
+              then Left ("artifact code file " <> show (outputText path) <> " is larger than " <> show codeByteLimit <> " bytes; show an excerpt")
+              else case TE.decodeUtf8' bytes of
+                Left _ -> Left ("artifact code file " <> show (outputText path) <> " is not valid UTF-8")
+                Right source ->
+                  let code = T.dropWhileEnd (== '\n') (T.replace "\r\n" "\n" source)
+                   in if T.null (T.strip code)
+                        then Left ("artifact code file " <> show (outputText path) <> " is empty")
+                        else Right (CodeArtifact (CodeExcerpt label language path code))
+
+codeByteLimit :: Int
+codeByteLimit = 32 * 1024
+
+-- | Images a section's artifact publishes.
+sectionImages :: DossierSection -> [OutputPath]
+sectionImages section =
+  case dossierBody section of
+    WideExhibit artifact _ -> artifactImage artifact
+    Split _ artifact _ -> artifactImage artifact
+    _ -> []
+  where
+    artifactImage artifact =
+      case artifact of
+        ImageArtifact p _ -> [p]
+        DiagramArtifact p _ -> [p]
+        CodeArtifact _ -> []
 
 showcaseKind :: Showcase -> T.Text
 showcaseKind sc =
@@ -470,6 +659,104 @@ showcase value =
   where
     decodeWith allowed decode =
       either (Left . unwords) Right (objectWith allowed value >>= runV . decode)
+
+-- | @hero@: @{ "src", "alt" | "decorative": true, "focus"? }@. The alt text
+-- policy is explicit: exactly one of @alt@ and @decorative@.
+heroField :: Json.Value -> Either String HeroMeta
+heroField value = do
+  obj <- either (Left . unwords) Right (objectWith ["src", "alt", "decorative", "focus"] value)
+  let has k = KeyMap.member (Key.fromText k) obj
+  either (Left . unwords) Right . runV $
+    HeroMeta
+      <$> field obj "src" mediaPathField
+      <*> V (case (has "alt", has "decorative") of
+               (True, True) -> Left ["give either \"alt\" or \"decorative\", not both"]
+               (False, False) -> Left ["missing \"alt\" (a short description of the artwork) or \"decorative\": true (atmosphere only)"]
+               (True, False) -> runV (HeroDescribed <$> field obj "alt" attributeText)
+               (False, True) -> runV (field obj "decorative" decorativeFlag))
+      <*> (maybe FocusCenter id <$> optionalField obj "focus" (enum [ (heroFocusName f, f) | f <- [minBound .. maxBound] ]))
+  where
+    decorativeFlag v =
+      case v of
+        Json.Bool True -> Right HeroDecorative
+        Json.Bool False -> Left "false is not allowed; describe the artwork with \"alt\" instead"
+        other -> Left ("expected true, got " <> jsonType other)
+
+-- | @sections@: an object from a body section's id to its presentation.
+sectionPlans :: Json.Value -> Either String (Map.Map T.Text SectionPlan)
+sectionPlans value =
+  case value of
+    Json.Object obj ->
+      case partitionEithers [ either (Left . ((show k <> ": ") <>)) (Right . (,) k) (sectionPlan v) | (key, v) <- KeyMap.toList obj, let k = Key.toText key ] of
+        ([], plans) -> Right (Map.fromList plans)
+        (errs, _) -> Left (unwords errs)
+    other -> Left ("expected an object from section ids to layouts, got " <> jsonType other)
+
+sectionPlan :: Json.Value -> Either String SectionPlan
+sectionPlan value =
+  case value of
+    Json.Object obj ->
+      case KeyMap.lookup "layout" obj of
+        Just (Json.String layout) ->
+          case layout of
+            "overview" -> decodeWith ["facts"] $ \o -> PlanOverview . maybe [] id <$> optionalField o "facts" (list fact)
+            "wide-exhibit" -> decodeWith ["artifact"] $ \o -> PlanWideExhibit <$> field o "artifact" artifactField
+            "split" -> decodeWith ["artifact", "artifact_side"] $ \o ->
+              (\side a -> PlanSplit (maybe ArtifactEnd id side) a)
+                <$> optionalField o "artifact_side" (enum [("start", ArtifactStart), ("end", ArtifactEnd)])
+                <*> field o "artifact" artifactField
+            "grid" -> decodeWith [] (const (pure PlanGrid))
+            "resources" -> decodeWith [] (const (pure PlanResources))
+            other -> Left ("unknown layout " <> show other <> "; expected one of: " <> T.unpack (T.intercalate ", " (map layoutKindName [minBound .. maxBound])))
+        Just other -> Left ("field \"layout\": expected a string, got " <> jsonType other)
+        Nothing -> Left "missing required field \"layout\""
+    other -> Left ("expected an object, got " <> jsonType other)
+  where
+    decodeWith extra decode =
+      either (Left . unwords) Right $ do
+        obj <- objectWith (["layout", "sidebar"] <> extra) value
+        runV $ SectionPlan <$> decode obj <*> (maybe True id <$> optionalField obj "sidebar" bool)
+
+fact :: Json.Value -> Either String Fact
+fact value = do
+  obj <- either (Left . unwords) Right (objectWith ["label", "value"] value)
+  either (Left . unwords) Right . runV $ Fact <$> field obj "label" text <*> field obj "value" text
+
+-- | @{ "kind": "image" | "diagram", "src", "alt" }@ or
+-- @{ "kind": "code", "src", "label", "language"? }@.
+artifactField :: Json.Value -> Either String ArtifactMeta
+artifactField value =
+  case value of
+    Json.Object obj ->
+      case KeyMap.lookup "kind" obj of
+        Just (Json.String "image") -> decodeWith ["kind", "src", "alt"] $ \o ->
+          ImageMeta False <$> field o "src" mediaPathField <*> field o "alt" attributeText
+        Just (Json.String "diagram") -> decodeWith ["kind", "src", "alt"] $ \o ->
+          ImageMeta True <$> field o "src" mediaPathField <*> field o "alt" attributeText
+        Just (Json.String "code") -> decodeWith ["kind", "src", "label", "language"] $ \o ->
+          (\src label lang -> CodeMeta label lang src)
+            <$> field o "src" mediaPathField <*> field o "label" text <*> optionalField o "language" languageToken
+        Just (Json.String other) -> Left ("unsupported artifact kind " <> show other <> "; expected one of: image, diagram, code")
+        Just other -> Left ("field \"kind\": expected a string, got " <> jsonType other)
+        Nothing -> Left "missing required field \"kind\""
+    other -> Left ("expected an object, got " <> jsonType other)
+  where
+    decodeWith allowed decode =
+      either (Left . unwords) Right (objectWith allowed value >>= runV . decode)
+
+-- | A code language name, as used in a @language-…@ class.
+languageToken :: Json.Value -> Either String T.Text
+languageToken value = do
+  raw <- text value
+  if T.all (\c -> isAsciiLower c || isDigit c || c `elem` ("+-_" :: String)) raw
+    then Right raw
+    else Left (show raw <> " may contain only lowercase letters, digits, '+', '-' and '_'")
+
+bool :: Json.Value -> Either String Bool
+bool value =
+  case value of
+    Json.Bool b -> Right b
+    other -> Left ("expected true or false, got " <> jsonType other)
 
 -- | Interactive exhibits must name an application this site implements.
 -- None exists yet, so every identifier is rejected.

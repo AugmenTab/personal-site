@@ -11,6 +11,22 @@ module Site.Content.Types
   , Showcase (..)
   , projectKicker
   , projectTitleId
+    -- * Dossiers (Phase 04)
+  , Hero (..)
+  , HeroDescription (..)
+  , HeroFocus (..)
+  , heroFocusName
+  , DossierSection (..)
+  , DossierBody (..)
+  , Fact (..)
+  , GridItem (..)
+  , Artifact (..)
+  , CodeExcerpt (..)
+  , ArtifactSide (..)
+  , LayoutKind (..)
+  , layoutKind
+  , layoutKindName
+  , sidebarSections
     -- * Articles
   , Article (..)
     -- * Media
@@ -33,7 +49,7 @@ import Data.Text qualified as T
 
 import Brigid.Types qualified as B
 
-import Site.Content.Markdown (Document)
+import Site.Content.Markdown (Block, Document, Inline)
 import Site.Path (OutputPath, mkOutputPath, outputText)
 import Site.Routes (Slug, elementId, slugText)
 
@@ -94,10 +110,141 @@ data Project =
       -- ^ Position among featured projects (homepage); 'Nothing' if not featured.
     , projectLinks :: [ExternalLink]
     , projectShowcase :: Maybe Showcase
+      -- ^ Card art (decorative on cards; a figure on hero-less pages).
+    , projectHero :: Maybe Hero
     , projectBody :: Document
+      -- ^ The parsed Markdown body; its lead opens the dossier.
+    , projectSections :: [DossierSection]
+      -- ^ The body's @##@ sections, in body order, each with its layout.
     , projectMedia :: [MediaFile]
-      -- ^ Every media file the project uses (showcase and Markdown images).
+      -- ^ Every media file the project uses (showcase, hero, artifacts and
+      -- Markdown images).
     }
+
+--------------------------------------------------------------------------------
+-- Dossiers
+
+-- | The symbolic artwork at the top of a project page. It never carries
+-- the page's text: the title, summary and tags are real HTML over it.
+data Hero =
+  Hero
+    { heroImage :: OutputPath
+    , heroDescription :: HeroDescription
+    , heroFocus :: HeroFocus
+    }
+  deriving (Eq, Show)
+
+-- | The hero's alt text policy, stated explicitly in @project.json@.
+data HeroDescription
+  = HeroDescribed T.Text
+    -- ^ A short description of the artwork, as its @alt@ text.
+  | HeroDecorative
+    -- ^ Purely atmospheric: empty @alt@, hidden from assistive technology.
+  deriving (Eq, Show)
+
+-- | Which part of the artwork stays in view when the banner crops it.
+data HeroFocus = FocusCenter | FocusTop | FocusBottom
+  deriving (Eq, Show, Bounded, Enum)
+
+heroFocusName :: HeroFocus -> T.Text
+heroFocusName focus =
+  case focus of
+    FocusCenter -> "center"
+    FocusTop -> "top"
+    FocusBottom -> "bottom"
+
+-- | One @##@ section of a project body, with the layout it is presented in.
+data DossierSection =
+  DossierSection
+    { dossierId :: T.Text
+      -- ^ The id of the section's @<h2>@ (derived from the heading).
+    , dossierHeading :: [Inline]
+    , dossierInSidebar :: Bool
+    , dossierBody :: DossierBody
+    }
+  deriving (Eq, Show)
+
+-- | The five dossier layouts. Each carries exactly what it presents; the
+-- Markdown blocks are the section's own content.
+data DossierBody
+  = Overview [Block] [Fact]
+    -- ^ Prose, with an optional small cluster of facts. The default.
+  | WideExhibit Artifact [Block]
+    -- ^ A dominant artifact, then short supporting copy.
+  | Split ArtifactSide Artifact [Block]
+    -- ^ Prose beside an artifact (stacked on narrow screens).
+  | Grid [Block] [GridItem]
+    -- ^ An optional introduction, then a grid of short items.
+  | Resources [Block]
+    -- ^ A quiet closing section: status, limitations, links.
+  deriving (Eq, Show)
+
+-- | The layout names used in @project.json@.
+data LayoutKind = OverviewKind | WideExhibitKind | SplitKind | GridKind | ResourcesKind
+  deriving (Eq, Ord, Show, Bounded, Enum)
+
+layoutKind :: DossierBody -> LayoutKind
+layoutKind body =
+  case body of
+    Overview _ _ -> OverviewKind
+    WideExhibit _ _ -> WideExhibitKind
+    Split {} -> SplitKind
+    Grid _ _ -> GridKind
+    Resources _ -> ResourcesKind
+
+layoutKindName :: LayoutKind -> T.Text
+layoutKindName kind =
+  case kind of
+    OverviewKind -> "overview"
+    WideExhibitKind -> "wide-exhibit"
+    SplitKind -> "split"
+    GridKind -> "grid"
+    ResourcesKind -> "resources"
+
+data Fact =
+  Fact
+    { factLabel :: T.Text
+    , factValue :: T.Text
+    }
+  deriving (Eq, Show)
+
+-- | A grid item, written in Markdown as a list item that starts with
+-- @**Title.**@ followed by its text.
+data GridItem =
+  GridItem
+    { gridTitle :: [Inline]
+    , gridText :: [Inline]
+    }
+  deriving (Eq, Show)
+
+data ArtifactSide = ArtifactStart | ArtifactEnd
+  deriving (Eq, Show, Bounded, Enum)
+
+-- | The evidence a section presents beside or above its prose.
+data Artifact
+  = ImageArtifact OutputPath T.Text
+    -- ^ An image in the project directory and its alt text. Scales to fit.
+  | DiagramArtifact OutputPath T.Text
+    -- ^ An image whose detail must stay legible: on narrow screens it keeps
+    -- a minimum width and scrolls, and it links to the full-size file.
+  | CodeArtifact CodeExcerpt
+  deriving (Eq, Show)
+
+-- | Source text shown verbatim (escaped), read from a file at load time.
+data CodeExcerpt =
+  CodeExcerpt
+    { codeLabel :: T.Text
+      -- ^ Shown on the panel's tab, e.g. a file name.
+    , codeLanguage :: Maybe T.Text
+    , codeSource :: OutputPath
+      -- ^ The text file it was read from (not published).
+    , codeText :: T.Text
+    }
+  deriving (Eq, Show)
+
+-- | The sections listed in the project sidebar, in order.
+sidebarSections :: Project -> [DossierSection]
+sidebarSections = filter dossierInSidebar . projectSections
 
 -- | "Haskell library · In development".
 projectKicker :: Project -> T.Text

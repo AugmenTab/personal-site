@@ -48,6 +48,7 @@ layoutAttributes layout =
   case layout of
     Stage -> []
     Interior -> [ A.class_ "interior" ]
+    Dossier -> [ A.class_ "interior interior--dossier" ]
 
 headContent :: Page -> [E.ChildHTML E.Head E.Html]
 headContent page =

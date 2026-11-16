@@ -15,5 +15,29 @@
     "kind": "image",
     "src": "card.svg",
     "alt": "Gold line drawing of a stepped Art Deco tower with a pointed arched gateway, beneath a small eclipse and flanked by angle-bracket chevrons"
+  },
+  "sections": {
+    "overview": {
+      "layout": "overview",
+      "facts": [
+        { "label": "Language", "value": "Haskell" },
+        { "label": "Licence", "value": "BSD-3-Clause" },
+        { "label": "Status", "value": "API not yet stable" },
+        { "label": "On this site", "value": "Pinned at e0f4d45" }
+      ]
+    },
+    "how-the-types-work": {
+      "layout": "split",
+      "artifact_side": "end",
+      "artifact": { "kind": "code", "src": "examples/fact-list.hs", "label": "src/Site/Pages/Work.hs", "language": "haskell" }
+    },
+    "caught-at-compile-time": {
+      "layout": "split",
+      "artifact_side": "start",
+      "artifact": { "kind": "code", "src": "examples/ghc-error.txt", "label": "GHC output", "language": "text" }
+    },
+    "what-the-types-buy": { "layout": "grid" },
+    "status-and-limitations": { "layout": "resources" },
+    "resources": { "layout": "resources" }
   }
 }

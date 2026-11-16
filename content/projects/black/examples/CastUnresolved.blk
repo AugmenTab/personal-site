@@ -1,0 +1,11 @@
+module CastUnresolved
+  ( main
+  )
+
+-- Amendment 04R section 3: an Int32 that may not fit UInt8 cannot be cast
+-- exactly; an unresolved proof is not an accepted proof.
+narrow :: Int32 -> UInt8
+narrow x = cast x
+
+main :: UInt8 -> UInt8
+main y = narrow (cast y)

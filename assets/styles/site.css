@@ -2507,3 +2507,622 @@ code {
     margin: 0;
   }
 }
+
+/* 13. Project dossiers (Phase 04)
+
+   Every project page shares the shell (navigation, sidebar, type, palette,
+   frames). A project may add a symbolic hero, and presents each section in
+   one of five layouts: overview, wide exhibit, split, grid, resources. */
+
+/* -- Hero: painted artwork under the header, the real title over it ----- */
+
+.interior--dossier {
+  padding-top: 0;
+  background: none;
+}
+
+.project.project--hero {
+  max-width: none;
+}
+
+.project-hero {
+  --hero-inner: calc(84rem - 2 * var(--gutter));
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  align-items: end;
+  min-height: clamp(32rem, 76vh, 48rem);
+  padding: calc(var(--header-h) + var(--space-6)) var(--gutter) clamp(3rem, 6vw, 4.5rem);
+  overflow: hidden;
+}
+
+.project-hero__art {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--void);
+}
+
+.project-hero__img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: 50% 50%;
+}
+
+.project-hero--focus-top .project-hero__img {
+  object-position: 50% 12%;
+}
+
+.project-hero--focus-bottom .project-hero__img {
+  object-position: 50% 88%;
+}
+
+/* Veils: dark under the navigation, toward the title at the lower left,
+   and into the page at the foot, so the art never competes with text. */
+.project-hero__art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgb(11 11 13 / 0.82), rgb(11 11 13 / 0.2) 18%, transparent 34%),
+    linear-gradient(0deg, var(--void) 0, rgb(11 11 13 / 0.9) 14%, rgb(11 11 13 / 0.35) 46%, transparent 68%),
+    linear-gradient(90deg, rgb(11 11 13 / 0.78) 0, rgb(11 11 13 / 0.4) 38%, transparent 66%);
+}
+
+/* An Art Deco frame inside the banner: hairline border, corner fans */
+.project-hero::before,
+.project-hero::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.project-hero {
+  --hero-frame-x: max(calc(var(--gutter) * 0.4), calc((100% - var(--hero-inner)) / 2 - 1.5rem));
+  --hero-frame-top: calc(var(--header-h) + 1.75rem);
+  --hero-fan: clamp(3.5rem, 7vw, 6rem);
+}
+
+/* the frame and its top-left fan */
+.project-hero::before {
+  inset: var(--hero-frame-top) var(--hero-frame-x) 1.25rem;
+  border: 1px solid var(--gold-hairline);
+  background: url("../images/ornament-corner.svg") left top / var(--hero-fan) no-repeat;
+}
+
+/* the top-right fan: the same ornament, mirrored */
+.project-hero::after {
+  top: var(--hero-frame-top);
+  right: var(--hero-frame-x);
+  width: var(--hero-fan);
+  aspect-ratio: 1;
+  background: url("../images/ornament-corner.svg") center / contain no-repeat;
+  transform: scaleX(-1);
+}
+
+.project-hero__inner {
+  position: relative;
+  width: 100%;
+  max-width: var(--hero-inner);
+  margin: 0 auto;
+}
+
+.project-hero .project__header {
+  max-width: 46rem;
+}
+
+.project-hero .project__kicker {
+  color: var(--verdigris-bright);
+  text-shadow: 0 1px 2px #000, 0 0 12px rgb(11 11 13 / 0.9);
+}
+
+.project-hero .project__title {
+  margin-top: 0.8rem;
+  font-size: clamp(3rem, 1.6rem + 5vw, 5.6rem);
+  letter-spacing: 0.09em;
+  filter:
+    drop-shadow(0 2px 0 rgb(0 0 0 / 0.65))
+    drop-shadow(0 0 22px rgb(11 11 13 / 0.85));
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .project-hero .project__title {
+    background: linear-gradient(180deg, #FBF6EA 8%, #E5DBC4 46%, #C9B386 72%, #9B7E4B 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+.project-hero .project__summary {
+  max-width: 36rem;
+  color: var(--bone);
+  text-shadow: 0 1px 2px #000, 0 0 14px rgb(11 11 13 / 0.95);
+  text-wrap: pretty;
+}
+
+.project-hero .project__tags li {
+  background: rgb(11 11 13 / 0.72);
+}
+
+.project-hero .project__external a {
+  text-shadow: 0 1px 2px #000;
+}
+
+/* The hero hands over to the dossier with a ruled diamond */
+.project--hero .project-layout {
+  position: relative;
+  max-width: 84rem;
+  padding-top: var(--space-5);
+}
+
+.project--hero .project-layout::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: min(28rem, 70%);
+  height: 9px;
+  transform: translateX(-50%);
+  background:
+    var(--diamond) center / 9px 9px no-repeat,
+    linear-gradient(90deg, transparent, var(--gold-line) 30%, var(--gold-line) 70%, transparent) center / 100% 1px no-repeat;
+}
+
+.project__body {
+  min-width: 0;
+}
+
+.project__body > .project__section:first-child,
+.project__body > .project__lead:first-child {
+  margin-top: 0;
+}
+
+/* -- Shared section rhythm ----------------------------------------------- */
+
+.project {
+  max-width: 60rem;
+}
+
+.dossier-section {
+  margin-top: var(--space-6);
+}
+
+.project .dossier-section:first-of-type {
+  margin-top: var(--space-5);
+}
+
+.project--hero .project__body > .dossier-section:first-child {
+  margin-top: 0;
+}
+
+/* -- A. Overview: prose, then a small cluster of facts ------------------- */
+
+.dossier-facts {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  max-width: none;
+  margin: var(--space-4) 0 0;
+  padding: 1rem 0 1.05rem;
+  border-top: 1px solid var(--gold-line);
+  border-bottom: 1px solid var(--gold-hairline);
+}
+
+.dossier-facts dt,
+.dossier-facts dd {
+  margin: 0;
+  padding: 0 1.25rem;
+}
+
+.dossier-facts dt:not(:first-of-type),
+.dossier-facts dd:not(:first-of-type) {
+  border-left: 1px solid var(--gold-hairline);
+}
+
+.dossier-facts dt:first-of-type,
+.dossier-facts dd:first-of-type {
+  padding-left: 0;
+}
+
+.dossier-facts dt {
+  font-family: var(--font-display);
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--verdigris-bright);
+}
+
+.dossier-facts dd {
+  padding-top: 0.35rem;
+  font-size: 1.05rem;
+  line-height: 1.35;
+  color: var(--bone);
+  text-wrap: balance;
+}
+
+/* -- Artifacts: framed images, diagrams and code panels ----------------- */
+
+.artifact {
+  position: relative;
+  background: linear-gradient(180deg, var(--surface-2), var(--surface-1) 40%, #0D0B0E);
+  border: 16px solid transparent;
+  border-image: url("../images/ornament-frame.svg") 32 / 16px / 0 stretch;
+  box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.9);
+}
+
+.artifact--image img,
+.artifact--diagram img {
+  width: 100%;
+  height: auto;
+}
+
+.artifact__viewport {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.artifact__open {
+  margin: 0;
+  padding: 0.6rem 0.25rem 0.1rem;
+  font-family: var(--font-display);
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  text-align: right;
+}
+
+.artifact__open a {
+  display: inline-block;
+  padding: 0.3rem 0;
+  text-decoration: none;
+}
+
+.artifact__open a::after {
+  content: " →" / "";
+  font-family: var(--font-body);
+}
+
+.artifact__tab {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  padding: 0.55rem 1.1rem 0.5rem;
+  border-bottom: 1px solid var(--gold-hairline);
+}
+
+.artifact__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  color: var(--text-gold);
+  overflow-wrap: anywhere;
+}
+
+.artifact__label::before {
+  content: "";
+  flex: none;
+  width: 6px;
+  height: 6px;
+  background: var(--diamond) center / contain no-repeat;
+}
+
+.artifact__language {
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.artifact__code {
+  padding: 1.1rem 1.25rem 1.2rem;
+  border: 0;
+  background: none;
+  font-size: 0.78rem;
+  line-height: 1.7;
+  font-variant-ligatures: none;
+}
+
+/* Every line is shown whole: a long line wraps, and its continuation hangs
+   two characters in, so the original line structure stays visible. The
+   text (and a copy of it) is exactly the source, newlines included. */
+.artifact__code {
+  overflow-x: visible;
+  white-space: pre-wrap;
+}
+
+.artifact__code .artifact__line {
+  display: inline-block;
+  width: 100%;
+  min-height: 1.7em;
+  padding-left: 2ch;
+  text-indent: -2ch;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.dossier-exhibit,
+.dossier-split__artifact {
+  margin: 0;
+}
+
+/* -- B. Wide exhibit: the artifact dominates, the copy explains ---------- */
+
+.dossier-exhibit {
+  margin-top: var(--space-3);
+}
+
+.dossier-exhibit__caption {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr);
+  column-gap: 1rem;
+  margin-top: var(--space-3);
+  color: var(--text-muted);
+}
+
+.dossier-exhibit__caption::before {
+  content: "";
+  grid-row: 1 / span 20;
+  width: 100%;
+  height: 1px;
+  margin-top: 0.8em;
+  background: linear-gradient(90deg, var(--gold-line), transparent);
+}
+
+.dossier-exhibit__caption > * {
+  grid-column: 2;
+}
+
+.dossier-exhibit__caption > * + * {
+  margin-top: var(--space-2);
+}
+
+/* -- C. Split: prose beside an artifact --------------------------------- */
+
+.dossier-split {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  gap: clamp(1.5rem, 3vw, 2.75rem);
+  align-items: start;
+}
+
+.dossier-section--artifact-start .dossier-split {
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+}
+
+.dossier-split__text {
+  padding-top: 0.2rem;
+}
+
+/* -- D. Grid: short items, a hairline lattice, diamond marks ------------ */
+
+.dossier-grid__intro {
+  margin-bottom: var(--space-3);
+}
+
+.dossier-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  background: var(--gold-hairline);
+  border: 1px solid var(--gold-hairline);
+}
+
+.dossier-grid--count-2,
+.dossier-grid--count-4 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.dossier-grid__item {
+  position: relative;
+  padding: 1.4rem 1.4rem 1.5rem 2.6rem;
+  background: linear-gradient(180deg, #131114, var(--void));
+}
+
+.dossier-grid__item::before {
+  content: "";
+  position: absolute;
+  left: 1.25rem;
+  top: 1.85rem;
+  width: 7px;
+  height: 7px;
+  border: 1px solid var(--gold);
+  transform: rotate(45deg);
+}
+
+.dossier-grid__title {
+  font-family: var(--font-display);
+  font-size: var(--step--1);
+  letter-spacing: 0.16em;
+  line-height: 1.35;
+  text-transform: uppercase;
+  color: var(--text-gold);
+  text-wrap: balance;
+}
+
+.dossier-grid__text {
+  margin-top: 0.55rem;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+
+.dossier-grid__text code {
+  font-family: var(--font-mono);
+  font-size: 0.8em;
+  color: var(--bone);
+}
+
+/* -- E. Resources: the quiet closing strip ------------------------------ */
+
+.dossier-section--resources {
+  margin-top: var(--space-5);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--gold-hairline);
+  font-size: 1.05rem;
+  color: var(--text-muted);
+}
+
+.dossier-section--resources + .dossier-section--resources {
+  margin-top: var(--space-4);
+}
+
+.dossier-section--resources .project__section-title {
+  font-size: var(--step--1);
+  color: var(--text-muted);
+}
+
+.dossier-section--resources .project__section-title::after {
+  max-width: 6rem;
+}
+
+/* -- Responsive --------------------------------------------------------- */
+
+/* The sidebar column leaves the split too little room: stack it (in
+   reading order, so artifact-first sections show their artifact first). */
+@media (max-width: 1180px) {
+  .dossier-split,
+  .dossier-section--artifact-start .dossier-split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dossier-split__text {
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .project--hero .project-layout {
+    padding-top: var(--space-4);
+  }
+
+  .dossier-section {
+    margin-top: var(--space-5);
+  }
+
+  .dossier-grid,
+  .dossier-grid--count-2,
+  .dossier-grid--count-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .project-hero {
+    min-height: clamp(30rem, 82vh, 40rem);
+    padding-bottom: var(--space-4);
+  }
+
+  .project-hero {
+    --hero-frame-x: 0.6rem;
+    --hero-frame-top: calc(var(--header-h) + 1rem);
+  }
+
+  .project-hero::before {
+    bottom: 0.75rem;
+  }
+
+  /* a wrapped kicker would strand its rule beside the second line */
+  .project-hero .project__kicker::after {
+    display: none;
+  }
+
+  .project-hero__art::after {
+    background:
+      linear-gradient(180deg, rgb(11 11 13 / 0.82), rgb(11 11 13 / 0.25) 16%, transparent 30%),
+      linear-gradient(0deg, var(--void) 0, rgb(11 11 13 / 0.92) 30%, rgb(11 11 13 / 0.45) 60%, transparent 82%);
+  }
+
+  .dossier-facts {
+    grid-auto-flow: row;
+    grid-template-columns: max-content minmax(0, 1fr);
+    grid-template-rows: none;
+    padding: 0;
+  }
+
+  .dossier-facts dt,
+  .dossier-facts dd {
+    padding: 0.65rem 0;
+    border-left: 0;
+  }
+
+  .dossier-facts dt:not(:first-of-type),
+  .dossier-facts dd:not(:first-of-type) {
+    border-left: 0;
+    border-top: 1px solid var(--gold-hairline);
+  }
+
+  .dossier-facts dt {
+    padding-right: 1.25rem;
+    line-height: 1.6;
+  }
+
+  .dossier-facts dd {
+    font-size: 1rem;
+  }
+
+  .dossier-grid,
+  .dossier-grid--count-2,
+  .dossier-grid--count-4 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* diagrams keep a legible size and scroll inside their frame */
+  .artifact--diagram .artifact__viewport img {
+    width: 42rem;
+    max-width: none;
+  }
+
+  .dossier-exhibit__caption {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dossier-exhibit__caption::before {
+    display: none;
+  }
+
+  .dossier-exhibit__caption > * {
+    grid-column: 1;
+  }
+
+  .artifact {
+    border-width: 10px;
+    border-image-width: 10px;
+  }
+
+  .artifact__code {
+    padding: 0.9rem 1rem 1rem;
+    font-size: 0.74rem;
+  }
+}
+
+@media (forced-colors: active) {
+  .project-hero__art::after,
+  .project-hero::before,
+  .project-hero::after,
+  .project--hero .project-layout::before {
+    display: none;
+  }
+
+  .project-hero .project__title {
+    color: CanvasText;
+    background: none;
+  }
+
+  .artifact,
+  .dossier-grid__item {
+    border: 1px solid CanvasText;
+  }
+}

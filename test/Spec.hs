@@ -13,7 +13,7 @@ import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
 import Data.Text.Encoding qualified as TE
 import System.Directory qualified as Dir
-import System.FilePath (normalise, takeDirectory, (</>))
+import System.FilePath (normalise, takeDirectory, takeFileName, (</>))
 import System.IO.Temp (withSystemTempDirectory)
 import Test.Tasty (TestTree, defaultMain, testGroup)
 import Test.Tasty.HUnit (Assertion, assertBool, assertFailure, testCase, (@?=))
@@ -34,6 +34,7 @@ import Site.Validate (PageProblem (..), activeContent, attributeValues, validate
 import System.IO.Unsafe (unsafePerformIO)
 
 import ContentTests (contentTests)
+import DossierTests (dossierTests)
 import HomeTests (homeTests)
 
 main :: IO ()
@@ -47,6 +48,7 @@ main =
       , buildTests
       , contentTests
       , homeTests
+      , dossierTests
       ]
 
 --------------------------------------------------------------------------------
@@ -149,7 +151,10 @@ manifestTests =
             let paths = map entryOutput (manifestEntries m)
             paths @?= sort paths
             length paths @?= length allRoutes + length allAssets + length (siteMedia theSite)
-            map outputText [ p | (_, p) <- manifestMedia m ] @?= ["media/projects/black/card.svg", "media/projects/brigid/card.svg", "media/projects/lockdown/card.svg"]
+            -- Card art and artifacts; hero art is checked by DossierTests
+            -- (it arrives per project as the owner approves it).
+            filter (not . T.isInfixOf "/hero.") (map (T.pack . outputText) [ p | (_, p) <- manifestMedia m ])
+              @?= ["media/projects/black/card.svg", "media/projects/black/pipeline.svg", "media/projects/brigid/card.svg", "media/projects/lockdown/card.svg"]
     , testCase "two pages with the same route are rejected" $
         assertCollision (mkManifest [Home, About, Home] [] [])
     , testCase "two project pages with the same slug are rejected" $
@@ -264,8 +269,8 @@ renderTests =
     , testCase "the Brigid page has its content, source link and a way back to Work" $ do
         let html = htmlOf brigidRoute
         forM_ [ "href=\"https://github.com/AugmenTab/brigid\"", "href=\"/work/\"", "BSD-3-Clause", "Haskell"
-              , "<pre class=\"code-block\"><code class=\"language-haskell\">"
-              , "src=\"/media/projects/brigid/card.svg\" alt=\"Gold line drawing" ] $ \frag ->
+              , "<pre class=\"code-block artifact__code\"><code class=\"language-haskell\">"
+              , "<span class=\"artifact__label\">src/Site/Pages/Work.hs</span>" ] $ \frag ->
           assertBool (T.unpack frag) (frag `T.isInfixOf` html)
     , testCase "project pages have the project sidebar beside the content" $ do
         let html = htmlOf brigidRoute
@@ -275,7 +280,7 @@ renderTests =
         assertBool "All projects link" ("class=\"project-nav__back\" href=\"/work/\"" `T.isInfixOf` sidebar)
         assertBool "All projects label" ("All projects</a>" `T.isInfixOf` sidebar)
         assertBool "current project" ("class=\"project-nav__current\" href=\"/work/brigid/\" aria-current=\"page\">Brigid</a>" `T.isInfixOf` sidebar)
-        assertBool "sidebar before content" (T.breakOn "<nav class=\"project-nav\"" html < T.breakOn "<article class=\"project\"" html)
+        assertBool "sidebar before content" (T.breakOn "<nav class=\"project-nav\"" html < T.breakOn "<section class=\"project__section" html)
     , testCase "every sidebar section link has a section, and every section a link" $ do
         let html = htmlOf brigidRoute
             sidebar = fst (T.breakOn "</nav>" (snd (T.breakOn "<nav class=\"project-nav\"" html)))
@@ -283,7 +288,7 @@ renderTests =
             links = [ T.drop 1 h | h <- attributeValues "href" sectionList ]
             sectionIds = [ i | (_, rest) <- T.breakOnAll "<h2 class=\"project__section-title\" id=\"" html
                              , let i = T.takeWhile (/= '"') (T.drop (T.length "<h2 class=\"project__section-title\" id=\"") rest) ]
-        links @?= ["overview", "technical-approach", "current-capabilities", "limitations-and-status", "resources"]
+        links @?= ["overview", "motivation", "how-the-types-work", "caught-at-compile-time", "what-the-types-buy", "status-and-limitations", "resources"]
         links @?= sectionIds
         forM_ links $ \l -> count ("id=\"" <> l <> "\"") html @?= 1
     , testCase "non-project pages have no project sidebar" $
@@ -622,6 +627,7 @@ copyAssets from to = do
     let target = to </> "assets" </> assetPath asset
     Dir.createDirectoryIfMissing True (takeDirectory target)
     Dir.copyFile (from </> "assets" </> assetPath asset) target
-  forM_ [ "content/projects" </> p </> f | p <- ["black", "brigid", "lockdown"], f <- ["project.json", "body.md", "card.svg"] ] $ \file -> do
+  projectFiles <- listTree (from </> "content/projects")
+  forM_ [ "content/projects" </> f | f <- projectFiles, takeFileName f /= ".DS_Store" ] $ \file -> do
     Dir.createDirectoryIfMissing True (takeDirectory (to </> file))
     Dir.copyFile (from </> file) (to </> file)

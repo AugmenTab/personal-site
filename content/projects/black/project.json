@@ -12,5 +12,37 @@
     "kind": "image",
     "src": "card.svg",
     "alt": "Gold line drawing of three slanted pillars crossed by a descending stroke, inside a stepped Art Deco frame over a ruled grid of proof marks"
+  },
+  "sections": {
+    "overview": {
+      "layout": "overview",
+      "facts": [
+        { "label": "Compiler", "value": "White, in Haskell" },
+        { "label": "Target", "value": "x86-64 Linux, via LLVM IR" },
+        { "label": "Stage", "value": "Phased, gated development" },
+        { "label": "Source", "value": "Private repository" }
+      ]
+    },
+    "design-principles": { "layout": "grid" },
+    "the-compiler-pipeline": {
+      "layout": "wide-exhibit",
+      "artifact": {
+        "kind": "diagram",
+        "src": "pipeline.svg",
+        "alt": "White’s pipeline in four stages. Front end: parse, canonical format, resolve names, unused bindings, types and exhaustiveness. Proof of fit: interval reasoning, every integer result fits its type, every divisor nonzero, each cast proved, contract obligations. Core: elaborate into Core, validate Core by re-deriving the evidence, bind entry points or a native boundary. Back end: emit textual LLVM IR, compile with clang-19, producing an executable or a shared library that a C host loads."
+      }
+    },
+    "a-program-white-accepts": {
+      "layout": "split",
+      "artifact_side": "end",
+      "artifact": { "kind": "code", "src": "examples/NominalRecord.blk", "label": "NominalRecord.blk", "language": "black" }
+    },
+    "a-program-white-rejects": {
+      "layout": "split",
+      "artifact_side": "start",
+      "artifact": { "kind": "code", "src": "examples/CastUnresolved.blk", "label": "CastUnresolved.blk", "language": "black" }
+    },
+    "status-and-limitations": { "layout": "resources" },
+    "resources": { "layout": "resources" }
   }
 }
