@@ -224,6 +224,12 @@ ul {
 
 /* 4. Primitives */
 
+/* The `hidden` attribute always wins over a component's own display value
+   (the Work index's filter controls and filtered-out cards rely on it). */
+[hidden] {
+  display: none !important;
+}
+
 .visually-hidden {
   position: absolute !important;
   width: 1px;
@@ -1121,38 +1127,225 @@ ul {
   scroll-margin-top: 1rem;
 }
 
-.about__links {
+/* The profile's short lists (areas of focus): small capitals between
+   diamonds, wrapping as a row */
+.about__list {
   display: flex;
-  gap: 1.5rem;
-  margin-top: var(--space-1);
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin-top: var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--text-gold);
 }
 
-.about__links a {
+.about__list li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.about__list li::before {
+  content: "";
+  flex: none;
+  width: 5px;
+  height: 5px;
+  border: 1px solid var(--gold);
+  transform: rotate(45deg);
+}
+
+.about__onward {
+  margin-top: var(--space-3);
+}
+
+.about__onward a {
   display: inline-block;
-  padding: 0.35rem 0.25rem;
-  font-size: var(--step-1);
+  padding: 0.4rem 0;
+  font-family: var(--font-display);
+  font-size: var(--step--1);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--gold-bright);
 }
 
-.site-footer {
-  display: grid;
-  justify-items: center;
+.about__onward a:hover {
+  color: var(--bone);
+}
+
+/* Contact (homepage, Phase 05): a short invitation and one control per
+   verified destination. Quieter than the sections above it. */
+.contact {
+  max-width: 62rem;
+  margin: 0 auto;
+  padding: var(--space-6) var(--gutter);
+  text-align: center;
+  scroll-margin-top: 1rem;
+}
+
+.contact__invitation {
+  max-width: var(--measure);
+  margin: var(--space-3) auto 0;
+  font-size: var(--step-1);
+  font-style: italic;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.contact__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 0.75rem;
-  padding: var(--space-4) var(--gutter) var(--space-5);
+  margin-top: var(--space-4);
+}
+
+/* Each card is one link: an icon beside its label, in a row (Phase 05
+   update 1; the full URL is no longer shown). */
+.contact__link {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-width: 11rem;
+  min-height: 3.25rem;
+  padding: 0.75rem 1.5rem;
+  border: 1px solid var(--gold-line);
+  background: linear-gradient(180deg, rgb(26 22 25 / 0.8), rgb(18 16 19 / 0.8));
+  color: var(--text-gold);
+  text-decoration: none;
+  transition: border-color 160ms ease, color 160ms ease;
+}
+
+.contact__link:hover {
+  border-color: var(--gold);
+  color: var(--gold-bright);
+}
+
+/* The icon is a mask filled with the link's colour, so it follows hover
+   and forced-colours states with the text. */
+.contact__icon {
+  flex: none;
+  width: 1.15rem;
+  height: 1.15rem;
+  background-color: currentColor;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+.contact__icon--github { --icon: url("../images/icon-github.svg"); }
+.contact__icon--linkedin { --icon: url("../images/icon-linkedin.svg"); }
+.contact__icon--email { --icon: url("../images/icon-email.svg"); }
+
+.contact__label {
+  font-family: var(--font-display);
+  font-size: var(--step--1);
+  letter-spacing: var(--tracking-caps);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+/* Footer (Phase 05): identity, site links, contact destinations, then the
+   copyright and colophon. One ruled diamond on the top rule; no monogram,
+   no emblem, no artwork. */
+.site-footer {
+  position: relative;
+  padding: var(--space-5) var(--gutter) var(--space-4);
   border-top: 1px solid var(--gold-hairline);
   color: var(--text-faint);
+}
+
+/* small Deco ornament: diamond between short rules, centred on the top rule */
+.site-footer__ornament {
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  width: 7rem;
+  height: 9px;
+  transform: translateX(-50%);
+  background:
+    var(--diamond) center / 9px 9px no-repeat,
+    linear-gradient(90deg, transparent, var(--gold-line) 30%, var(--gold-line) 42%, transparent 42%, transparent 58%, var(--gold-line) 58%, var(--gold-line) 70%, transparent) center / 100% 1px no-repeat,
+    linear-gradient(var(--void), var(--void)) center / 2rem 100% no-repeat;
+}
+
+.site-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-4) clamp(2rem, 6vw, 5rem);
+  max-width: 64rem;
+  margin: 0 auto;
+}
+
+.site-footer__identity {
+  flex: 1 1 18rem;
+}
+
+.site-footer__nav,
+.site-footer__contact {
+  flex: 0 1 11rem;
+}
+
+.site-footer__name {
+  font-family: var(--font-display);
+  font-size: var(--step-0);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--bone);
+}
+
+.site-footer__thesis {
+  margin-top: 0.4rem;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+.site-footer__heading {
   font-family: var(--font-display);
   font-size: var(--step--2);
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
+  color: var(--text-gold);
 }
 
-/* small Deco ornament: diamond between short rules (no monogram here) */
-.site-footer__ornament {
-  width: 7rem;
-  height: 9px;
-  background:
-    var(--diamond) center / 9px 9px no-repeat,
-    linear-gradient(90deg, transparent, var(--gold-line) 30%, var(--gold-line) 42%, transparent 42%, transparent 58%, var(--gold-line) 58%, var(--gold-line) 70%, transparent) center / 100% 1px no-repeat;
+.site-footer__links {
+  margin-top: 0.5rem;
+}
+
+.site-footer__link {
+  display: inline-block;
+  padding: 0.3rem 0;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.site-footer__link:hover,
+.site-footer__link[aria-current="page"] {
+  color: var(--gold-bright);
+}
+
+.site-footer__link:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--gold-line);
+}
+
+.site-footer__base {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 2rem;
+  max-width: 64rem;
+  margin: var(--space-4) auto 0;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--gold-hairline);
+  font-family: var(--font-display);
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
 }
 
 /* 9. Responsive, motion, forced colours */
@@ -1194,7 +1387,7 @@ ul {
     border-left: 0;
   }
 
-  .about__links {
+  .about__list {
     justify-content: center;
   }
 
@@ -1257,6 +1450,48 @@ ul {
     grid-row: 2;
     gap: 1.1rem;
     height: auto;
+  }
+
+  /* Five or six links (Writing or Résumé published): each side gets its
+     own centred row under the monogram, and the header grows to fit. The
+     standard four-link header above is unchanged. */
+  .page--nav-extended {
+    --header-h: 9.75rem;
+    --plate-top: 5.5rem;
+  }
+
+  .page--nav-extended .site-nav {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    row-gap: 0.15rem;
+  }
+
+  .page--nav-extended .site-nav__list {
+    grid-row: auto;
+    justify-content: center;
+  }
+
+  .page--nav-extended .site-nav__link {
+    padding-block: 0.45rem;
+  }
+
+  /* Footer: one centred column */
+  .site-footer__inner {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .site-footer__identity,
+  .site-footer__nav,
+  .site-footer__contact {
+    flex: none;
+  }
+
+  .site-footer__base {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
   }
 
   .site-nav__link {
@@ -1636,9 +1871,16 @@ ul {
   text-align: center;
 }
 
-/* Tablet and mobile: one column in source order: the opening (hero or
-   header), the sidebar as a compact section index (no JavaScript; it
-   wraps rather than scrolls sideways), then the dossier. */
+/* The compact section index (below 900px only; see the media query). */
+.project-nav__index {
+  display: none;
+}
+
+/* Tablet and mobile (Phase 05): one column in source order: the opening
+   (hero or header, which carries the title), then a compact index (All
+   projects, and a collapsed "On this page" disclosure: native <details>,
+   no JavaScript), then the dossier. The desktop tab and section list are
+   not displayed, so the keyboard and screen readers meet one index. */
 @media (max-width: 900px) {
   .project-layout {
     grid-template-columns: minmax(0, 1fr);
@@ -1647,35 +1889,132 @@ ul {
       "opening"
       "nav"
       "body";
-    row-gap: var(--space-4);
+    row-gap: var(--space-3);
   }
 
   .project-nav {
     position: static;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.75rem 1.5rem;
-    padding: 0 0 var(--space-2);
+    display: grid;
+    justify-items: start;
+    gap: 0.5rem;
+    padding: 0;
     border-right: 0;
+  }
+
+  .project-nav__current,
+  .project-nav__sections {
+    display: none;
+  }
+
+  .project-nav__index {
+    display: block;
+    justify-self: stretch;
+    border: 1px solid var(--gold-line);
+    background: linear-gradient(180deg, var(--surface-2), var(--surface-1));
+  }
+
+  .project-nav__summary {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 3rem;
+    padding: 0.7rem 1rem;
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-display);
+    font-size: var(--step--1);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--bone);
+  }
+
+  .project-nav__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .project-nav__summary:focus-visible {
+    outline-offset: -4px;
+  }
+
+  .project-nav__summary-count {
+    margin-left: auto;
+    font-size: var(--step--2);
+    color: var(--text-faint);
+  }
+
+  /* a gold chevron that turns when the index is open */
+  .project-nav__summary::after {
+    content: "";
+    flex: none;
+    width: 7px;
+    height: 7px;
+    margin: 0 0.2rem 0.2rem 0;
+    border-right: 1px solid var(--gold);
+    border-bottom: 1px solid var(--gold);
+    transform: rotate(45deg);
+    transition: transform 160ms ease;
+  }
+
+  .project-nav__index[open] > .project-nav__summary::after {
+    margin-bottom: -0.2rem;
+    transform: rotate(-135deg);
+  }
+
+  .project-nav__index[open] > .project-nav__summary {
     border-bottom: 1px solid var(--gold-hairline);
   }
 
-  .project-nav__current {
-    margin-top: 0;
+  .project-nav__index-list {
+    padding: 0.25rem 1rem 0.5rem;
   }
 
-  .project-nav__sections {
-    display: flex;
-    flex-wrap: wrap;
-    flex-basis: 100%;
-    gap: 0 1.5rem;
-    margin-top: 0;
-    padding-left: 0;
+  .project-nav__index-list li + li {
+    border-top: 1px solid rgb(194 164 106 / 0.14);
+  }
+
+  .project-nav__index-list a {
+    position: relative;
+    display: block;
+    padding: 0.65rem 0 0.65rem 1.1rem;
+    font-family: var(--font-display);
+    font-size: var(--step--2);
+    letter-spacing: var(--tracking-caps);
+    line-height: 1.4;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--text-muted);
+    overflow-wrap: break-word;
+  }
+
+  .project-nav__index-list a::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 1.05rem;
+    width: 5px;
+    height: 5px;
+    border: 1px solid var(--gold);
+    transform: rotate(45deg);
+  }
+
+  .project-nav__index-list a:hover {
+    color: var(--gold-bright);
   }
 
   .project__section {
     margin-top: var(--space-4);
+  }
+
+  /* the grid's row gap already separates the index from the dossier */
+  .project__body > :first-child {
+    margin-top: var(--space-2);
+  }
+}
+
+@media (max-width: 640px) {
+  /* a wrapped kicker would strand its rule beside the second line */
+  .project__kicker::after {
+    display: none;
   }
 }
 
@@ -1838,16 +2177,33 @@ ul {
   padding: 0.3rem 0;
 }
 
-.project__showcase {
-  max-width: 20rem;
-  margin: var(--space-4) 0 0;
-  border: 1px solid var(--gold-hairline);
-  box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.9);
+/* Topics: the project's cross-cutting subjects, quieter than the
+   technology tags above them */
+.project__topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.25rem;
+  margin-top: 0.85rem;
+  font-family: var(--font-display);
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--verdigris-bright);
 }
 
-.project__showcase img {
-  width: 100%;
-  height: auto;
+.project__topics li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.project__topics li::before {
+  content: "";
+  flex: none;
+  width: 5px;
+  height: 5px;
+  border: 1px solid currentColor;
+  transform: rotate(45deg);
 }
 
 .project__lead {
@@ -2249,52 +2605,10 @@ ul {
   text-decoration: none;
 }
 
-/* About and Contact: personal and editorial */
-.about--home {
-  padding-top: var(--space-6);
-}
-
+/* About: personal and editorial */
 .about__bio {
   margin-top: var(--space-2);
   color: var(--text-muted);
-}
-
-.about__links {
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.about__links a {
-  display: inline-flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  min-width: 13rem;
-  padding: 0.7rem 1.1rem 0.75rem;
-  border: 1px solid var(--gold-hairline);
-  background: linear-gradient(180deg, rgb(26 22 25 / 0.8), rgb(18 16 19 / 0.8));
-  text-decoration: none;
-  transition: border-color 160ms ease, background-color 160ms ease;
-}
-
-.about__links a:hover {
-  border-color: var(--gold-line);
-}
-
-.about__link-label {
-  font-family: var(--font-display);
-  font-size: var(--step--2);
-  letter-spacing: var(--tracking-caps);
-  text-transform: uppercase;
-  color: var(--text-faint);
-}
-
-.about__link-display {
-  font-size: var(--step-1);
-  color: var(--text-gold);
-}
-
-.about__links a:hover .about__link-display {
-  color: var(--gold-bright);
 }
 
 @media (max-width: 1099px) {
@@ -2368,11 +2682,11 @@ ul {
     padding-top: 0;
   }
 
-  .about--home {
-    padding-top: var(--space-5);
+  .contact {
+    padding-block: var(--space-5);
   }
 
-  .about__links a {
+  .contact__link {
     min-width: min(100%, 16rem);
   }
 
@@ -2389,8 +2703,13 @@ ul {
 }
 
 @media (forced-colors: active) {
-  .about__links a {
+  .contact__link {
     border: 1px solid LinkText;
+  }
+
+  .contact__icon {
+    forced-color-adjust: none;
+    background-color: LinkText;
   }
 }
 
@@ -2434,6 +2753,26 @@ ul {
   }
 }
 
+/* The narrowest phones (Phase 05 fix): two columns of disciplines cannot
+   fit at 320px at a legible size, and the code bar's label was clipped.
+   Above 380px nothing here applies, so the approved hero is unchanged. */
+@media (max-width: 379px) {
+  .hero__disciplines {
+    grid-template-columns: auto;
+    gap: 0.45rem;
+  }
+
+  .feature__code-bar {
+    flex-wrap: wrap;
+    row-gap: 0;
+  }
+
+  .feature__code-tag {
+    padding-bottom: 0.45rem;
+    white-space: normal;
+  }
+}
+
 /* Code is shown exactly as written: no programming ligatures (JetBrains
    Mono would otherwise draw -> as an arrow). */
 pre,
@@ -2442,21 +2781,26 @@ code {
   font-feature-settings: "liga" 0, "calt" 0;
 }
 
-/* 12c. Homepage cards: aligned titles, intentional footers */
+/* 12c. Homepage cards (and, since Phase 05, the Work index's grid):
+   aligned titles, intentional footers */
 
 /* Category over status (the status keeps its verdigris), so a long
    category never pushes one card's title below its neighbour's. The
    separator stays in the accessible text. */
 .work__list--home .project-card__category,
-.work__list--home .project-card__status {
+.work__list--home .project-card__status,
+.work__list--index .project-card__category,
+.work__list--index .project-card__status {
   display: block;
 }
 
-.work__list--home .project-card__category {
+.work__list--home .project-card__category,
+.work__list--index .project-card__category {
   color: var(--text-gold);
 }
 
-.work__list--home .project-card__kicker-sep {
+.work__list--home .project-card__kicker-sep,
+.work__list--index .project-card__kicker-sep {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -2468,15 +2812,18 @@ code {
 /* Tags follow the summary; only the link is pinned to the card's foot,
    above a hairline, so equal-height cards end on the same ruled line and
    any spare height reads as space, not as a gap inside the text. */
-.work__list--home .project-card__footer {
+.work__list--home .project-card__footer,
+.work__list--index .project-card__footer {
   display: contents;
 }
 
-.work__list--home .project-card__tags {
+.work__list--home .project-card__tags,
+.work__list--index .project-card__tags {
   margin-top: 0.3rem;
 }
 
-.work__list--home .project-card__link {
+.work__list--home .project-card__link,
+.work__list--index .project-card__link {
   margin-top: auto;
   padding-top: 0.85rem;
   border-top: 1px solid var(--gold-hairline);
@@ -3039,10 +3386,6 @@ code {
     display: none;
   }
 
-  .project__body > .project__showcase:first-child {
-    margin-top: 0;
-  }
-
   .dossier-section {
     margin-top: var(--space-5);
   }
@@ -3160,5 +3503,227 @@ code {
   .artifact,
   .dossier-grid__item {
     border: 1px solid CanvasText;
+  }
+}
+
+/* 14. Work index and discovery (Phase 05)
+
+   The index's own grid, scoped to .work__list--index so the homepage's
+   approved Selected Work composition (.work__list--home) is untouched.
+   Two columns from 1100px, where each card keeps a comfortable measure;
+   one centred column below. The search controls are revealed by
+   assets/scripts/work-filter.js; without it they stay `hidden`. */
+
+.work--index {
+  padding-bottom: var(--space-6);
+}
+
+.work__list--index {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(1.75rem, 3vw, 2.5rem);
+  max-width: 46rem;
+  margin: var(--space-4) auto 0;
+}
+
+.work__list--index .work__item {
+  display: flex;
+}
+
+.work__list--index .project-card {
+  flex: 1;
+  grid-template-columns: minmax(9rem, 32%) 1fr;
+  min-height: 0;
+}
+
+.work__list--index .project-card--text {
+  grid-template-columns: 1fr;
+}
+
+.work__list--index .project-card__summary {
+  font-size: 1.0625rem;
+}
+
+@media (min-width: 1100px) {
+  .work__list--index {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 76rem;
+  }
+
+  .work__list--index .project-card {
+    grid-template-columns: minmax(8rem, 30%) 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .work__list--index .project-card {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Search, category chips and result count. With scripting available the
+   controls take their place from the first paint, so revealing them never
+   shifts the cards; without it they stay hidden (no inert controls). */
+@media (scripting: enabled) {
+  .work-filter[hidden] {
+    display: grid !important;
+  }
+}
+
+.work-filter {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  max-width: 60rem;
+  margin: var(--space-4) auto 0;
+}
+
+.work-filter__field {
+  display: grid;
+  gap: 0.45rem;
+  width: min(100%, 32rem);
+}
+
+.work-filter__label,
+.work-filter__status {
+  font-family: var(--font-display);
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+}
+
+.work-filter__label {
+  color: var(--text-gold);
+  text-align: center;
+}
+
+.work-filter__input {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--gold-line);
+  border-radius: 0;
+  background: linear-gradient(180deg, var(--surface-1), #0D0B0E);
+  color: var(--bone);
+  font: inherit;
+  font-size: var(--step-0);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.work-filter__input::placeholder {
+  color: var(--text-faint);
+  font-style: italic;
+}
+
+.work-filter__input:hover {
+  border-color: var(--gold);
+}
+
+.work-filter__input:focus-visible {
+  outline-offset: 2px;
+}
+
+.work-filter__chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.work-filter__chip,
+.work-filter__reset {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--gold-hairline);
+  border-radius: 0;
+  background: rgb(11 11 13 / 0.6);
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-size: var(--step--2);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease;
+}
+
+.work-filter__chip:hover,
+.work-filter__reset:hover {
+  border-color: var(--gold-line);
+  color: var(--gold-bright);
+}
+
+/* The selected chip: gilded edge, verdigris fill and a solid diamond, so
+   the state never depends on colour alone. */
+.work-filter__chip[aria-pressed="true"] {
+  border-color: var(--gold);
+  background:
+    radial-gradient(120% 140% at 0% 50%, rgb(116 165 149 / 0.16), transparent 70%),
+    linear-gradient(90deg, #15221E, #0F1714);
+  color: var(--bone);
+}
+
+.work-filter__chip[aria-pressed="true"]::before {
+  content: "";
+  flex: none;
+  width: 6px;
+  height: 6px;
+  background: var(--gold);
+  transform: rotate(45deg);
+}
+
+.work-filter__status {
+  color: var(--text-faint);
+}
+
+.work-filter__empty {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  max-width: 32rem;
+  margin: var(--space-4) auto 0;
+  padding: var(--space-4) var(--space-3);
+  border: 1px solid var(--gold-hairline);
+  text-align: center;
+}
+
+.work-filter__empty-text {
+  font-size: var(--step-1);
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+.work-filter__reset {
+  border-color: var(--gold-line);
+  color: var(--gold-bright);
+}
+
+/* Writing index refinements: date first, a single arrowed link */
+.writing__item .writing__date {
+  margin-top: 0;
+}
+
+.writing__item .writing__title {
+  margin-top: 0.3rem;
+}
+
+.writing__arrow {
+  font-family: var(--font-body);
+  letter-spacing: 0;
+}
+
+@media (forced-colors: active) {
+  .work-filter__chip,
+  .work-filter__reset,
+  .work-filter__input,
+  .project-nav__index {
+    border: 1px solid ButtonText;
+  }
+
+  .work-filter__chip[aria-pressed="true"] {
+    border-width: 3px;
   }
 }

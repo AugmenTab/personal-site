@@ -39,12 +39,14 @@ import Data.Text.Encoding qualified as TE
 import Numeric (showFFloat)
 import System.Directory qualified as Dir
 import System.FilePath (takeExtension, (</>))
+import System.IO (IOMode (ReadMode), withBinaryFile)
 
 import Site.Content.Markdown (Block (..), Document (..), Inline (..), LinkTarget (..), MarkdownError, Section (..), documentImages, inlineText, linkTarget, parseDocument)
 import Site.Content.Types
 import Site.Path (OutputPath, mkOutputPath, outputFilePath, outputText)
 import Site.Routes (Slug, mkSlug, slugText)
-import Site.Source (describeSourceProblem, sourceFileProblem)
+import Site.Source (SourceProblem (..), describeSourceProblem, sourceFileProblem)
+import Site.Taxonomy (Category, Topic, allCategories, allTopics, categoryLabel, parseCategory, parseTopic, topicId, topicLabel)
 
 -- | Problems with one source file (path relative to the source root).
 data ContentError = ContentError FilePath [String]
@@ -65,16 +67,58 @@ loadContentWith policy root = do
   (articleDirErrs, articleDirs) <- discover root "content/writing"
   projects <- forM projectDirs (uncurry (loadProject policy root))
   articles <- forM articleDirs (uncurry (loadArticle root))
+  resume <- loadResume root
   let (projectErrs, loadedProjects) = partitionEithers projects
       (articleErrs, loadedArticles) = partitionEithers articles
       errors =
         projectDirErrs <> articleDirErrs <> concat projectErrs <> concat articleErrs
-          <> featuredConflicts loadedProjects
+          <> featuredConflicts loadedProjects <> either id (const []) resume
   case errors of
     [] -> do
       warnings <- concat <$> forM loadedProjects (heroWarnings policy root)
-      pure (Right Content { contentProjects = loadedProjects, contentArticles = loadedArticles, contentWarnings = warnings })
+      pure . Right $
+        Content
+          { contentProjects = loadedProjects
+          , contentArticles = loadedArticles
+          , contentResume = either (const Nothing) id resume
+          , contentWarnings = warnings
+          }
     _ -> pure (Left errors)
+
+--------------------------------------------------------------------------------
+-- The résumé
+
+-- | @content/resume.pdf@, if present: published as @/resume.pdf@. Its
+-- absence is not an error (the site then has no résumé link); a file that
+-- is present must be a regular file inside @content/@ (no symlink escape),
+-- a PDF (by its @%PDF-@ signature), and at most 'resumeByteLimit'.
+loadResume :: FilePath -> IO (Either [ContentError] (Maybe MediaFile))
+loadResume root =
+  case mkOutputPath resumeFile of
+    Left err -> pure (Left [ContentError ("content" </> resumeFile) [show err]])
+    Right path -> do
+      contentExists <- Dir.doesDirectoryExist (root </> "content")
+      problem <- if contentExists then sourceFileProblem (root </> "content") path else pure (Just SourceMissing)
+      case problem of
+        Just SourceMissing -> pure (Right Nothing)
+        Just p -> pure (Left [ContentError ("content" </> resumeFile) [describeSourceProblem p]])
+        Nothing -> do
+          let file = root </> "content" </> resumeFile
+          size <- Dir.getFileSize file
+          header <- withBinaryFile file ReadMode (`BS.hGet` 5)
+          pure $
+            case () of
+              _ | size > resumeByteLimit ->
+                    Left [ContentError ("content" </> resumeFile) ["is " <> describeBytes size <> "; a résumé may be at most " <> describeBytes resumeByteLimit]]
+                | header /= "%PDF-" ->
+                    Left [ContentError ("content" </> resumeFile) ["is not a PDF (it does not start with %PDF-)"]]
+                | otherwise -> Right (Just (MediaFile SiteMedia "content" path))
+
+resumeFile :: FilePath
+resumeFile = "resume.pdf"
+
+resumeByteLimit :: Integer
+resumeByteLimit = 10 * 1024 * 1024
 
 -- | The content directories of one kind, sorted by name.
 discover :: FilePath -> FilePath -> IO ([ContentError], [(Slug, FilePath)])
@@ -112,7 +156,8 @@ data ProjectMeta =
     { metaSlug :: T.Text
     , metaTitle :: T.Text
     , metaSummary :: T.Text
-    , metaCategory :: T.Text
+    , metaCategory :: Category
+    , metaTopics :: [Topic]
     , metaDevelopment :: DevelopmentStatus
     , metaPublication :: PublicationStatus
     , metaTechnologies :: [T.Text]
@@ -149,7 +194,7 @@ data ArtifactMeta
 
 projectFields :: [T.Text]
 projectFields =
-  [ "slug", "title", "summary", "category", "development_status", "publication_status"
+  [ "slug", "title", "summary", "category", "topics", "development_status", "publication_status"
   , "technologies", "featured_order", "links", "body", "showcase", "hero", "sections" ]
 
 -- | Strictly decode @project.json@. Every field problem is reported.
@@ -162,10 +207,11 @@ decodeProjectMeta value = do
       <$> field obj "slug" text
       <*> field obj "title" text
       <*> field obj "summary" attributeText
-      <*> field obj "category" text
+      <*> field obj "category" (\v -> text v >>= parseCategory)
+      <*> (maybe [] id <$> optionalField obj "topics" topicsField)
       <*> field obj "development_status" (enum [("implemented", Implemented), ("in_development", InDevelopment), ("proposed", Proposed)])
       <*> field obj "publication_status" (enum [("draft", Draft), ("published", Published)])
-      <*> field obj "technologies" (list text)
+      <*> field obj "technologies" technologiesField
       <*> optionalField obj "featured_order" positiveInt
       <*> (maybe [] id <$> optionalField obj "links" (list externalLink))
       <*> field obj "body" markdownPath
@@ -213,6 +259,7 @@ loadProject policy root slug dir = do
                   , projectTitle = metaTitle meta
                   , projectSummary = metaSummary meta
                   , projectCategory = metaCategory meta
+                  , projectTopics = metaTopics meta
                   , projectDevelopment = metaDevelopment meta
                   , projectPublication = metaPublication meta
                   , projectTechnologies = metaTechnologies meta
@@ -648,6 +695,44 @@ positiveInt value =
         Right i | i >= 1 && i <= 10000 -> Right (fromInteger i)
         _ -> Left ("expected a whole number from 1 to 10000, got " <> show n)
     other -> Left ("expected a number, got " <> jsonType other)
+
+-- | @topics@: topic ids from the vocabulary ("Site.Taxonomy"), each at most
+-- once, at most 'topicLimit'. Returned in vocabulary order, so the
+-- display and the filter data never depend on how the list was written.
+topicsField :: Json.Value -> Either String [Topic]
+topicsField value = do
+  raw <- list text value
+  topics <- either (Left . unwords) Right $
+    case partitionEithers [ either (Left . (("[" <> show i <> "]: ") <>)) Right (parseTopic t) | (i, t) <- zip [0 :: Int ..] raw ] of
+      ([], ok) -> Right ok
+      (errs, _) -> Left errs
+  case [ topicId t | (t, n) <- Map.toList (Map.fromListWith (+) [ (t, 1 :: Int) | t <- topics ]), n > 1 ] of
+    [] | length topics > topicLimit -> Left ("has " <> show (length topics) <> " topics; at most " <> show topicLimit <> " (choose the most characteristic)")
+       | otherwise -> Right (sort topics)
+    dups -> Left ("lists " <> T.unpack (T.intercalate ", " (map (T.pack . show) dups)) <> " more than once")
+
+topicLimit :: Int
+topicLimit = 5
+
+-- | @technologies@: concrete tools, as free text. Each at most once (case
+-- does not distinguish them), and none may be a category or topic, which
+-- belong in their own fields.
+technologiesField :: Json.Value -> Either String [T.Text]
+technologiesField value = do
+  techs <- list text value
+  let folded = map T.toCaseFold techs
+      dups = [ t | (t, n) <- Map.toList (Map.fromListWith (+) [ (f, 1 :: Int) | f <- folded ]), n > 1 ]
+      topicNames = [ (T.toCaseFold n, topicId t) | t <- allTopics, n <- [topicLabel t, topicId t] ]
+      categoryNames = [ (T.toCaseFold n, categoryLabel c) | c <- allCategories, n <- [categoryLabel c] ]
+      misfiled =
+        [ show t <> " is the topic " <> show i <> "; list it under \"topics\""
+        | t <- techs, Just i <- [lookup (T.toCaseFold t) topicNames] ]
+          <> [ show t <> " is a category (" <> T.unpack c <> "), not a technology"
+             | t <- techs, Just c <- [lookup (T.toCaseFold t) categoryNames] ]
+  case (dups, misfiled) of
+    ([], []) -> Right techs
+    ([], _) -> Left (unwords misfiled)
+    (_, _) -> Left ("lists " <> T.unpack (T.intercalate ", " (map (T.pack . show) dups)) <> " more than once (ignoring case)")
 
 markdownPath :: Json.Value -> Either String OutputPath
 markdownPath value = do

@@ -10,8 +10,10 @@
 --   manifest, and every @#fragment@ names an id on its target page;
 -- * no tag carries active content: no @<script>@, @<iframe>@, @<object>@,
 --   @<embed>@ or @<style>@ element, and no @on…=@ event-handler attribute.
---   The site uses none of these, so any occurrence means content escaped
---   its attribute or text (see 'activeContent').
+--   The site uses none of these (the one exception is an external module
+--   script from @/assets/scripts/@, in exactly one form; see
+--   'sitePageScript'), so any occurrence means content escaped its
+--   attribute or text (see 'activeContent').
 --
 -- External @http(s):@ and @mailto:@ URLs are not fetched.
 module Site.Validate
@@ -21,7 +23,7 @@ module Site.Validate
   , activeContent
   ) where
 
-import Data.Char (isAsciiLower, isSpace)
+import Data.Char (isAsciiLower, isDigit, isSpace)
 import Data.List (group, sort)
 import Data.Map.Strict qualified as Map
 import Data.Text qualified as T
@@ -82,6 +84,7 @@ validatePages manifest pages = concatMap check pages
                         (Just fragment, PageSource target) -> fragmentOn route target url fragment
                         (Just _, AssetSource _) -> [BrokenLink route url "fragment on an asset"]
                         (Just _, MediaSource _) -> [BrokenLink route url "fragment on a media file"]
+                        (Just _, GeneratedSource _) -> [BrokenLink route url "fragment on a generated file"]
       | otherwise = [BrokenLink route url "relative URLs are not allowed; use a root-absolute URL"]
 
     fragmentOn route target url fragment
@@ -114,7 +117,8 @@ activeContent html =
   | chunk <- drop 1 (T.splitOn "<" html)
   , let tag = T.takeWhile (/= '>') chunk
         name = T.toLower (T.takeWhile (\c -> not (isSpace c) && c /= '/' ) tag)
-  , name `elem` ["script", "iframe", "object", "embed", "style", "frame", "frameset", "applet", "base"]
+  , (name `elem` ["script", "iframe", "object", "embed", "style", "frame", "frameset", "applet", "base"]
+       && not (name == "script" && sitePageScript chunk))
       || any handler (attributeNames tag)
   ]
   where
@@ -126,6 +130,27 @@ activeContent html =
       , not (T.null before)
       , T.any isSpace before
       ]
+
+-- | The one form of script the site emits (Phase 05: the Work index's
+-- search and filter enhancement): exactly
+-- @<script src="/assets/scripts/NAME.js" type="module"></script>@, with
+-- no other attribute and no inline code. NAME is lowercase letters, digits
+-- and hyphens. The link checker separately requires the file to be a listed
+-- asset, so only reviewed code in @assets/scripts/@ can ever run. Takes the
+-- text after the tag's @<@, up to the next @<@.
+sitePageScript :: T.Text -> Bool
+sitePageScript chunk =
+  T.null inline
+    && case sort (T.words (T.drop (T.length "script") tag)) of
+         [srcAttr, typeAttr] -> typeAttr == "type=\"module\"" && validSrc srcAttr
+         _ -> False
+  where
+    tag = T.takeWhile (/= '>') chunk
+    inline = T.drop 1 (T.dropWhile (/= '>') chunk)
+    validSrc a =
+      case T.stripPrefix "src=\"/assets/scripts/" a >>= T.stripSuffix ".js\"" of
+        Just name -> not (T.null name) && T.all (\c -> isAsciiLower c || isDigit c || c == '-') name
+        Nothing -> False
 
 -- | Values of every @ name="..."@ attribute, with @&amp;@ decoded.
 attributeValues :: T.Text -> T.Text -> [T.Text]

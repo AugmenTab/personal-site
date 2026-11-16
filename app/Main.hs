@@ -66,7 +66,7 @@ build root dir = do
     Right report ->
       putStrLn $
         "Wrote " <> show (reportPageCount report) <> " pages (" <> show (reportHtmlBytes report)
-          <> " bytes of HTML) and " <> show (reportAssetCount report) <> " assets and media files to " <> dir <> "/."
+          <> " bytes of HTML) and " <> show (reportAssetCount report) <> " asset, media and generated files to " <> dir <> "/."
 
 describeEntry :: Int -> Entry -> String
 describeEntry width entry = "  " <> padRight width (outputText (entryOutput entry)) <> describeSource (entrySource entry)

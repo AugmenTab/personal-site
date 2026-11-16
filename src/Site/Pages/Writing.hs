@@ -1,8 +1,9 @@
 {-# LANGUAGE DataKinds #-}
 
 -- | Writing: an index and one page per published article. Both exist only
--- when at least one article is published ("Site.Definition"); the full
--- presentation and discovery features are Phase 05.
+-- when at least one article is published ("Site.Definition"), and only
+-- then does the navigation link to them. Draft articles are never
+-- rendered, listed or linked.
 module Site.Pages.Writing
   ( indexPage
   , articlePage
@@ -30,21 +31,25 @@ indexPage config articles =
     , pageMain =
         [ E.section [ A.class_ "writing", A.aria_labelledby (NEL.singleton titleId) ]
             [ pageHeading [] titleId "Writing"
+            , E.p [ A.class_ "page-lede" ] [ E.text "Notes and essays, newest first." ]
             , E.ul [ A.class_ "writing__list" ] (map entry articles)
             ]
         ]
     }
   where
     titleId = elementId "writing-title"
+    -- Date first (as on the homepage preview), then title, summary and a
+    -- single link per article.
     entry article =
       E.li [ A.class_ "writing__item" ]
-        ( [ E.h2 [ A.class_ "writing__title" ] [ E.text (articleTitle article) ] ]
-            <> [ E.p [ A.class_ "writing__date" ] [ E.text date ] | Just date <- [articleDate article] ]
-            <> [ E.p [ A.class_ "writing__summary" ] [ E.text (articleSummary article) ]
+        ( [ E.p [ A.class_ "writing__date" ] [ E.text date ] | Just date <- [articleDate article] ]
+            <> [ E.h2 [ A.class_ "writing__title" ] [ E.text (articleTitle article) ]
+               , E.p [ A.class_ "writing__summary" ] [ E.text (articleSummary article) ]
                , E.p [ A.class_ "writing__more" ]
                    [ E.a [ A.href (routeUrl (WritingArticle (articleSlug article))) ]
                        [ E.text "Read"
                        , E.span [ A.class_ "visually-hidden" ] [ E.text (": " <> articleTitle article) ]
+                       , E.span [ A.class_ "writing__arrow", A.aria_hidden True ] [ E.text " →" ]
                        ]
                    ]
                ]

@@ -21,6 +21,7 @@ import Brigid.Types qualified as B
 import Site.Assets qualified as Asset
 import Site.Content.Types (MediaOwner (..), Project (..), Showcase (..), developmentLabel, mediaUrl, projectTitleId)
 import Site.Routes (Route (WorkDetail), routeUrl)
+import Site.Taxonomy (categoryLabel)
 
 -- | An image with empty alt text: artwork that carries no information.
 decorativeImage :: E.ValidChild E.Image parent grandparent
@@ -72,7 +73,7 @@ projectCard level project =
                  -- 'projectKicker'), so narrow cards can stack them on two
                  -- lines and keep every card's title on the same line.
                  E.p [ A.class_ "project-card__kicker" ]
-                   [ E.span [ A.class_ "project-card__category" ] [ E.text (projectCategory project) ]
+                   [ E.span [ A.class_ "project-card__category" ] [ E.text (categoryLabel (projectCategory project)) ]
                    , E.span [ A.class_ "project-card__kicker-sep" ] [ E.text " · " ]
                    , E.span [ A.class_ "project-card__status" ] [ E.text (developmentLabel (projectDevelopment project)) ]
                    ]
@@ -81,7 +82,7 @@ projectCard level project =
                    Level3 -> E.h3 [ A.class_ "project-card__title", A.id (projectTitleId project) ] [ E.text (projectTitle project) ]
                , E.p [ A.class_ "project-card__summary" ] [ E.text (projectSummary project) ]
                , E.div [ A.class_ "project-card__footer" ]
-                   [ E.ul [ A.class_ "project-card__tags", A.aria_label "Topics" ]
+                   [ E.ul [ A.class_ "project-card__tags", A.aria_label "Technologies" ]
                        (map (\tag -> E.li [] [ E.text tag ]) (projectTechnologies project))
                    , E.a
                        [ A.class_ "project-card__link"

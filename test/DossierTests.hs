@@ -371,12 +371,17 @@ heroTests =
         has html "<div class=\"project-hero__art\" aria-hidden=\"true\"><img class=\"project-hero__img\" src=\"/media/projects/demo/hero.webp\" alt=\"\""
         -- the hero itself is not focusable
         hasNot html "tabindex"
-    , testCase "without a hero, the header opens the same layout and the card art opens the dossier" $ do
+    , testCase "without a hero, the header opens the same layout and the dossier follows directly (no orphaned card art)" $ do
         (page, html) <- render (demo "## A\n" [showcaseArt] <> [ (dir </> "card.svg", svg) ])
         pageLayout page @?= Interior
         hasNot html "project-hero"
         has html "<main id=\"main\" class=\"interior\"><article class=\"project project-layout\" aria-labelledby=\"demo-title\"><div class=\"project__header\">"
-        has html "</nav><div class=\"project__body\"><figure class=\"project__showcase\">"
+        has html "</nav><div class=\"project__body\"><section class=\"project__section"
+        -- Phase 05: the card art is the card's alone; the dossier shows no
+        -- stand-alone figure in its place
+        hasNot html "project__showcase"
+        hasNot html "card.svg"
+        hasNot html "<figure"
     , testCase "adding a hero does not move the sidebar: the same nav, between the opening and the body" $ do
         let body = "Lead.\n\n## One\n\n## Two\n"
         (_, withHero) <- render (demo body [hero [("src", "hero.webp"), ("alt", "x")], showcaseArt] <> heroFiles)

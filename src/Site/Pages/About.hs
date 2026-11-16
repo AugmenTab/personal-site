@@ -1,16 +1,23 @@
 {-# LANGUAGE DataKinds #-}
 
--- | The standalone About page, and the biography pieces the homepage's About
--- section shares with it.
+-- | The About page: the personal profile (Phase 05).
+--
+-- About introduces the person; Contact (a section of the homepage, linked
+-- from every page as @/#contact@) lists the ways to reach them. The two no
+-- longer share a page or a section. About keeps the tree-and-eclipse
+-- emblem, which appears nowhere else on the site.
+--
+-- The profile's copy is the owner's verified Phase 03 biography, arranged
+-- as a lede, titled sections and a closing note. It is draft copy awaiting
+-- the owner's content pass: nothing here may invent biographical facts.
+-- More sections (background, motivations) slot into 'profileSections'
+-- when the owner supplies them.
 module Site.Pages.About
   ( page
-  , aboutEmblem
-  , aboutLede
-  , biography
-  , ContactLink (..)
-  , contacts
-  , contactId
-  , contactLinks
+  , Profile (..)
+  , ProfileSection (..)
+  , profile
+  , aboutTitleId
   ) where
 
 import Data.List.NonEmpty qualified as NEL
@@ -25,7 +32,47 @@ import Brigid.Types qualified as B
 import Site.Assets qualified as Asset
 import Site.Components (pageHeading)
 import Site.Page (Layout (..), Page (..), SiteConfig, sectionTitle)
-import Site.Routes (Route (About), elementId)
+import Site.Pages.Home (CopyStatus (..), Introduction (..), introduction)
+import Site.Routes (Route (About, Home), contactId, elementId, routeFragmentUrl)
+
+-- | The profile's copy.
+data Profile =
+  Profile
+    { profileStatus :: CopyStatus
+    , profileLede :: T.Text
+    , profileSections :: [ProfileSection]
+    , profileNote :: T.Text
+    }
+
+-- | A titled part of the profile.
+data ProfileSection =
+  ProfileSection
+    { profileSectionId :: T.Text
+    , profileSectionHeading :: T.Text
+    , profileSectionParagraphs :: [T.Text]
+    , profileSectionList :: [T.Text]
+      -- ^ An optional short list after the paragraphs.
+    }
+
+-- | DRAFT: the Phase 03 biography (verified), for the owner's content
+-- pass. The areas of focus are the homepage's disciplines, so the two
+-- cannot drift apart.
+profile :: Profile
+profile =
+  Profile
+    { profileStatus = DraftCopy
+    , profileLede = "I’m a software engineer who builds the precise foundations that ambitious work depends on."
+    , profileSections =
+        [ ProfileSection
+            { profileSectionId = "work-and-interests"
+            , profileSectionHeading = "Work and interests"
+            , profileSectionParagraphs =
+                [ "My work spans programming languages and type systems, AI-assisted development, simulation and game technology, and tools for creative work. What connects it is a preference for systems whose behaviour can be understood, checked and trusted." ]
+            , profileSectionList = introDisciplines introduction
+            }
+        ]
+    , profileNote = "This site is a portfolio in progress."
+    }
 
 page :: SiteConfig -> Page
 page config =
@@ -35,22 +82,40 @@ page config =
     , pageDescription = "About Tyler Baum, a software engineer working on programming languages, AI-assisted development, simulation and creative technical tools."
     , pageLayout = Interior
     , pageMain =
-        [ E.section [ A.class_ "about", A.aria_labelledby (NEL.singleton titleId) ]
-            [ pageHeading ["section-title--quiet"] titleId "About"
+        [ E.section [ A.class_ "about about--profile", A.aria_labelledby (NEL.singleton aboutTitleId) ]
+            [ pageHeading ["section-title--quiet"] aboutTitleId "About"
             , E.div [ A.class_ "about__body" ]
                 [ aboutEmblem
                 , E.div [ A.class_ "about__text" ]
-                    ( aboutLede
-                        <> [ E.h2 [ A.class_ "about__subhead", A.id contactId ] [ E.text "Contact" ]
-                           , contactLinks
+                    ( [ E.p [ A.class_ "about__lede" ] [ E.text (profileLede profile) ] ]
+                        <> concatMap profileSection (profileSections profile)
+                        <> [ E.p [ A.class_ "about__note" ] [ E.text (profileNote profile) ]
+                           , E.p [ A.class_ "about__onward" ]
+                               [ E.a [ A.href (routeFragmentUrl Home contactId) ]
+                                   [ E.text "Get in touch"
+                                   , E.span [ A.class_ "about__onward-arrow", A.aria_hidden True ] [ E.text " →" ]
+                                   ]
+                               ]
                            ]
                     )
                 ]
             ]
         ]
     }
+
+profileSection :: ProfileSection -> [E.ChildHTML E.Division grandparent]
+profileSection s =
+  [ E.h2 [ A.class_ "about__subhead", A.id sid ] [ E.text (profileSectionHeading s) ] ]
+    <> [ E.p [ A.class_ "about__bio" ] [ E.text p ] | p <- profileSectionParagraphs s ]
+    <> [ E.ul [ A.class_ "about__list", A.aria_labelledby (NEL.singleton sid) ]
+           [ E.li [] [ E.text item ] | item <- profileSectionList s ]
+       | not (null (profileSectionList s))
+       ]
   where
-    titleId = elementId "about-title"
+    sid = elementId (profileSectionId s)
+
+aboutTitleId :: B.Id
+aboutTitleId = elementId "about-title"
 
 -- | The tree-and-eclipse emblem: a symbolic accompaniment to the biography
 -- (Baum = tree). Decorative; the monogram remains the personal signature.
@@ -63,60 +128,6 @@ aboutEmblem =
         , A.alt ""
         , A.width (680 :: Positive)
         , A.height (696 :: Positive)
-        , A.loading HTML.Lazy
         , A.decoding HTML.DecodeAsync
         ]
     ]
-
--- | DRAFT biography (Phase 03 revision), for owner review. The first
--- paragraph is the lede; the rest is quieter. An introduction, not a
--- professional history.
-biography :: [T.Text]
-biography =
-  [ "I’m a software engineer who builds the precise foundations that ambitious work depends on."
-  , "My work spans programming languages and type systems, AI-assisted development, simulation and game technology, and tools for creative work. What connects it is a preference for systems whose behaviour can be understood, checked and trusted."
-  , "This site is a portfolio in progress."
-  ]
-
-aboutLede :: E.ValidChild E.Paragraph parent grandparent => [E.ChildHTML parent grandparent]
-aboutLede =
-  zipWith paragraph [0 :: Int ..] biography
-  where
-    paragraph i text = E.p [ A.class_ (classFor i) ] [ E.text text ]
-    classFor i
-      | i == 0 = "about__lede"
-      | i == length biography - 1 = "about__note"
-      | otherwise = "about__bio"
-
--- | Target of the navigation's Contact link (on the About page) and of the
--- homepage's in-page contact heading.
-contactId :: B.Id
-contactId = elementId "contact"
-
--- | A verified contact destination. Only destinations confirmed by the owner
--- belong here; a missing one is simply left out (README "Homepage copy").
-data ContactLink =
-  ContactLink
-    { contactLabel :: T.Text
-    , contactDisplay :: T.Text
-      -- ^ The destination as shown, e.g. @github.com/AugmenTab@.
-    , contactUrl :: T.Text
-      -- ^ @https://@ only.
-    }
-
-contacts :: [ContactLink]
-contacts =
-  [ ContactLink "GitHub" "github.com/AugmenTab" "https://github.com/AugmenTab"
-  ]
-
-contactLinks :: E.ValidChild E.UnorderedList parent grandparent => E.ChildHTML parent grandparent
-contactLinks =
-  E.ul [ A.class_ "about__links" ] (map link contacts)
-  where
-    link c =
-      E.li [ A.class_ "about__link" ]
-        [ E.a [ A.href (B.mkRawURL (contactUrl c)) ]
-            [ E.span [ A.class_ "about__link-label" ] [ E.text (contactLabel c) ]
-            , E.span [ A.class_ "about__link-display" ] [ E.text (contactDisplay c) ]
-            ]
-        ]

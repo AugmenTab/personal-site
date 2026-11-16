@@ -58,7 +58,9 @@ fragment alternative was not needed.
      contain a straight `"`. URLs, ids, media paths and language classes
      already exclude it by construction.
   2. `Site.Validate.activeContent` fails the build on any tag containing an
-     `on…=` attribute or a script-capable element.
+     `on…=` attribute or a script-capable element. (Phase 05 allows one
+     exact form, an external module script from `/assets/scripts/` with no
+     inline code; see ADR 0004, decision 4.)
 
   This is recommended as an upstream fix in Brigid.
 

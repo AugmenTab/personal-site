@@ -132,3 +132,28 @@ the rest stands.
     `.local/hero-preview/`), served by a separate `hero-preview` service.
     Stand-in art never enters the repository's content tree; a test fails
     if a stand-in-named file appears under `content/`.
+
+## Amendment — Phase 05 (2026-11-16)
+
+16. **No card-art figure in the dossier.** A hero-less dossier no longer
+    opens its body with the project's `showcase` image. That figure had no
+    content role, and the owner's review found it orphaned. `showcase`
+    remains the card art only (cards on the homepage and the Work index).
+    A hero-less page opens with its header (title, summary, technologies,
+    topics, links) and goes straight into the lead and sections; nothing
+    stands in for a hero. Typed section artifacts (diagrams, images, code)
+    are unaffected. No content migration was needed: the field keeps its
+    shape and meaning for cards.
+
+17. **Below 900px the sidebar is a compact disclosure.** The phone
+    presentation of decision 11 (a wrapping list beside an oversized
+    current-project tab) is replaced by **All projects** and a collapsed
+    **On this page** `<details>` holding the section links. The title is
+    already in the opening, so the tab is not displayed there. The
+    desktop sidebar is unchanged. Both section lists are rendered from the
+    same `sidebarSections` value in `projectNav` (decision 10 still holds),
+    and CSS displays exactly one of them, so they cannot drift and the
+    keyboard and screen readers meet one. A single `<details>` serving both
+    widths was rejected: a closed `<details>` hides its content on desktop
+    too, and the CSS that would force it open (`::details-content`) is not
+    yet broadly supported.

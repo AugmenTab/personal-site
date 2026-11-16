@@ -21,6 +21,7 @@ from urllib.parse import urldefrag, urljoin, urlparse
 from playwright.sync_api import sync_playwright
 
 from phase04 import PHASE04_OUT, phase04_captures
+from phase05 import PHASE05_OUT, phase05_checks
 
 BASE = os.environ.get("PREVIEW_URL", "http://localhost:8080/")
 OUT = "design/proof"
@@ -178,19 +179,26 @@ def crawl(browser, failures):
 
 
 def no_js_walk(browser, failures):
-    """Navigate the site by clicking real links with JavaScript disabled."""
-    context = browser.new_context(viewport=VIEWPORTS["desktop"], java_script_enabled=False)
+    """Navigate the site by clicking real links with JavaScript disabled.
+
+    Reduced motion makes in-page jumps instant (no smooth scrolling), so a
+    link clicked after a same-page jump is not still moving."""
+    context = browser.new_context(viewport=VIEWPORTS["desktop"], java_script_enabled=False, reduced_motion="reduce")
     page = context.new_page()
     page.goto(urljoin(BASE, "/"), wait_until="networkidle")
     steps = [
-        ("nav Work", "nav >> text=Work", "/work/"),
+        ("nav Work", ".site-nav >> text=Work", "/work/"),
         ("Brigid card", ".project-card__link[href='/work/brigid/']", "/work/brigid/"),
         ("sidebar All projects", ".project-nav__back", "/work/"),
-        ("nav About", "nav >> text=About", "/about/"),
-        ("nav Contact", "nav >> text=Contact", "/about/#contact"),
+        ("nav About", ".site-nav >> text=About", "/about/"),
+        ("About: get in touch", ".about__onward a", "/#contact"),
         ("monogram", ".site-nav__mark", "/"),
         ("hero CTA", ".hero__actions .button--primary", "/#selected-work"),
-        ("nav Home", "nav >> text=Home", "/"),
+        ("hero secondary CTA", ".hero__actions .button--secondary", "/#contact"),
+        ("nav Contact", ".site-nav >> text=Contact", "/#contact"),
+        ("footer Work", ".site-footer__nav >> text=Work", "/work/"),
+        ("footer About", ".site-footer__nav >> text=About", "/about/"),
+        ("nav Home", ".site-nav >> text=Home", "/"),
     ]
     walk = []
     for label, selector, expected in steps:
@@ -232,6 +240,10 @@ def project_sidebar_checks(browser, failures):
     for page_name, path in PROJECT_PAGES.items():
         report[page_name] = {}
         for vp_name, viewport in VIEWPORTS.items():
+            # Phase 05: at 900px and below the section links live in the
+            # collapsed "On this page" disclosure (native <details>).
+            compact = viewport["width"] <= 900
+            link_selector = ".project-nav__index-list a" if compact else ".project-nav__sections a"
             context = browser.new_context(viewport=viewport, java_script_enabled=False)
             page = context.new_page()
             page.goto(urljoin(BASE, path), wait_until="networkidle")
@@ -239,7 +251,7 @@ def project_sidebar_checks(browser, failures):
             # scrolling; see INSTANT_SCROLL_JS.
             page.evaluate(INSTANT_SCROLL_JS)
             links = page.eval_on_selector_all(
-                ".project-nav__sections a", "els => els.map(a => a.getAttribute('href'))")
+                link_selector, "els => els.map(a => a.getAttribute('href'))")
             entry = {"sectionLinks": links, "clicks": []}
             if not page.query_selector(".project-nav__back[href='/work/']"):
                 failures.append(f"{page_name}/{vp_name}: sidebar has no All projects link")
@@ -248,7 +260,9 @@ def project_sidebar_checks(browser, failures):
             if not links:
                 failures.append(f"{page_name}/{vp_name}: sidebar has no section links")
             for href in links:
-                page.click(f".project-nav__sections a[href='{href}']")
+                if compact and not page.evaluate("() => document.querySelector('.project-nav__index').open"):
+                    page.click(".project-nav__summary")
+                page.click(f"{link_selector}[href='{href}']")
                 page.wait_for_timeout(100)
                 state = page.evaluate(
                     """(id) => { const t = document.getElementById(id); if (!t) return null;
@@ -281,17 +295,22 @@ def project_sidebar_checks(browser, failures):
             context.close()
 
             # Keyboard order through the sidebar (JavaScript on, default motion).
+            # Compact: All projects, the summary (Enter opens it), the links.
             page = browser.new_page(viewport=viewport)
             page.goto(urljoin(BASE, path), wait_until="networkidle")
             page.evaluate(INSTANT_SCROLL_JS)
             page.focus(".project-nav__back")
             stops = [page.evaluate("() => document.activeElement.getAttribute('href')")]
-            for _ in range(1 + len(links)):
+            describe = (
+                "() => { const e = document.activeElement; const s = getComputedStyle(e);"
+                " const name = e.tagName === 'SUMMARY' ? 'summary' : e.getAttribute('href');"
+                " return name + (s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) > 0 ? '' : ' (no outline)'); }")
+            for i in range(1 + len(links)):
                 page.keyboard.press("Tab")
-                stops.append(page.evaluate(
-                    "() => { const e = document.activeElement; const s = getComputedStyle(e);"
-                    " return e.getAttribute('href') + (s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) > 0 ? '' : ' (no outline)'); }"))
-            expected = ["/work/", path] + links
+                stops.append(page.evaluate(describe))
+                if compact and i == 0:
+                    page.keyboard.press("Enter")
+            expected = ["/work/", "summary" if compact else path] + links
             entry["keyboardStops"] = stops
             if stops != expected:
                 failures.append(f"{page_name}/{vp_name}: sidebar keyboard order {stops}, expected {expected}")
@@ -332,13 +351,14 @@ def focus_checks(browser, failures):
 
 PHASE03_OUT = f"{OUT}/phase-03"
 
-# The required homepage order (Phase 03 §11). #writing is conditional.
-HOME_SECTIONS = ["top", "black", "selected-work", "philosophy", "writing", "about"]
+# The required homepage order (Phase 03 §11; Phase 05 replaced About with
+# Contact). #writing is conditional.
+HOME_SECTIONS = ["top", "black", "selected-work", "philosophy", "writing", "contact"]
 
 SECTION_CAPTURES = {
-    "desktop": ["black", "selected-work", "philosophy", "writing", "about"],
-    "tablet": ["black", "selected-work", "philosophy", "about"],
-    "mobile": ["black", "selected-work", "philosophy", "about"],
+    "desktop": ["black", "selected-work", "philosophy", "writing", "contact"],
+    "tablet": ["black", "selected-work", "philosophy", "contact"],
+    "mobile": ["black", "selected-work", "philosophy", "contact"],
 }
 
 HOME_STRUCTURE_JS = """
@@ -462,14 +482,16 @@ def main() -> int:
         report["focus"] = focus_checks(browser, failures)
         report["projectSidebar"] = project_sidebar_checks(browser, failures)
 
-        # Branding close-ups at desktop: the About composition (tree emblem)
-        # and the nav medallion + divider beneath the name.
+        # Branding close-ups at desktop: the About composition (tree emblem,
+        # on the About page since Phase 05) and the nav medallion + divider
+        # beneath the name.
         page = browser.new_page(viewport=VIEWPORTS["desktop"])
         ready(page)
         page.evaluate("document.fonts.ready")
         page.screenshot(path=f"{OUT}/branding-nav-divider.png",
                         clip={"x": 360, "y": 0, "width": 720, "height": 300})
-        page.locator("#about").screenshot(path=f"{OUT}/about-section.png")
+        ready(page, "/about/")
+        page.locator(".about__body").screenshot(path=f"{OUT}/about-section.png")
         page.close()
         report["monogramImages"] = {}
         for page_name, path in PAGES.items():
@@ -482,9 +504,9 @@ def main() -> int:
                 failures.append(f"{page_name}: monogram must appear once, in the nav: {placement}")
             page.close()
         page = browser.new_page(viewport=VIEWPORTS["mobile"])
-        ready(page)
+        ready(page, "/about/")
         page.evaluate("document.fonts.ready")
-        page.locator("#about").screenshot(path=f"{OUT}/about-section-mobile.png")
+        page.locator(".about__body").screenshot(path=f"{OUT}/about-section-mobile.png")
         page.close()
 
         # Keyboard: tab from the top of the page and record the focus order.
@@ -535,6 +557,7 @@ def main() -> int:
 
         report["phase03"] = phase03_captures(browser, failures)
         report["phase04"] = phase04_captures(browser, BASE, PROJECT_PAGES, VIEWPORTS, ready, failures)
+        report["phase05"] = phase05_checks(browser, BASE, PAGES, ready, watch, CHECKS_JS, failures)
 
         # Reduced motion: confirm animations and smooth scrolling are off.
         context = browser.new_context(viewport=VIEWPORTS["desktop"], reduced_motion="reduce")
@@ -565,7 +588,7 @@ def main() -> int:
     # The container runs as root; hand the evidence to whoever owns the
     # bind-mounted proof directory (matters on Linux hosts only).
     st = os.stat(OUT)
-    for directory in (OUT, PAGES_OUT, PHASE03_OUT, PHASE04_OUT):
+    for directory in (OUT, PAGES_OUT, PHASE03_OUT, PHASE04_OUT, PHASE05_OUT):
         for name in [""] + os.listdir(directory):
             try:
                 os.chown(os.path.join(directory, name), st.st_uid, st.st_gid)

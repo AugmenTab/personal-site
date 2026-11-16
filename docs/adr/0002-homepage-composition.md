@@ -51,3 +51,11 @@ content pipeline ([ADR 0001](0001-content-pipeline.md)).
   index and the navigation entry follow automatically.
 - Swapping the teaser to another project would be a code change, which is
   deliberate: the teaser's copy is editorial, not data.
+
+## Amendment — Phase 05 (2026-11-16)
+
+The closing About and Contact section is replaced by a **Contact** section
+(`#contact`): a short invitation and one link per verified destination.
+The biography and the tree-and-eclipse emblem moved to the About page
+alone. The arrival (hero) is unchanged; its secondary button keeps the
+label "About & contact" and now targets `#contact`. See ADR 0004.
