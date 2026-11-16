@@ -1436,9 +1436,31 @@ ul {
 
   .site-nav__list {
     grid-row: 2;
-    flex-wrap: wrap;    /* three links a side (Writing, Résumé) wrap, never overflow */
-    gap: 0 1.1rem;
+    gap: 1.1rem;
     height: auto;
+  }
+
+  /* Five or six links (Writing or Résumé published): each side gets its
+     own centred row under the monogram, and the header grows to fit. The
+     standard four-link header above is unchanged. */
+  .page--nav-extended {
+    --header-h: 9.75rem;
+    --plate-top: 5.5rem;
+  }
+
+  .page--nav-extended .site-nav {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    row-gap: 0.15rem;
+  }
+
+  .page--nav-extended .site-nav__list {
+    grid-row: auto;
+    justify-content: center;
+  }
+
+  .page--nav-extended .site-nav__link {
+    padding-block: 0.45rem;
   }
 
   /* Footer: one centred column */
@@ -3502,7 +3524,15 @@ code {
   }
 }
 
-/* Search, category chips and result count */
+/* Search, category chips and result count. With scripting available the
+   controls take their place from the first paint, so revealing them never
+   shifts the cards; without it they stay hidden (no inert controls). */
+@media (scripting: enabled) {
+  .work-filter[hidden] {
+    display: grid !important;
+  }
+}
+
 .work-filter {
   display: grid;
   justify-items: center;

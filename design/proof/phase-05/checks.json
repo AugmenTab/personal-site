@@ -1,0 +1,1081 @@
+{
+  "pages": {
+    "home/wide": {
+      "overflow": false,
+      "problems": []
+    },
+    "home/laptop": {
+      "overflow": false,
+      "problems": []
+    },
+    "home/narrow": {
+      "overflow": false,
+      "problems": []
+    },
+    "work/wide": {
+      "overflow": false,
+      "problems": []
+    },
+    "work/laptop": {
+      "overflow": false,
+      "problems": []
+    },
+    "work/narrow": {
+      "overflow": false,
+      "problems": []
+    },
+    "project-black/wide": {
+      "overflow": false,
+      "problems": []
+    },
+    "project-black/laptop": {
+      "overflow": false,
+      "problems": []
+    },
+    "project-black/narrow": {
+      "overflow": false,
+      "problems": []
+    },
+    "project-brigid/wide": {
+      "overflow": false,
+      "problems": []
+    },
+    "project-brigid/laptop": {
+      "overflow": false,
+      "problems": []
+    },
+    "project-brigid/narrow": {
+      "overflow": false,
+      "problems": []
+    },
+    "project-lockdown/wide": {
+      "overflow": false,
+      "problems": []
+    },
+    "project-lockdown/laptop": {
+      "overflow": false,
+      "problems": []
+    },
+    "project-lockdown/narrow": {
+      "overflow": false,
+      "problems": []
+    },
+    "about/wide": {
+      "overflow": false,
+      "problems": []
+    },
+    "about/laptop": {
+      "overflow": false,
+      "problems": []
+    },
+    "about/narrow": {
+      "overflow": false,
+      "problems": []
+    },
+    "404/wide": {
+      "overflow": false,
+      "problems": []
+    },
+    "404/laptop": {
+      "overflow": false,
+      "problems": []
+    },
+    "404/narrow": {
+      "overflow": false,
+      "problems": []
+    },
+    "404-deep/wide": {
+      "overflow": false,
+      "problems": []
+    },
+    "404-deep/laptop": {
+      "overflow": false,
+      "problems": []
+    },
+    "404-deep/narrow": {
+      "overflow": false,
+      "problems": []
+    }
+  },
+  "work": {
+    "grid": {
+      "wide": {
+        "columns": 2,
+        "colGap": 40,
+        "rowGap": 40,
+        "equalRows": true,
+        "cardWidths": [
+          588,
+          588,
+          588
+        ],
+        "summaryWidths": [
+          317,
+          317,
+          317
+        ],
+        "overflow": false,
+        "controlsVisible": true
+      },
+      "desktop": {
+        "columns": 2,
+        "colGap": 40,
+        "rowGap": 40,
+        "equalRows": true,
+        "cardWidths": [
+          588,
+          588,
+          588
+        ],
+        "summaryWidths": [
+          317,
+          317,
+          317
+        ],
+        "overflow": false,
+        "controlsVisible": true
+      },
+      "laptop": {
+        "columns": 2,
+        "colGap": 38,
+        "rowGap": 38,
+        "equalRows": true,
+        "cardWidths": [
+          573,
+          573,
+          573
+        ],
+        "summaryWidths": [
+          307,
+          307,
+          307
+        ],
+        "overflow": false,
+        "controlsVisible": true
+      },
+      "tablet": {
+        "columns": 1,
+        "colGap": null,
+        "rowGap": 28,
+        "equalRows": true,
+        "cardWidths": [
+          707,
+          707,
+          707
+        ],
+        "summaryWidths": [
+          413,
+          413,
+          413
+        ],
+        "overflow": false,
+        "controlsVisible": true
+      },
+      "mobile": {
+        "columns": 1,
+        "colGap": null,
+        "rowGap": 28,
+        "equalRows": true,
+        "cardWidths": [
+          358,
+          358,
+          358
+        ],
+        "summaryWidths": [
+          286,
+          286,
+          286
+        ],
+        "overflow": false,
+        "controlsVisible": true
+      },
+      "narrow": {
+        "columns": 1,
+        "colGap": null,
+        "rowGap": 28,
+        "equalRows": true,
+        "cardWidths": [
+          288,
+          288,
+          288
+        ],
+        "summaryWidths": [
+          216,
+          216,
+          216
+        ],
+        "overflow": false,
+        "controlsVisible": true
+      }
+    },
+    "search": {
+      "initial": {
+        "titles": [
+          "Black",
+          "Brigid",
+          "Lockdown"
+        ],
+        "status": "3 projects",
+        "empty": false,
+        "pressed": [
+          "All"
+        ],
+        "active": "page"
+      },
+      "technology 'haskell'": {
+        "titles": [
+          "Black",
+          "Brigid"
+        ],
+        "status": "2 of 3 projects",
+        "empty": false,
+        "pressed": [
+          "All"
+        ],
+        "active": "work-search"
+      },
+      "topic with case and whitespace": {
+        "titles": [
+          "Black",
+          "Brigid"
+        ],
+        "status": "2 of 3 projects",
+        "empty": false,
+        "pressed": [
+          "All"
+        ],
+        "active": "work-search"
+      },
+      "description word": {
+        "titles": [
+          "Lockdown"
+        ],
+        "status": "1 of 3 projects",
+        "empty": false,
+        "pressed": [
+          "All"
+        ],
+        "active": "work-search"
+      },
+      "name": {
+        "titles": [
+          "Brigid"
+        ],
+        "status": "1 of 3 projects",
+        "empty": false,
+        "pressed": [
+          "All"
+        ],
+        "active": "work-search"
+      },
+      "category chip": {
+        "titles": [
+          "Lockdown"
+        ],
+        "status": "1 of 3 projects",
+        "empty": false,
+        "pressed": [
+          "Simulation & Games"
+        ],
+        "active": "work-filter__chip"
+      },
+      "category + search": {
+        "titles": [
+          "Brigid"
+        ],
+        "status": "1 of 3 projects",
+        "empty": false,
+        "pressed": [
+          "Libraries & Tooling"
+        ],
+        "active": "work-search"
+      },
+      "no results": {
+        "titles": [],
+        "status": "0 of 3 projects",
+        "empty": true,
+        "pressed": [
+          "Libraries & Tooling"
+        ],
+        "active": "work-search"
+      },
+      "reset": {
+        "titles": [
+          "Black",
+          "Brigid",
+          "Lockdown"
+        ],
+        "status": "3 projects",
+        "empty": false,
+        "pressed": [
+          "All"
+        ],
+        "active": "work-search"
+      },
+      "back to All": {
+        "titles": [
+          "Black",
+          "Brigid",
+          "Lockdown"
+        ],
+        "status": "3 projects",
+        "empty": false,
+        "pressed": [
+          "All"
+        ],
+        "active": "work-filter__chip"
+      },
+      "keyboard chip": {
+        "titles": [
+          "Black"
+        ],
+        "status": "1 of 3 projects",
+        "empty": false,
+        "pressed": [
+          "Programming Languages"
+        ],
+        "active": "work-filter__chip"
+      },
+      "keyboardFocus": {
+        "text": "Programming Languages",
+        "ring": true
+      },
+      "keyboard All": {
+        "titles": [
+          "Black",
+          "Brigid",
+          "Lockdown"
+        ],
+        "status": "3 projects",
+        "empty": false,
+        "pressed": [
+          "All"
+        ],
+        "active": "work-filter__chip"
+      },
+      "focus guard": {
+        "titles": [
+          "Brigid"
+        ],
+        "status": "1 of 3 projects",
+        "empty": false,
+        "pressed": [
+          "All"
+        ],
+        "active": "work-search"
+      }
+    },
+    "cumulativeLayoutShift": 0.0011775971003193588,
+    "noJavaScript": {
+      "cards": 3,
+      "controls": false,
+      "empty": false,
+      "links": [
+        "/work/black/",
+        "/work/brigid/",
+        "/work/lockdown/"
+      ]
+    }
+  },
+  "projectNav": {
+    "black/desktop": {
+      "details": false,
+      "sections": true,
+      "tab": true,
+      "back": true,
+      "open": false,
+      "navHeight": 479,
+      "position": "sticky",
+      "overflow": false
+    },
+    "black/tablet": {
+      "details": true,
+      "sections": false,
+      "tab": false,
+      "back": true,
+      "open": false,
+      "navHeight": 92,
+      "position": "static",
+      "overflow": false,
+      "expanded": [
+        {
+          "href": "#overview",
+          "visible": true,
+          "right": 720
+        },
+        {
+          "href": "#design-principles",
+          "visible": true,
+          "right": 720
+        },
+        {
+          "href": "#the-compiler-pipeline",
+          "visible": true,
+          "right": 720
+        },
+        {
+          "href": "#a-program-white-accepts",
+          "visible": true,
+          "right": 720
+        },
+        {
+          "href": "#a-program-white-rejects",
+          "visible": true,
+          "right": 720
+        },
+        {
+          "href": "#language-today",
+          "visible": true,
+          "right": 720
+        },
+        {
+          "href": "#status-and-limitations",
+          "visible": true,
+          "right": 720
+        },
+        {
+          "href": "#resources",
+          "visible": true,
+          "right": 720
+        }
+      ]
+    },
+    "black/mobile": {
+      "details": true,
+      "sections": false,
+      "tab": false,
+      "back": true,
+      "open": false,
+      "navHeight": 92,
+      "position": "static",
+      "overflow": false,
+      "expanded": [
+        {
+          "href": "#overview",
+          "visible": true,
+          "right": 357
+        },
+        {
+          "href": "#design-principles",
+          "visible": true,
+          "right": 357
+        },
+        {
+          "href": "#the-compiler-pipeline",
+          "visible": true,
+          "right": 357
+        },
+        {
+          "href": "#a-program-white-accepts",
+          "visible": true,
+          "right": 357
+        },
+        {
+          "href": "#a-program-white-rejects",
+          "visible": true,
+          "right": 357
+        },
+        {
+          "href": "#language-today",
+          "visible": true,
+          "right": 357
+        },
+        {
+          "href": "#status-and-limitations",
+          "visible": true,
+          "right": 357
+        },
+        {
+          "href": "#resources",
+          "visible": true,
+          "right": 357
+        }
+      ]
+    },
+    "black/narrow": {
+      "details": true,
+      "sections": false,
+      "tab": false,
+      "back": true,
+      "open": false,
+      "navHeight": 108,
+      "position": "static",
+      "overflow": false,
+      "expanded": [
+        {
+          "href": "#overview",
+          "visible": true,
+          "right": 287
+        },
+        {
+          "href": "#design-principles",
+          "visible": true,
+          "right": 287
+        },
+        {
+          "href": "#the-compiler-pipeline",
+          "visible": true,
+          "right": 287
+        },
+        {
+          "href": "#a-program-white-accepts",
+          "visible": true,
+          "right": 287
+        },
+        {
+          "href": "#a-program-white-rejects",
+          "visible": true,
+          "right": 287
+        },
+        {
+          "href": "#language-today",
+          "visible": true,
+          "right": 287
+        },
+        {
+          "href": "#status-and-limitations",
+          "visible": true,
+          "right": 287
+        },
+        {
+          "href": "#resources",
+          "visible": true,
+          "right": 287
+        }
+      ]
+    },
+    "brigid/desktop": {
+      "details": false,
+      "sections": true,
+      "tab": true,
+      "back": true,
+      "open": false,
+      "navHeight": 447,
+      "position": "sticky",
+      "overflow": false
+    },
+    "brigid/tablet": {
+      "details": true,
+      "sections": false,
+      "tab": false,
+      "back": true,
+      "open": false,
+      "navHeight": 92,
+      "position": "static",
+      "overflow": false
+    },
+    "brigid/mobile": {
+      "details": true,
+      "sections": false,
+      "tab": false,
+      "back": true,
+      "open": false,
+      "navHeight": 92,
+      "position": "static",
+      "overflow": false,
+      "expanded": [
+        {
+          "href": "#overview",
+          "visible": true,
+          "right": 357
+        },
+        {
+          "href": "#motivation",
+          "visible": true,
+          "right": 357
+        },
+        {
+          "href": "#how-the-types-work",
+          "visible": true,
+          "right": 357
+        },
+        {
+          "href": "#caught-at-compile-time",
+          "visible": true,
+          "right": 357
+        },
+        {
+          "href": "#what-the-types-buy",
+          "visible": true,
+          "right": 357
+        },
+        {
+          "href": "#status-and-limitations",
+          "visible": true,
+          "right": 357
+        },
+        {
+          "href": "#resources",
+          "visible": true,
+          "right": 357
+        }
+      ]
+    },
+    "brigid/narrow": {
+      "details": true,
+      "sections": false,
+      "tab": false,
+      "back": true,
+      "open": false,
+      "navHeight": 108,
+      "position": "static",
+      "overflow": false
+    },
+    "lockdown/desktop": {
+      "details": false,
+      "sections": true,
+      "tab": true,
+      "back": true,
+      "open": false,
+      "navHeight": 332,
+      "position": "sticky",
+      "overflow": false
+    },
+    "lockdown/tablet": {
+      "details": true,
+      "sections": false,
+      "tab": false,
+      "back": true,
+      "open": false,
+      "navHeight": 92,
+      "position": "static",
+      "overflow": false
+    },
+    "lockdown/mobile": {
+      "details": true,
+      "sections": false,
+      "tab": false,
+      "back": true,
+      "open": false,
+      "navHeight": 92,
+      "position": "static",
+      "overflow": false,
+      "expanded": [
+        {
+          "href": "#overview",
+          "visible": true,
+          "right": 357
+        },
+        {
+          "href": "#technical-approach",
+          "visible": true,
+          "right": 357
+        },
+        {
+          "href": "#current-capabilities",
+          "visible": true,
+          "right": 357
+        },
+        {
+          "href": "#limitations-and-status",
+          "visible": true,
+          "right": 357
+        }
+      ]
+    },
+    "lockdown/narrow": {
+      "details": true,
+      "sections": false,
+      "tab": false,
+      "back": true,
+      "open": false,
+      "navHeight": 108,
+      "position": "static",
+      "overflow": false
+    }
+  },
+  "contact": {
+    "fromProject": {
+      "path": "/",
+      "hash": "#contact",
+      "top": 157,
+      "inView": true,
+      "fixedUi": []
+    },
+    "onHomepage": {
+      "kept": true,
+      "hash": "#contact",
+      "inView": true
+    },
+    "controls/desktop": [
+      "https://github.com/AugmenTab"
+    ],
+    "controls/mobile": [
+      "https://github.com/AugmenTab"
+    ],
+    "controls/narrow": [
+      "https://github.com/AugmenTab"
+    ]
+  },
+  "footer": {
+    "footer/about/desktop": {
+      "links": [
+        "/work/",
+        "/about/",
+        "https://github.com/AugmenTab"
+      ],
+      "images": 0,
+      "overflow": false,
+      "width": 1440,
+      "minFont": 11.52
+    },
+    "footer/about/tablet": {
+      "links": [
+        "/work/",
+        "/about/",
+        "https://github.com/AugmenTab"
+      ],
+      "images": 0,
+      "overflow": false,
+      "width": 768,
+      "minFont": 11.52
+    },
+    "footer/about/mobile": {
+      "links": [
+        "/work/",
+        "/about/",
+        "https://github.com/AugmenTab"
+      ],
+      "images": 0,
+      "overflow": false,
+      "width": 390,
+      "minFont": 11.52
+    },
+    "footer/about/narrow": {
+      "links": [
+        "/work/",
+        "/about/",
+        "https://github.com/AugmenTab"
+      ],
+      "images": 0,
+      "overflow": false,
+      "width": 320,
+      "minFont": 11.52
+    },
+    "footer/home/desktop": {
+      "links": [
+        "/work/",
+        "/about/"
+      ],
+      "images": 0,
+      "overflow": false,
+      "width": 1440,
+      "minFont": 11.52
+    },
+    "footer/home/tablet": {
+      "links": [
+        "/work/",
+        "/about/"
+      ],
+      "images": 0,
+      "overflow": false,
+      "width": 768,
+      "minFont": 11.52
+    },
+    "footer/home/mobile": {
+      "links": [
+        "/work/",
+        "/about/"
+      ],
+      "images": 0,
+      "overflow": false,
+      "width": 390,
+      "minFont": 11.52
+    },
+    "footer/home/narrow": {
+      "links": [
+        "/work/",
+        "/about/"
+      ],
+      "images": 0,
+      "overflow": false,
+      "width": 320,
+      "minFont": 11.52
+    },
+    "footer/brigid/desktop": {
+      "links": [
+        "/work/",
+        "/about/",
+        "https://github.com/AugmenTab"
+      ],
+      "images": 0,
+      "overflow": false,
+      "width": 1440,
+      "minFont": 11.52
+    },
+    "footer/brigid/tablet": {
+      "links": [
+        "/work/",
+        "/about/",
+        "https://github.com/AugmenTab"
+      ],
+      "images": 0,
+      "overflow": false,
+      "width": 768,
+      "minFont": 11.52
+    },
+    "footer/brigid/mobile": {
+      "links": [
+        "/work/",
+        "/about/",
+        "https://github.com/AugmenTab"
+      ],
+      "images": 0,
+      "overflow": false,
+      "width": 390,
+      "minFont": 11.52
+    },
+    "footer/brigid/narrow": {
+      "links": [
+        "/work/",
+        "/about/",
+        "https://github.com/AugmenTab"
+      ],
+      "images": 0,
+      "overflow": false,
+      "width": 320,
+      "minFont": 11.52
+    }
+  },
+  "aboutAndHome": {
+    "about/desktop": {
+      "trees": 1,
+      "monograms": 1
+    },
+    "about/mobile": {
+      "trees": 1,
+      "monograms": 1
+    }
+  },
+  "discovery": {
+    "/sitemap.xml": {
+      "status": 200,
+      "type": "text/xml",
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n  <url><loc>https://tylerbaum.dev/</loc></url>\n  <url><loc>https://tylerbaum.dev/about/</loc></url>\n  <url><loc>https://tylerbaum.dev/work/</loc></url>\n  <url><loc>https://tylerbaum.dev/work/black/</loc></url>\n  <url><loc>https://tylerbaum.dev/work/brigid/</loc></url>\n  <url><loc>https://tylerbaum.dev/work/lockdown/</loc></url>\n</urlset>\n"
+    },
+    "/robots.txt": {
+      "status": 200,
+      "type": "text/plain",
+      "body": "User-agent: *\nAllow: /\n\nSitemap: https://tylerbaum.dev/sitemap.xml\n"
+    },
+    "sitemapUrls": [
+      "https://tylerbaum.dev/",
+      "https://tylerbaum.dev/about/",
+      "https://tylerbaum.dev/work/",
+      "https://tylerbaum.dev/work/black/",
+      "https://tylerbaum.dev/work/brigid/",
+      "https://tylerbaum.dev/work/lockdown/"
+    ],
+    "canonicalBrigid": "https://tylerbaum.dev/work/brigid/"
+  },
+  "fixture": {
+    "available": true,
+    "fixture/home/desktop": {
+      "nav": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "R\u00e9sum\u00e9 (PDF)",
+        "Contact"
+      ]
+    },
+    "fixture/home/tablet": {
+      "nav": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "R\u00e9sum\u00e9 (PDF)",
+        "Contact"
+      ]
+    },
+    "fixture/home/mobile": {
+      "nav": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "R\u00e9sum\u00e9 (PDF)",
+        "Contact"
+      ]
+    },
+    "fixture/home/narrow": {
+      "nav": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "R\u00e9sum\u00e9 (PDF)",
+        "Contact"
+      ]
+    },
+    "fixture/writing/desktop": {
+      "nav": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "R\u00e9sum\u00e9 (PDF)",
+        "Contact"
+      ]
+    },
+    "fixture/writing/tablet": {
+      "nav": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "R\u00e9sum\u00e9 (PDF)",
+        "Contact"
+      ]
+    },
+    "fixture/writing/mobile": {
+      "nav": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "R\u00e9sum\u00e9 (PDF)",
+        "Contact"
+      ]
+    },
+    "fixture/writing/narrow": {
+      "nav": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "R\u00e9sum\u00e9 (PDF)",
+        "Contact"
+      ]
+    },
+    "fixture/article/desktop": {
+      "nav": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "R\u00e9sum\u00e9 (PDF)",
+        "Contact"
+      ]
+    },
+    "fixture/article/tablet": {
+      "nav": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "R\u00e9sum\u00e9 (PDF)",
+        "Contact"
+      ]
+    },
+    "fixture/article/mobile": {
+      "nav": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "R\u00e9sum\u00e9 (PDF)",
+        "Contact"
+      ]
+    },
+    "fixture/article/narrow": {
+      "nav": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "R\u00e9sum\u00e9 (PDF)",
+        "Contact"
+      ]
+    },
+    "fixture/about/desktop": {
+      "nav": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "R\u00e9sum\u00e9 (PDF)",
+        "Contact"
+      ]
+    },
+    "fixture/about/tablet": {
+      "nav": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "R\u00e9sum\u00e9 (PDF)",
+        "Contact"
+      ]
+    },
+    "fixture/about/mobile": {
+      "nav": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "R\u00e9sum\u00e9 (PDF)",
+        "Contact"
+      ]
+    },
+    "fixture/about/narrow": {
+      "nav": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "R\u00e9sum\u00e9 (PDF)",
+        "Contact"
+      ]
+    },
+    "fixture/work/desktop": {
+      "nav": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "R\u00e9sum\u00e9 (PDF)",
+        "Contact"
+      ]
+    },
+    "fixture/work/tablet": {
+      "nav": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "R\u00e9sum\u00e9 (PDF)",
+        "Contact"
+      ]
+    },
+    "fixture/work/mobile": {
+      "nav": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "R\u00e9sum\u00e9 (PDF)",
+        "Contact"
+      ]
+    },
+    "fixture/work/narrow": {
+      "nav": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "R\u00e9sum\u00e9 (PDF)",
+        "Contact"
+      ]
+    },
+    "resume": {
+      "status": 200,
+      "type": "application/pdf",
+      "head": "%PDF-"
+    },
+    "draftStatus": 404,
+    "sitemapWriting": true
+  }
+}

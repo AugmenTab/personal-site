@@ -297,6 +297,15 @@ Use `not started / in progress / blocked / gate passed` for phases. A phase pass
 
 **Dependencies:** Phases 03 **and** 04.
 
+> **Status (2026-11-16):** implemented as revised by the Phase 05 handoff
+> (Work index grid, search and category filters; controlled taxonomy;
+> separate About and Contact; conditional Writing and Résumé; compact
+> mobile project index; shared footer; canonical and social metadata;
+> generated sitemap and robots.txt). Decisions: ADR 0004. Dossier
+> breadcrumbs remain the sidebar's "All projects" link; no separate
+> breadcrumb trail was added. Social preview images are deliberately
+> omitted until approved art exists.
+
 ### Work
 
 - `/work/`: searchable/filterable only if justified; initial index can be simple and fully functional without JS. Clearly show all published projects, not just featured ones.

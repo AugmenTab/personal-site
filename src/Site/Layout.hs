@@ -37,13 +37,18 @@ pageDocument :: SiteConfig -> Page -> E.HTML
 pageDocument config page =
   E.html [ A.lang (Just (siteLanguage config)) ]
     [ E.head [] (headContent config page)
-    , E.body [ A.class_ "page" ]
+    , E.body [ A.class_ (if extended then "page page--nav-extended" else "page") ]
         [ E.a [ A.class_ "skip-link", A.href mainId ] [ E.text "Skip to content" ]
         , siteHeader config (pageRoute page)
         , E.main (A.id mainId : layoutAttributes (pageLayout page)) (pageMain page)
         , siteFooter config (pageRoute page)
         ]
     ]
+  where
+    -- More than the four standard links (Writing or Résumé published):
+    -- phones then stack each side's links on its own row (CSS), leaving
+    -- the approved four-link header untouched.
+    extended = let (start, end) = navItems config in length start + length end > 4
 
 layoutAttributes :: Layout -> [A.Attribute E.Main]
 layoutAttributes layout =
