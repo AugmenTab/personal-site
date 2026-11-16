@@ -4,9 +4,9 @@
 
 Run after the screenshots service. Reference: the full-resolution render
 from the git-ignored kit, resized to 1440 wide (1586x992 -> 1440x900).
-Proof: design/proof/desktop-first-view.png (Chromium, 1440x900).
+Proof: design/proof/latest/desktop-first-view.png (Chromium, 1440x900).
 
-Writes to design/proof/compare/:
+Writes to design/proof/latest/compare/:
   01-reference-1440x900.png      approved render at the authoritative size
   02-proof-1440x900.png          revised browser screenshot
   03-overlay-50.png              registered 50% opacity overlay
@@ -32,8 +32,8 @@ from PIL import Image, ImageDraw
 from common import chown_like_work
 
 RENDER = ".local/kit/01_approved_visuals/homepage-render-02.png"
-PROOF = "design/proof/desktop-first-view.png"
-OUT = "design/proof/compare"
+PROOF = "design/proof/latest/desktop-first-view.png"
+OUT = "design/proof/latest/compare"
 
 # Regions (x0, y0, x1, y1) in 1440x900 page pixels.
 ART_REGIONS = {  # artwork only: no text, controls or intentional differences

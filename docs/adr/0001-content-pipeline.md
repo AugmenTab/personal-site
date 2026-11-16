@@ -62,6 +62,18 @@ fragment alternative was not needed.
      exact form, an external module script from `/assets/scripts/` with no
      inline code; see ADR 0004, decision 4.)
 
+  **Amended (post-Phase 05 remediation, 2026-11-16).** Brigid was fixed
+  upstream and `e0f4d45` (pinned since Phase 03) escapes `"`, `'`, `&`,
+  `<` and `>` in every attribute value. Layer 1 is removed: summaries and
+  alt text accept straight quotes, and escaping is Brigid's alone, at
+  serialization. Layer 2 stays unchanged. It is a string scan over
+  Brigid's own output, not a general HTML parser; because Brigid escapes
+  `<` and `>` everywhere, every literal `<` and `>` in a page is a real tag
+  boundary, which is the assumption it relies on. It errs towards refusing
+  (attribute text that itself reads `… onclick=…` fails the build even
+  though it is escaped). `test/RemediationTests.hs` covers both layers'
+  replacement: rendered pages are re-read with an independent tokenizer.
+
   This is recommended as an upstream fix in Brigid.
 
 ## 3. URL policy

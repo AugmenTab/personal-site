@@ -10,9 +10,11 @@ dist.old/
 .stack-work/
 .stack-root/
 
-# Scratch screenshots (curated proof screenshots live in design/proof/)
+# Screenshot and comparison tool output. Every capture run writes here and
+# nothing here is committed; curated evidence is copied into design/proof/
+# deliberately (see design/proof/README.md).
+design/proof/latest/
 *.scratch.png
 
 .DS_Store
 __pycache__/
-design/proof/regression-diff.png

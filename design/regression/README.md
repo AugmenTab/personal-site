@@ -23,13 +23,14 @@ docker compose --profile tools run --rm screenshots
 docker compose --profile tools run --rm art python3 tools/art/regression.py
 ```
 
-`regression.py` compares `design/proof/desktop-first-view.png` with
+`regression.py` compares `design/proof/latest/desktop-first-view.png` (written by the
+screenshots service; git-ignored) with
 `desktop-1440x900.png`. It reports two values:
 
 - the mean absolute luminance difference (limit 1.5/255);
 - the worst 32×32 tile (limit 12/255), which catches local breakage that a
   whole-frame mean would hide.
 
-It also writes `design/proof/regression-diff.png`. A failure means "look at
+It also writes `design/proof/latest/regression-diff.png`. A failure means "look at
 the diff". Content changes that the owner has approved are expected to fail
 it; refresh the reference only after that approval.

@@ -51,21 +51,26 @@ docker compose run --rm site-build stack test   # Haskell tests
 docker compose up -d preview                    # serve dist/ at http://localhost:8080/
 docker compose run --rm site-build bash         # shell in the toolchain container
 
-# development-only: screenshots + browser checks for every page into design/proof/
+# development-only: screenshots + browser checks for every page into design/proof/latest/ (git-ignored)
 docker compose up -d preview
 docker compose --profile tools run --rm screenshots
 docker compose --profile tools run --rm art python3 tools/art/regression.py --hero-band   # hero vs approved baseline (the hard gate)
 docker compose --profile tools run --rm art python3 tools/art/regression.py               # whole first view (teaser changed by design in Phase 03)
+docker compose --profile tools run --rm art python3 tools/art/evidence_diff.py            # fresh captures vs the committed evidence, pixel by pixel
 docker compose --profile tools run --rm art python3 tools/art/phase03_sheet.py            # hero and homepage comparison sheets
 ```
 
-The screenshot run also writes the Phase 03 homepage evidence to
-`design/proof/phase-03/`: full-page and first-view captures at desktop,
-tablet, mobile and 1920-wide, each new section on its own, and a full page
-with JavaScript disabled. The Phase 05 checks (Work search and filters,
+Every capture and comparison tool writes into `design/proof/latest/`, which
+Git ignores, so a run never modifies committed files. That folder holds the
+homepage captures under their Phase 00 names (`desktop-first-view.png` is
+what `regression.py` compares with `design/regression/`), `pages/`, the
+Phase 03 homepage captures in `phase-03/`, the dossier captures in
+`phase-04/` and the Phase 05 checks in `phase-05/` (Work search and filters,
 the compact project index, Contact, the footer, the extra 1280, 1920 and
-320px widths, discovery files) write `design/proof/phase-05/`; for Writing
-and the Résumé link they need the fixture site:
+320px widths, discovery files), plus `checks.txt`. The committed evidence
+in `design/proof/` is a curated, frozen selection; its retention rules and
+how to refresh it are in [`design/proof/README.md`](design/proof/README.md).
+For Writing and the Résumé link the checks need the fixture site:
 
 ```sh
 docker compose --profile tools run --rm art python3 tools/art/fixture_site.py   # .local/fixture-site/ (git-ignored)
@@ -475,7 +480,8 @@ docker compose --profile tools run --rm art python3 tools/screenshots/hero_check
 
 `hero_check.py` runs the same layout, hero, focus, overflow, keyboard and
 no-JavaScript checks as the main screenshot run, and writes its captures and
-`checks.json` to `design/proof/phase-04-remediation/NAME/`. Re-run step 1
+`checks.json` to `design/proof/latest/hero-check/NAME/` (git-ignored; copy an
+accepted result into `design/proof/` deliberately). Re-run step 1
 after editing the stylesheet, since the preview holds a copy of `assets/`.
 Nothing in `.local/hero-preview/` can be published from the repository. A
 test also fails if any file under `content/` is named as a stand-in.
@@ -483,8 +489,11 @@ test also fails if any file under `content/` is named as a stand-in.
 ### `article.json` fields
 
 The fields are `slug`, `title`, `summary`, `publication_status` and `body`,
-all as above. `date` is optional, in the form `YYYY-MM-DD`; articles are
-listed newest first, undated last. A Writing index and the navigation's
+all as above. `date` is optional, in the form `YYYY-MM-DD`, and must be a
+day that exists in the Gregorian calendar (`2024-02-29` is accepted;
+`2026-02-29`, `2026-02-31` and `2026-04-31` are rejected, naming the file).
+The date is shown exactly as written; it is never taken from the build
+clock. Articles are listed newest first, undated last. A Writing index and the navigation's
 "Writing" link appear only when at least one article is published. No empty
 Writing page is ever generated.
 
@@ -609,12 +618,16 @@ Markdown is content, not trusted HTML.
   directory. Remote images, traversal (`..`), absolute paths, symlinks that
   escape, and non-image files such as `body.md` or `project.json` are all
   rejected.
-- **Straight double quotes are rejected** in text that becomes an HTML
-  attribute: summaries and alt text. Use typographic quotes (“ ”). This
-  rule dates from Brigid `9344bfb`, which did not escape `"` or `&` in
-  attribute values. Brigid `e0f4d45` (pinned since Phase 03) escapes every
-  attribute value, and a test proves it, but the rule and the scan below
-  are kept as defence in depth until the owner decides otherwise.
+- **Quotation marks and other punctuation are ordinary text** in summaries
+  and alt text, including text that becomes an HTML attribute (the meta
+  description, `og:description`, `alt`). Brigid `e0f4d45` (pinned since
+  Phase 03) escapes `"`, `'`, `&`, `<` and `>` in every attribute value when
+  it serializes the page, so `A "correctness-first" programming language.`
+  is published exactly as written. Nothing is pre-escaped by this site.
+  (The quote ban that Phase 02 added for Brigid `9344bfb` was removed in the
+  post-Phase 05 remediation; `test/RemediationTests.hs` re-reads the
+  rendered attributes with an independent tokenizer to prove the value stays
+  inside its attribute.)
 - **Defence in depth.** Every generated page is scanned before publishing:
   - every real tag (Brigid escapes `<` in text) is checked;
   - the build fails on any `on…=` event-handler attribute;
@@ -934,8 +947,9 @@ or file. The previous output is left untouched.
 | `field "body": referenced file "…" does not exist` | The Markdown body named in the metadata is missing |
 | `content/projects/x/body.md:` then `line N: …` | A Markdown problem at that line: raw HTML, a disallowed link, a heading-level problem, or an image without alt text |
 | `… resolves to …, outside its permitted directory (symlink escape)` | A content file or media file is a symlink out of its directory |
-| `must not contain a straight double quote` | Use typographic quotes in summaries and alt text |
-| `page /… contains active content in the tag …` | A value broke out of its attribute. This should be impossible. Report it, as it indicates an escaping gap |
+| `field "date": invalid date "…"; that day does not exist in the calendar` | The date has the right shape but no such day (e.g. `2026-02-29`, `2026-04-31`) |
+| `field "date": invalid date "…"; expected YYYY-MM-DD` | Write the date as four, two and two ASCII digits |
+| `page /… contains active content in the tag …` | A tag would run script. Usually this is attribute-bound text (a summary or alt text) that itself reads like an event handler, such as `x" onclick="…`: Brigid escapes it, so it cannot break out, but the scan is a plain string check and refuses it anyway (it fails closed). Reword the text. Anything else indicates an escaping gap: report it |
 | `required asset(s) missing from the source tree: - assets/images/x.webp` | A file in `allAssets` does not exist. Restore it, or remove it from the list |
 | `assets/x is not a regular file` / `resolves to …, outside the assets directory` | The asset is a directory, or a symlink pointing out of `assets/`. Replace it with a real file |
 | `assets/styles/site.css references "../images/x.png", which is not a listed asset` | Add the file to `allAssets`, or fix the `url()` |
@@ -1043,10 +1057,10 @@ test/ContentTests.hs   content, Markdown, adversarial-input and publication test
 test/HomeTests.hs      homepage composition: Selected Work, Black teaser, Writing preview, structure
 test/DossierTests.hs   project dossiers: section layouts, heroes, sidebar, artifacts, publication
 assets/                production-bound CSS, SVG, raster plates and fonts (copied to dist/assets/)
-design/                design master files, curated references, proof screenshots, regression baseline
+design/                design master files, curated references, curated proof screenshots (design/proof/README.md), regression baseline; tool output goes to design/proof/latest/ (ignored)
 docs/                  PRD, implementation plan, Phase 00 handoff
 docker/                entrypoint, build script and preview server config
 tools/Dockerfile       development-only tools image (never used by the site build)
 tools/screenshots/     Playwright captures and browser checks for every page (phase04.py: dossier checks; hero_check.py: a previewed hero)
-tools/art/             hero reconstruction, emblem prep, hero promotion and preview, registered comparisons, regression check
+tools/art/             hero reconstruction, emblem prep, hero promotion and preview, registered comparisons, regression check, evidence_diff.py (fresh captures vs committed evidence)
 ```

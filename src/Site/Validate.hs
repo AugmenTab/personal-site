@@ -51,7 +51,7 @@ instance Show PageProblem where
       BrokenLink route url why -> page route <> " links to " <> show (T.unpack url) <> ": " <> why
       ActiveContent route tag ->
         page route <> " contains active content in the tag " <> show (T.unpack (T.take 120 tag))
-          <> " (an attribute or text value broke out of its context)"
+          <> " (a script-capable element or an on…= event-handler attribute; text that merely reads like one, such as a summary containing ' onclick=', is refused too: reword it)"
     where
       page route = "page " <> T.unpack (routePath route)
 

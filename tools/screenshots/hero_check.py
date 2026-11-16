@@ -7,7 +7,7 @@
 Runs the dossier checks of phase04.py (layout, hero, sections, keyboard)
 against the hero preview server (README "Previewing a hero"), plus a
 no-JavaScript walk of the sidebar links at every viewport. Captures go to
-design/proof/phase-04-remediation/NAME/ (default "stand-in"), with the
+design/proof/latest/hero-check/NAME/ (default "stand-in"), with the
 results in checks.json. Exits 1 if any check fails.
 
 The preview is built from .local/hero-preview/, never from content/, so
@@ -36,7 +36,7 @@ NO_JS_CLICK_JS = """
 def main() -> int:
     slug = sys.argv[1]
     name = sys.argv[2] if len(sys.argv) > 2 else "stand-in"
-    out = f"design/proof/phase-04-remediation/{name}"
+    out = f"design/proof/latest/hero-check/{name}"
     path = f"/work/{slug}/"
     failures, errors = [], []
 

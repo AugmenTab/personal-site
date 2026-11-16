@@ -42,7 +42,9 @@ content pipeline ([ADR 0001](0001-content-pipeline.md)).
 6. **Brigid moves to `e0f4d45`**, which escapes all attribute values. The
    Phase 02 mitigations (no straight quotes in attribute-bound content, and
    the build's active-content scan) stay as defence in depth. Removing them
-   is a separate owner decision.
+   is a separate owner decision. (Amended 2026-11-16: the owner's
+   remediation plan removed the quote ban; the active-content scan stays.
+   See ADR 0001.)
 
 ## Consequences
 

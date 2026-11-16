@@ -6,8 +6,8 @@
     docker compose --profile tools run --rm art python3 tools/art/regression.py --hero-band
 
 Reference: design/regression/desktop-1440x900.png (approved at the Phase 00
-gate). Candidate: design/proof/desktop-first-view.png. Writes
-design/proof/regression-diff.png (|difference| x4) and exits 1 if the mean
+gate). Candidate: design/proof/latest/desktop-first-view.png. Writes
+design/proof/latest/regression-diff.png (|difference| x4) and exits 1 if the mean
 absolute luminance difference exceeds the threshold, or if any 32x32 tile
 differs by more than the tile threshold (catches local breakage that a
 whole-frame mean would hide). Thresholds allow for font antialiasing noise.
@@ -26,8 +26,8 @@ import numpy as np
 from PIL import Image
 
 REFERENCE = "design/regression/desktop-1440x900.png"
-CANDIDATE = "design/proof/desktop-first-view.png"
-DIFF = "design/proof/regression-diff.png"
+CANDIDATE = "design/proof/latest/desktop-first-view.png"
+DIFF = "design/proof/latest/regression-diff.png"
 HERO_BAND_ROWS = 416  # a whole number of 32px tiles above the teaser frame (y=421)
 MEAN_LIMIT = 1.5      # 0-255 luminance, whole frame
 TILE_LIMIT = 12.0     # 0-255 luminance, worst 32x32 tile

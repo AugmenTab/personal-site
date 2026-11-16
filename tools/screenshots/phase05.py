@@ -1,6 +1,6 @@
 """Phase 05 evidence and browser checks (called by capture.py).
 
-Same browser, same preview. Writes design/proof/phase-05/ and returns a
+Same browser, same preview. Writes design/proof/latest/phase-05/ and returns a
 report; every problem is appended to `failures`.
 
   - every page at the extra widths (1280 laptop, 1920 wide, 320 narrow):
@@ -24,7 +24,7 @@ import json
 import os
 from urllib.parse import urljoin, urlparse
 
-PHASE05_OUT = "design/proof/phase-05"
+PHASE05_OUT = "design/proof/latest/phase-05"
 FIXTURE = os.environ.get("FIXTURE_URL", "http://fixture-preview/")
 
 VIEWPORTS = {
