@@ -27,7 +27,8 @@ def main() -> int:
         browser = p.chromium.launch()
         page = browser.new_page(viewport={"width": width, "height": height})
         page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
-        page.goto(BASE + path, wait_until="networkidle")
+        # a full URL (e.g. http://hero-preview/work/black/) overrides BASE
+        page.goto(path if path.startswith("http") else BASE + path, wait_until="networkidle")
         page.evaluate("""async () => {
           document.documentElement.style.scrollBehavior = 'auto';
           for (const img of document.images) { img.loading = 'eager'; }

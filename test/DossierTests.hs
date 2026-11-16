@@ -6,6 +6,7 @@
 -- inspect the generated HTML.
 module DossierTests (dossierTests) where
 
+import Control.Exception (try)
 import Control.Monad (forM_)
 import Data.Aeson ((.=))
 import Data.Aeson qualified as Json
@@ -20,7 +21,7 @@ import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (Assertion, assertBool, assertFailure, testCase, (@?=))
 
 import Site.Build
-import Site.Content.Load (ContentError (..), loadContent)
+import Site.Content.Load (ContentError (..), HeroSizePolicy (..), defaultHeroSizePolicy, loadContent, loadContentWith)
 import Site.Content.Markdown (inlineText)
 import Site.Content.Types
 import Site.Definition (siteFrom)
@@ -201,6 +202,13 @@ realContentTests =
           forM_ (projectHero p) $ \h ->
             assertBool (show (projectSlug p)) (MediaFile (ProjectMedia (projectSlug p)) (projectSource p) (heroImage h) `elem` projectMedia p)
         assertBool "crest withheld" (slugOf "crest" `notElem` map projectSlug content)
+    , testCase "nothing new is published: the same three projects, no stand-in art, no warnings" $ do
+        content <- realProjects
+        sort (map (slugText . projectSlug) content) @?= ["black", "brigid", "lockdown"]
+        files <- listFiles "content"
+        assertBool (show files) (not (any (\f -> any (`isInfixOf` f) ["stand-in", "standin", "stand_in"]) files))
+        result <- loadContent "."
+        either (assertFailure . concatMap show) (\c -> contentWarnings c @?= []) result
     , testCase "the Black excerpts are the verified programs: the accepted one is the homepage's" $ do
         accepted <- readText "content/projects/black/examples/NominalRecord.blk"
         T.stripEnd accepted @?= T.stripEnd (exampleSource blackExample)
@@ -344,24 +352,81 @@ sectionValidationTests =
 heroTests :: TestTree
 heroTests =
   testGroup "heroes"
-    [ testCase "a hero page opens on the art, with the real title, summary and tags over it" $ do
+    [ testCase "a hero opens the main column, beside the sidebar, with the real title, summary and tags over it" $ do
         (page, html) <- render (demo "## A\n\nText.\n" [hero [("src", "hero.webp"), ("alt", "A gothic window")], showcaseArt] <> heroFiles)
         pageLayout page @?= Dossier
-        has html "<main id=\"main\" class=\"interior interior--dossier\"><article class=\"project project--hero\" aria-labelledby=\"demo-title\"><header class=\"project-hero project-hero--focus-center\"><div class=\"project-hero__art\"><img class=\"project-hero__img\" src=\"/media/projects/demo/hero.webp\" alt=\"A gothic window\" fetchpriority=\"high\"/></div><div class=\"project-hero__inner\"><div class=\"project__header\">"
+        -- one article is the layout: hero, then sidebar, then dossier body
+        has html "<main id=\"main\" class=\"interior interior--dossier\"><article class=\"project project-layout project--hero\" aria-labelledby=\"demo-title\"><header class=\"project-hero project-hero--x-50 project-hero--y-50 project-hero--mx-50 project-hero--my-50\"><div class=\"project-hero__art\"><img class=\"project-hero__img\" src=\"/media/projects/demo/hero.webp\" alt=\"A gothic window\" fetchpriority=\"high\"/></div><div class=\"project-hero__inner\"><div class=\"project__header\">"
         has html "<h1 class=\"project__title\" id=\"demo-title\">Project demo</h1>"
-        -- then the shared shell: sidebar beside the sections
-        assertBool "sidebar after the hero" (position html "project-hero" < position html "class=\"project-nav\"")
+        has html "</div></div></header><nav class=\"project-nav\" aria-label=\"Project\">"
+        has html "</nav><div class=\"project__body\"><section class=\"project__section dossier-section dossier-section--overview prose\""
+        assertBool "hero, sidebar and body all inside the article"
+          (position html "</article>" > position html "class=\"project__body\"")
         -- the card art is the card's; the hero page does not repeat it
         hasNot html "project__showcase"
         T.count "<h1" html @?= 1
-    , testCase "decorative heroes have empty alt and are hidden; focus picks the crop" $ do
-        (_, html) <- render (demo "## A\n" [hero [("src", "hero.webp"), ("decorative", Json.Bool True), ("focus", "top")]] <> heroFiles)
-        has html "<header class=\"project-hero project-hero--focus-top\"><div class=\"project-hero__art\" aria-hidden=\"true\"><img class=\"project-hero__img\" src=\"/media/projects/demo/hero.webp\" alt=\"\""
-    , testCase "without a hero, the Phase 02 header and card art remain" $ do
+        T.count "<header class=\"project-hero" html @?= 1
+    , testCase "decorative heroes have empty alt and are hidden from assistive technology" $ do
+        (_, html) <- render (demo "## A\n" [hero [("src", "hero.webp"), ("decorative", Json.Bool True)]] <> heroFiles)
+        has html "<div class=\"project-hero__art\" aria-hidden=\"true\"><img class=\"project-hero__img\" src=\"/media/projects/demo/hero.webp\" alt=\"\""
+        -- the hero itself is not focusable
+        hasNot html "tabindex"
+    , testCase "without a hero, the header opens the same layout and the card art opens the dossier" $ do
         (page, html) <- render (demo "## A\n" [showcaseArt] <> [ (dir </> "card.svg", svg) ])
         pageLayout page @?= Interior
         hasNot html "project-hero"
-        has html "<figure class=\"project__showcase\">"
+        has html "<main id=\"main\" class=\"interior\"><article class=\"project project-layout\" aria-labelledby=\"demo-title\"><div class=\"project__header\">"
+        has html "</nav><div class=\"project__body\"><figure class=\"project__showcase\">"
+    , testCase "adding a hero does not move the sidebar: the same nav, between the opening and the body" $ do
+        let body = "Lead.\n\n## One\n\n## Two\n"
+        (_, withHero) <- render (demo body [hero [("src", "hero.webp"), ("alt", "x")], showcaseArt] <> heroFiles)
+        (_, without) <- render (demo body [showcaseArt] <> heroFiles)
+        let navOf html = fst (T.breakOn "</nav>" (snd (T.breakOn "<nav class=\"project-nav\"" html)))
+        navOf withHero @?= navOf without
+        assertBool "nav present" (not (T.null (navOf withHero)))
+        forM_ [withHero, without] $ \html -> do
+          has html "</nav><div class=\"project__body\">"
+          assertBool "the opening precedes the sidebar" (position html "class=\"project__header\"" < position html "<nav class=\"project-nav\"")
+        -- and the sections and their anchors are identical
+        let bodyOf html = fst (T.breakOn "</article>" (snd (T.breakOn "<div class=\"project__lead" html)))
+        bodyOf withHero @?= bodyOf without
+    , testCase "focus: omitted, legacy keywords, one point, and separate desktop and mobile points" $ do
+        let classesFor focus = do
+              (_, html) <- render (demo "## A\n" [hero ([("src", "hero.webp"), ("alt", "x")] <> [ ("focus", f) | Just f <- [focus] ])] <> heroFiles)
+              pure (fst (T.breakOn "\"" (snd (T.breakOn "project-hero--x" html))))
+            point x y = Json.object [ k .= (v :: Int) | (k, Just v) <- [("x", x), ("y", y)] ]
+        c0 <- classesFor Nothing
+        c0 @?= "project-hero--x-50 project-hero--y-50 project-hero--mx-50 project-hero--my-50"
+        c1 <- classesFor (Just "top")
+        c1 @?= "project-hero--x-50 project-hero--y-10 project-hero--mx-50 project-hero--my-10"
+        c2 <- classesFor (Just "bottom")
+        c2 @?= "project-hero--x-50 project-hero--y-90 project-hero--mx-50 project-hero--my-90"
+        c3 <- classesFor (Just (point (Just 65) (Just 35)))
+        c3 @?= "project-hero--x-65 project-hero--y-35 project-hero--mx-65 project-hero--my-35"
+        c4 <- classesFor (Just (Json.object ["desktop" .= point (Just 65) (Just 35), "mobile" .= point (Just 80) Nothing]))
+        c4 @?= "project-hero--x-65 project-hero--y-35 project-hero--mx-80 project-hero--my-50"
+        c5 <- classesFor (Just (Json.object ["mobile" .= point (Just 80) (Just 45)]))
+        c5 @?= "project-hero--x-50 project-hero--y-50 project-hero--mx-80 project-hero--my-45"
+        c6 <- classesFor (Just (Json.object ["desktop" .= point (Just 100) (Just 0)]))
+        c6 @?= "project-hero--x-100 project-hero--y-0 project-hero--mx-100 project-hero--my-0"
+    , testCase "malformed focus is rejected with the field and the reason" $ do
+        let json = dir </> "project.json"
+            withFocus f = demo "## A\n" [hero [("src", "hero.webp"), ("alt", "x"), ("focus", f)]] <> heroFiles
+            point kvs = Json.object [ (Key.fromText k, v) | (k, v) <- kvs ]
+            n :: Double -> Json.Value
+            n = Json.toJSON
+        expectError (withFocus "left") json ["field \"focus\": invalid value \"left\"; expected one of: center, top, bottom"]
+        expectError (withFocus (point [("x", n 101)])) json ["field \"x\": must be from 0 to 100, got 101"]
+        expectError (withFocus (point [("y", n (-5))])) json ["field \"y\": must be from 0 to 100, got -5"]
+        expectError (withFocus (point [("x", n 62)])) json ["field \"x\": must be a multiple of 5 (e.g. 60 or 65), got 62"]
+        expectError (withFocus (point [("x", n 12.5)])) json ["field \"x\": expected a whole number from 0 to 100"]
+        expectError (withFocus (point [("x", "65")])) json ["field \"x\": expected a number, got a string"]
+        expectError (withFocus (point [])) json ["give \"x\", \"y\" or both"]
+        expectError (withFocus (point [("x", n 50), ("z", n 1)])) json ["unknown field \"z\""]
+        expectError (withFocus (point [("desktop", point [("x", n 50)]), ("x", n 50)])) json ["unknown field \"x\""]
+        expectError (withFocus (point [("mobile", point [("y", n 200)])])) json ["field \"mobile\": field \"y\": must be from 0 to 100, got 200"]
+        expectError (withFocus (point [("desktop", "top")])) json ["field \"desktop\": must be a JSON object"]
+        expectError (withFocus (n 50)) json ["field \"focus\": expected a keyword or an object, got a number"]
     , testCase "the alt text policy is explicit: exactly one of alt and decorative" $ do
         let json = dir </> "project.json"
         expectError (demo "## A\n" [hero [("src", "hero.webp")]] <> heroFiles) json
@@ -372,19 +437,69 @@ heroTests =
           ["false is not allowed; describe the artwork with \"alt\" instead"]
         expectError (demo "## A\n" [hero [("src", "hero.webp"), ("alt", "a \"quoted\" alt")]] <> heroFiles) json
           ["straight double quote"]
-        expectError (demo "## A\n" [hero [("src", "hero.webp"), ("alt", "x"), ("focus", "left")]] <> heroFiles) json
-          ["invalid value \"left\"; expected one of: center, top, bottom"]
         expectError (demo "## A\n" [hero [("src", "hero.webp"), ("alt", "x"), ("credit", "me")]] <> heroFiles) json
           ["unknown field \"credit\""]
-    , testCase "missing, misplaced, non-image and oversized hero files are errors" $ do
+        expectError (demo "## A\n" [("hero", Just "hero.webp")] <> heroFiles) json
+          ["field \"hero\": must be a JSON object"]
+    , testCase "missing, misplaced and non-image hero files are errors" $ do
         let json = dir </> "project.json"
             withSrc src = demo "## A\n" [hero [("src", src), ("alt", "x")]]
         expectError (withSrc "hero.webp") json ["field \"hero\": image \"hero.webp\" does not exist"]
         expectError (withSrc "body.md") json ["field \"hero\": image \"body.md\": not an image file"]
         expectError (withSrc "../brigid/hero.webp") json ["field \"hero\""]
         expectError (withSrc "/hero.webp") json ["field \"hero\""]
-        expectError (withSrc "hero.webp" <> [ (dir </> "hero.webp", BS.replicate (1024 * 1024 + 1) 0) ]) json
-          ["is 1048577 bytes; the limit is 1048576"]
+    , testCase "size policy: silent within the budget, a warning over it, an error over the ceiling" $ do
+        let files size = demo "## A\n" [hero [("src", "hero.webp"), ("alt", "x")]] <> [ (dir </> "hero.webp", BS.replicate size 0) ]
+            small = HeroSizePolicy { heroBudgetBytes = 100, heroCeilingBytes = 200 }
+            loadWith policy fs = withSource fs (loadContentWith policy)
+        atBudget <- loadWith small (files 100)
+        either (assertFailure . concatMap show) (\c -> contentWarnings c @?= []) atBudget
+        overBudget <- loadWith small (files 150)
+        case overBudget of
+          Left errs -> assertFailure (concatMap show errs)
+          Right c -> do
+            length (contentWarnings c) @?= 1
+            forM_ ["content/projects/demo/project.json: field \"hero\": image \"hero.webp\" is 0.00 MiB (150 bytes), over the 0.00 MiB (100 bytes) budget (accepted up to 0.00 MiB (200 bytes))"] $ \needle ->
+              assertBool (show (contentWarnings c)) (any (needle `isInfixOf`) (contentWarnings c))
+            -- and the site carries the warning to the CLI
+            siteWarnings (siteFrom c) @?= contentWarnings c
+        atCeiling <- loadWith small (files 200)
+        either (assertFailure . concatMap show) (const (pure ())) atCeiling
+        overCeiling <- loadWith small (files 201)
+        case overCeiling of
+          Right _ -> assertFailure "a hero over the ceiling loaded"
+          Left errs -> assertBool (concatMap show errs) ("is 0.00 MiB (201 bytes); the ceiling is 0.00 MiB (200 bytes) (budget 0.00 MiB (100 bytes))" `isInfixOf` concatMap show errs)
+    , testCase "default size policy: 1 MiB budget, 8 MiB ceiling" $ do
+        defaultHeroSizePolicy @?= HeroSizePolicy { heroBudgetBytes = 1024 * 1024, heroCeilingBytes = 8 * 1024 * 1024 }
+        let json = dir </> "project.json"
+            files size = demo "## A\n" [hero [("src", "hero.webp"), ("alt", "x")]] <> [ (dir </> "hero.webp", BS.replicate size 0) ]
+        -- over the old 1 MiB limit: now accepted, with a warning
+        overBudget <- load (files (1024 * 1024 + 1))
+        case overBudget of
+          Left errs -> assertFailure (concatMap show errs)
+          Right c -> assertBool (show (contentWarnings c)) (any ("over the 1.00 MiB (1048576 bytes) budget" `isInfixOf`) (contentWarnings c))
+        expectError (files (8 * 1024 * 1024 + 1)) json
+          ["is 8.00 MiB (8388609 bytes); the ceiling is 8.00 MiB (8388608 bytes)", "tools/art/promote_hero.py"]
+    , testCase "a hero over the ceiling fails the build and leaves the previous output in place" $
+        withSource (demo "## A\n" []) $ \root -> do
+          let out = root </> "dist"
+          s <- loadSite root
+          _ <- buildSite BuildConfig { sourceRoot = root, outputDir = out } s
+          before <- listFiles out
+          BS.writeFile (root </> dir </> "project.json") (projectJson "demo" [hero [("src", "hero.webp"), ("alt", "x")]])
+          BS.writeFile (root </> dir </> "hero.webp") (BS.replicate (8 * 1024 * 1024 + 1) 0)
+          result <- try (loadSite root >>= buildSite BuildConfig { sourceRoot = root, outputDir = out })
+          case result of
+            Left (InvalidContent _) -> pure ()
+            Left other -> assertFailure ("unexpected " <> show other)
+            Right _ -> assertFailure "built with an oversized hero"
+          after <- listFiles out
+          after @?= before
+    , testCase "hero pages render deterministically" $ do
+        let files = demo "Lead.\n\n## A\n" [hero [("src", "hero.webp"), ("alt", "x"), ("focus", Json.object ["x" .= (65 :: Int)])]] <> heroFiles
+        (_, first) <- render files
+        (_, second) <- render files
+        first @?= second
     ]
   where
     heroFiles = [ (dir </> "hero.webp", heroBytes), (dir </> "card.svg", svg) ]

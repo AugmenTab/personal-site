@@ -146,7 +146,12 @@ renderOk body = do
 
 -- | The part of a project page produced from Markdown (after the header).
 contentPart :: T.Text -> T.Text
-contentPart html = fst (T.breakOn "</article>" (snd (T.breakOn "class=\"project__header\"" html)))
+contentPart html = header <> body
+  where
+    -- the project's own content: its header and its dossier body, without
+    -- the sidebar between them (Phase 04 remediation layout)
+    header = fst (T.breakOn "<nav class=\"project-nav\"" (snd (T.breakOn "class=\"project__header\"" html)))
+    body = fst (T.breakOn "</article>" (snd (T.breakOn "class=\"project__body\"" html)))
 
 slugOf :: T.Text -> Slug
 slugOf = either (error . show) id . mkSlug

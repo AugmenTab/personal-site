@@ -616,7 +616,7 @@
         "a \"Tyler Baum \u2014 home\" -> /",
         "a \"ABOUT\" -> /about/",
         "a \"CONTACT\" -> /about/#contact",
-        "a \"\u2190 ALL PROJECTS\" -> /work/"
+        "a \"Source code on GitHub\" -> https://github.com/AugmenTab/brigid"
       ],
       "focusVisible": true
     },
@@ -702,7 +702,7 @@
           {
             "#design-principles": {
               "hash": "#design-principles",
-              "top": 25,
+              "top": 24,
               "inView": true,
               "underSidebar": false
             }
@@ -734,7 +734,7 @@
           {
             "#language-today": {
               "hash": "#language-today",
-              "top": 25,
+              "top": 24,
               "inView": true,
               "underSidebar": false
             }
@@ -757,8 +757,8 @@
           }
         ],
         "desktopGeometry": {
-          "navRight": 376,
-          "contentLeft": 434,
+          "navRight": 328,
+          "contentLeft": 386,
           "stickyTopAfterScroll": 24,
           "position": "sticky"
         },
@@ -1003,7 +1003,7 @@
           {
             "#what-the-types-buy": {
               "hash": "#what-the-types-buy",
-              "top": 24,
+              "top": 25,
               "inView": true,
               "underSidebar": false
             }
@@ -1011,7 +1011,7 @@
           {
             "#status-and-limitations": {
               "hash": "#status-and-limitations",
-              "top": 223,
+              "top": 222,
               "inView": true,
               "underSidebar": false
             }
@@ -1026,8 +1026,8 @@
           }
         ],
         "desktopGeometry": {
-          "navRight": 376,
-          "contentLeft": 434,
+          "navRight": 328,
+          "contentLeft": 386,
           "stickyTopAfterScroll": 24,
           "position": "sticky"
         },
@@ -1247,8 +1247,8 @@
           }
         ],
         "desktopGeometry": {
-          "navRight": 376,
-          "contentLeft": 434,
+          "navRight": 328,
+          "contentLeft": 386,
           "stickyTopAfterScroll": 24,
           "position": "sticky"
         },
@@ -1568,6 +1568,46 @@
   "phase04": {
     "black": {
       "desktop": {
+        "layout": {
+          "opening": {
+            "top": 108,
+            "left": 386,
+            "right": 1328,
+            "bottom": 361,
+            "width": 942,
+            "height": 253
+          },
+          "nav": {
+            "top": 108,
+            "left": 112,
+            "right": 328,
+            "bottom": 587,
+            "width": 216,
+            "height": 479
+          },
+          "body": {
+            "top": 361,
+            "left": 386,
+            "right": 1328,
+            "bottom": 4853,
+            "width": 942,
+            "height": 4492
+          },
+          "allInArticle": true,
+          "sourceOrder": [
+            "project__header",
+            "project-nav",
+            "project__body"
+          ],
+          "navBeside": true,
+          "navSticky": true,
+          "stacked": false,
+          "firstSectionTop": 785,
+          "viewport": [
+            1440,
+            900
+          ]
+        },
         "hero": null,
         "sections": [
           {
@@ -1643,6 +1683,46 @@
         ]
       },
       "tablet": {
+        "layout": {
+          "opening": {
+            "top": 108,
+            "left": 31,
+            "right": 737,
+            "bottom": 345,
+            "width": 707,
+            "height": 237
+          },
+          "nav": {
+            "top": 385,
+            "left": 31,
+            "right": 737,
+            "bottom": 555,
+            "width": 707,
+            "height": 170
+          },
+          "body": {
+            "top": 595,
+            "left": 31,
+            "right": 737,
+            "bottom": 5220,
+            "width": 707,
+            "height": 4625
+          },
+          "allInArticle": true,
+          "sourceOrder": [
+            "project__header",
+            "project-nav",
+            "project__body"
+          ],
+          "navBeside": false,
+          "navSticky": false,
+          "stacked": true,
+          "firstSectionTop": 979,
+          "viewport": [
+            768,
+            1024
+          ]
+        },
         "hero": null,
         "sections": [
           {
@@ -1714,6 +1794,46 @@
         "overflow": false
       },
       "mobile": {
+        "layout": {
+          "opening": {
+            "top": 196,
+            "left": 16,
+            "right": 374,
+            "bottom": 509,
+            "width": 358,
+            "height": 313
+          },
+          "nav": {
+            "top": 549,
+            "left": 16,
+            "right": 374,
+            "bottom": 815,
+            "width": 358,
+            "height": 266
+          },
+          "body": {
+            "top": 855,
+            "left": 16,
+            "right": 374,
+            "bottom": 6948,
+            "width": 358,
+            "height": 6093
+          },
+          "allInArticle": true,
+          "sourceOrder": [
+            "project__header",
+            "project-nav",
+            "project__body"
+          ],
+          "navBeside": false,
+          "navSticky": false,
+          "stacked": true,
+          "firstSectionTop": 1239,
+          "viewport": [
+            390,
+            844
+          ]
+        },
         "hero": null,
         "sections": [
           {
@@ -1787,6 +1907,46 @@
     },
     "brigid": {
       "desktop": {
+        "layout": {
+          "opening": {
+            "top": 108,
+            "left": 386,
+            "right": 1328,
+            "bottom": 384,
+            "width": 942,
+            "height": 276
+          },
+          "nav": {
+            "top": 108,
+            "left": 112,
+            "right": 328,
+            "bottom": 555,
+            "width": 216,
+            "height": 447
+          },
+          "body": {
+            "top": 384,
+            "left": 386,
+            "right": 1328,
+            "bottom": 3553,
+            "width": 942,
+            "height": 3169
+          },
+          "allInArticle": true,
+          "sourceOrder": [
+            "project__header",
+            "project-nav",
+            "project__body"
+          ],
+          "navBeside": true,
+          "navSticky": true,
+          "stacked": false,
+          "firstSectionTop": 808,
+          "viewport": [
+            1440,
+            900
+          ]
+        },
         "hero": null,
         "sections": [
           {
@@ -1855,6 +2015,46 @@
         ]
       },
       "tablet": {
+        "layout": {
+          "opening": {
+            "top": 108,
+            "left": 31,
+            "right": 737,
+            "bottom": 369,
+            "width": 707,
+            "height": 261
+          },
+          "nav": {
+            "top": 409,
+            "left": 31,
+            "right": 737,
+            "bottom": 579,
+            "width": 707,
+            "height": 170
+          },
+          "body": {
+            "top": 619,
+            "left": 31,
+            "right": 737,
+            "bottom": 4035,
+            "width": 707,
+            "height": 3416
+          },
+          "allInArticle": true,
+          "sourceOrder": [
+            "project__header",
+            "project-nav",
+            "project__body"
+          ],
+          "navBeside": false,
+          "navSticky": false,
+          "stacked": true,
+          "firstSectionTop": 1003,
+          "viewport": [
+            768,
+            1024
+          ]
+        },
         "hero": null,
         "sections": [
           {
@@ -1919,6 +2119,46 @@
         "overflow": false
       },
       "mobile": {
+        "layout": {
+          "opening": {
+            "top": 196,
+            "left": 16,
+            "right": 374,
+            "bottom": 448,
+            "width": 358,
+            "height": 252
+          },
+          "nav": {
+            "top": 488,
+            "left": 16,
+            "right": 374,
+            "bottom": 723,
+            "width": 358,
+            "height": 234
+          },
+          "body": {
+            "top": 763,
+            "left": 16,
+            "right": 374,
+            "bottom": 5593,
+            "width": 358,
+            "height": 4830
+          },
+          "allInArticle": true,
+          "sourceOrder": [
+            "project__header",
+            "project-nav",
+            "project__body"
+          ],
+          "navBeside": false,
+          "navSticky": false,
+          "stacked": true,
+          "firstSectionTop": 1147,
+          "viewport": [
+            390,
+            844
+          ]
+        },
         "hero": null,
         "sections": [
           {
@@ -1985,6 +2225,46 @@
     },
     "lockdown": {
       "desktop": {
+        "layout": {
+          "opening": {
+            "top": 108,
+            "left": 386,
+            "right": 1328,
+            "bottom": 329,
+            "width": 942,
+            "height": 221
+          },
+          "nav": {
+            "top": 108,
+            "left": 112,
+            "right": 328,
+            "bottom": 440,
+            "width": 216,
+            "height": 332
+          },
+          "body": {
+            "top": 329,
+            "left": 386,
+            "right": 1328,
+            "bottom": 2343,
+            "width": 942,
+            "height": 2013
+          },
+          "allInArticle": true,
+          "sourceOrder": [
+            "project__header",
+            "project-nav",
+            "project__body"
+          ],
+          "navBeside": true,
+          "navSticky": true,
+          "stacked": false,
+          "firstSectionTop": 753,
+          "viewport": [
+            1440,
+            900
+          ]
+        },
         "hero": null,
         "sections": [
           {
@@ -2022,6 +2302,46 @@
         "bodyFocusStops": []
       },
       "tablet": {
+        "layout": {
+          "opening": {
+            "top": 108,
+            "left": 31,
+            "right": 737,
+            "bottom": 314,
+            "width": 707,
+            "height": 206
+          },
+          "nav": {
+            "top": 354,
+            "left": 31,
+            "right": 737,
+            "bottom": 491,
+            "width": 707,
+            "height": 138
+          },
+          "body": {
+            "top": 531,
+            "left": 31,
+            "right": 737,
+            "bottom": 2409,
+            "width": 707,
+            "height": 1877
+          },
+          "allInArticle": true,
+          "sourceOrder": [
+            "project__header",
+            "project-nav",
+            "project__body"
+          ],
+          "navBeside": false,
+          "navSticky": false,
+          "stacked": true,
+          "firstSectionTop": 915,
+          "viewport": [
+            768,
+            1024
+          ]
+        },
         "hero": null,
         "sections": [
           {
@@ -2058,6 +2378,46 @@
         "overflow": false
       },
       "mobile": {
+        "layout": {
+          "opening": {
+            "top": 196,
+            "left": 16,
+            "right": 374,
+            "bottom": 474,
+            "width": 358,
+            "height": 278
+          },
+          "nav": {
+            "top": 514,
+            "left": 16,
+            "right": 374,
+            "bottom": 729,
+            "width": 358,
+            "height": 216
+          },
+          "body": {
+            "top": 769,
+            "left": 16,
+            "right": 374,
+            "bottom": 3369,
+            "width": 358,
+            "height": 2600
+          },
+          "allInArticle": true,
+          "sourceOrder": [
+            "project__header",
+            "project-nav",
+            "project__body"
+          ],
+          "navBeside": false,
+          "navSticky": false,
+          "stacked": true,
+          "firstSectionTop": 1153,
+          "viewport": [
+            390,
+            844
+          ]
+        },
         "hero": null,
         "sections": [
           {

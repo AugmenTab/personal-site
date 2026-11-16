@@ -1,0 +1,579 @@
+{
+  "base": "http://hero-preview/",
+  "path": "/work/black/",
+  "failures": [],
+  "noJavaScript": {
+    "desktop": {
+      "#overview": {
+        "hash": "#overview",
+        "inView": true
+      },
+      "#design-principles": {
+        "hash": "#design-principles",
+        "inView": true
+      },
+      "#the-compiler-pipeline": {
+        "hash": "#the-compiler-pipeline",
+        "inView": true
+      },
+      "#a-program-white-accepts": {
+        "hash": "#a-program-white-accepts",
+        "inView": true
+      },
+      "#a-program-white-rejects": {
+        "hash": "#a-program-white-rejects",
+        "inView": true
+      },
+      "#language-today": {
+        "hash": "#language-today",
+        "inView": true
+      },
+      "#status-and-limitations": {
+        "hash": "#status-and-limitations",
+        "inView": true
+      },
+      "#resources": {
+        "hash": "#resources",
+        "inView": true
+      }
+    },
+    "tablet": {
+      "#overview": {
+        "hash": "#overview",
+        "inView": true
+      },
+      "#design-principles": {
+        "hash": "#design-principles",
+        "inView": true
+      },
+      "#the-compiler-pipeline": {
+        "hash": "#the-compiler-pipeline",
+        "inView": true
+      },
+      "#a-program-white-accepts": {
+        "hash": "#a-program-white-accepts",
+        "inView": true
+      },
+      "#a-program-white-rejects": {
+        "hash": "#a-program-white-rejects",
+        "inView": true
+      },
+      "#language-today": {
+        "hash": "#language-today",
+        "inView": true
+      },
+      "#status-and-limitations": {
+        "hash": "#status-and-limitations",
+        "inView": true
+      },
+      "#resources": {
+        "hash": "#resources",
+        "inView": true
+      }
+    },
+    "mobile": {
+      "#overview": {
+        "hash": "#overview",
+        "inView": true
+      },
+      "#design-principles": {
+        "hash": "#design-principles",
+        "inView": true
+      },
+      "#the-compiler-pipeline": {
+        "hash": "#the-compiler-pipeline",
+        "inView": true
+      },
+      "#a-program-white-accepts": {
+        "hash": "#a-program-white-accepts",
+        "inView": true
+      },
+      "#a-program-white-rejects": {
+        "hash": "#a-program-white-rejects",
+        "inView": true
+      },
+      "#language-today": {
+        "hash": "#language-today",
+        "inView": true
+      },
+      "#status-and-limitations": {
+        "hash": "#status-and-limitations",
+        "inView": true
+      },
+      "#resources": {
+        "hash": "#resources",
+        "inView": true
+      }
+    }
+  },
+  "report": {
+    "black": {
+      "desktop": {
+        "layout": {
+          "opening": {
+            "top": 108,
+            "left": 386,
+            "right": 1328,
+            "bottom": 724,
+            "width": 942,
+            "height": 616
+          },
+          "nav": {
+            "top": 108,
+            "left": 112,
+            "right": 328,
+            "bottom": 650,
+            "width": 216,
+            "height": 542
+          },
+          "body": {
+            "top": 788,
+            "left": 386,
+            "right": 1328,
+            "bottom": 4856,
+            "width": 942,
+            "height": 4068
+          },
+          "allInArticle": true,
+          "sourceOrder": [
+            "project-hero",
+            "project-nav",
+            "project__body"
+          ],
+          "navBeside": true,
+          "navSticky": true,
+          "stacked": false,
+          "firstSectionTop": 788,
+          "viewport": [
+            1440,
+            900
+          ]
+        },
+        "hero": {
+          "box": {
+            "top": 108,
+            "left": 386,
+            "right": 1328,
+            "bottom": 724,
+            "width": 942,
+            "height": 616
+          },
+          "title": {
+            "top": 201,
+            "left": 386,
+            "right": 1026,
+            "bottom": 495,
+            "width": 640,
+            "height": 294
+          },
+          "summary": {
+            "top": 511,
+            "left": 386,
+            "right": 962,
+            "bottom": 637,
+            "width": 576,
+            "height": 125
+          },
+          "focus": {
+            "x": 50,
+            "y": 50,
+            "mx": 50,
+            "my": 50
+          },
+          "imageLoaded": true,
+          "imageNatural": [
+            2400,
+            1200
+          ],
+          "objectPosition": "50% 50%",
+          "decorative": true,
+          "focusable": false,
+          "textInside": true,
+          "titleClipped": false,
+          "sameColumnAsBody": true,
+          "edgeToEdge": false
+        },
+        "sections": [
+          {
+            "id": "overview",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "design-principles",
+            "layout": "grid",
+            "columns": 3,
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "the-compiler-pipeline",
+            "layout": "wide-exhibit",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "a-program-white-accepts",
+            "layout": "split",
+            "side": "end",
+            "sideBySide": true,
+            "artifactFirst": false,
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "a-program-white-rejects",
+            "layout": "split",
+            "side": "start",
+            "sideBySide": true,
+            "artifactFirst": true,
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "language-today",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "status-and-limitations",
+            "layout": "resources",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "resources",
+            "layout": "resources",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          }
+        ],
+        "sidebar": [
+          "overview",
+          "design-principles",
+          "the-compiler-pipeline",
+          "a-program-white-accepts",
+          "a-program-white-rejects",
+          "language-today",
+          "status-and-limitations",
+          "resources"
+        ],
+        "overflow": false,
+        "bodyFocusStops": [
+          "/media/projects/black/pipeline.svg",
+          "https://github.com/AugmenTab/black-vim"
+        ]
+      },
+      "tablet": {
+        "layout": {
+          "opening": {
+            "top": 108,
+            "left": 31,
+            "right": 737,
+            "bottom": 611,
+            "width": 707,
+            "height": 503
+          },
+          "nav": {
+            "top": 651,
+            "left": 31,
+            "right": 737,
+            "bottom": 888,
+            "width": 707,
+            "height": 236
+          },
+          "body": {
+            "top": 928,
+            "left": 31,
+            "right": 737,
+            "bottom": 5168,
+            "width": 707,
+            "height": 4241
+          },
+          "allInArticle": true,
+          "sourceOrder": [
+            "project-hero",
+            "project-nav",
+            "project__body"
+          ],
+          "navBeside": false,
+          "navSticky": false,
+          "stacked": true,
+          "firstSectionTop": 928,
+          "viewport": [
+            768,
+            1024
+          ]
+        },
+        "hero": {
+          "box": {
+            "top": 108,
+            "left": 31,
+            "right": 737,
+            "bottom": 611,
+            "width": 707,
+            "height": 503
+          },
+          "title": {
+            "top": 201,
+            "left": 31,
+            "right": 671,
+            "bottom": 395,
+            "width": 640,
+            "height": 194
+          },
+          "summary": {
+            "top": 411,
+            "left": 31,
+            "right": 607,
+            "bottom": 536,
+            "width": 576,
+            "height": 125
+          },
+          "focus": {
+            "x": 50,
+            "y": 50,
+            "mx": 50,
+            "my": 50
+          },
+          "imageLoaded": true,
+          "imageNatural": [
+            2400,
+            1200
+          ],
+          "objectPosition": "50% 50%",
+          "decorative": true,
+          "focusable": false,
+          "textInside": true,
+          "titleClipped": false,
+          "sameColumnAsBody": true,
+          "edgeToEdge": false
+        },
+        "sections": [
+          {
+            "id": "overview",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "design-principles",
+            "layout": "grid",
+            "columns": 2,
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "the-compiler-pipeline",
+            "layout": "wide-exhibit",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "a-program-white-accepts",
+            "layout": "split",
+            "side": "end",
+            "sideBySide": false,
+            "artifactFirst": false,
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "a-program-white-rejects",
+            "layout": "split",
+            "side": "start",
+            "sideBySide": false,
+            "artifactFirst": true,
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "language-today",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "status-and-limitations",
+            "layout": "resources",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "resources",
+            "layout": "resources",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          }
+        ],
+        "sidebar": [
+          "overview",
+          "design-principles",
+          "the-compiler-pipeline",
+          "a-program-white-accepts",
+          "a-program-white-rejects",
+          "language-today",
+          "status-and-limitations",
+          "resources"
+        ],
+        "overflow": false
+      },
+      "mobile": {
+        "layout": {
+          "opening": {
+            "top": 196,
+            "left": 0,
+            "right": 390,
+            "bottom": 765,
+            "width": 390,
+            "height": 569
+          },
+          "nav": {
+            "top": 805,
+            "left": 16,
+            "right": 374,
+            "bottom": 1180,
+            "width": 358,
+            "height": 375
+          },
+          "body": {
+            "top": 1220,
+            "left": 16,
+            "right": 374,
+            "bottom": 6929,
+            "width": 358,
+            "height": 5709
+          },
+          "allInArticle": true,
+          "sourceOrder": [
+            "project-hero",
+            "project-nav",
+            "project__body"
+          ],
+          "navBeside": false,
+          "navSticky": false,
+          "stacked": true,
+          "firstSectionTop": 1220,
+          "viewport": [
+            390,
+            844
+          ]
+        },
+        "hero": {
+          "box": {
+            "top": 196,
+            "left": 0,
+            "right": 390,
+            "bottom": 765,
+            "width": 390,
+            "height": 569
+          },
+          "title": {
+            "top": 307,
+            "left": 16,
+            "right": 374,
+            "bottom": 451,
+            "width": 358,
+            "height": 144
+          },
+          "summary": {
+            "top": 467,
+            "left": 16,
+            "right": 374,
+            "bottom": 655,
+            "width": 358,
+            "height": 188
+          },
+          "focus": {
+            "x": 50,
+            "y": 50,
+            "mx": 50,
+            "my": 50
+          },
+          "imageLoaded": true,
+          "imageNatural": [
+            2400,
+            1200
+          ],
+          "objectPosition": "50% 50%",
+          "decorative": true,
+          "focusable": false,
+          "textInside": true,
+          "titleClipped": false,
+          "sameColumnAsBody": false,
+          "edgeToEdge": true
+        },
+        "sections": [
+          {
+            "id": "overview",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "design-principles",
+            "layout": "grid",
+            "columns": 1,
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "the-compiler-pipeline",
+            "layout": "wide-exhibit",
+            "codeScrollsSideways": false,
+            "diagramScrolls": true
+          },
+          {
+            "id": "a-program-white-accepts",
+            "layout": "split",
+            "side": "end",
+            "sideBySide": false,
+            "artifactFirst": false,
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "a-program-white-rejects",
+            "layout": "split",
+            "side": "start",
+            "sideBySide": false,
+            "artifactFirst": true,
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "language-today",
+            "layout": "overview",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "status-and-limitations",
+            "layout": "resources",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          },
+          {
+            "id": "resources",
+            "layout": "resources",
+            "codeScrollsSideways": false,
+            "diagramScrolls": false
+          }
+        ],
+        "sidebar": [
+          "overview",
+          "design-principles",
+          "the-compiler-pipeline",
+          "a-program-white-accepts",
+          "a-program-white-rejects",
+          "language-today",
+          "status-and-limitations",
+          "resources"
+        ],
+        "overflow": false
+      }
+    }
+  }
+}

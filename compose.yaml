@@ -41,6 +41,28 @@ services:
           # creating an empty root-owned dist/ on the host.
           create_host_path: false
 
+  # Development-only hero preview at http://localhost:8081/: serves a site
+  # built from the throwaway tree tools/art/hero_preview.py writes into
+  # .local/hero-preview/ (never from content/). See README "Previewing a hero".
+  #   docker compose --profile tools up -d hero-preview
+  hero-preview:
+    profiles: ["tools"]
+    image: nginx:1.27.3-alpine
+    ports:
+      - "8081:80"
+    volumes:
+      - type: bind
+        source: ./docker/preview.conf
+        target: /etc/nginx/conf.d/default.conf
+        read_only: true
+      # The parent directory, so the build's swap of html/ is seen at once.
+      - type: bind
+        source: ./.local/hero-preview
+        target: /usr/share/nginx
+        read_only: true
+        bind:
+          create_host_path: false
+
   # Development-only screenshot capture (not part of the site build).
   #   docker compose --profile tools run --rm screenshots
   screenshots:
