@@ -29,6 +29,7 @@ module Site.Routes
     -- * Fragment identifiers
   , elementId
   , mainId
+  , contactId
   ) where
 
 import Data.Char (isAsciiLower, isDigit)
@@ -130,3 +131,8 @@ elementId txt =
 -- | The @<main>@ landmark on every page (the skip link's target).
 mainId :: B.Id
 mainId = elementId "main"
+
+-- | The homepage's Contact section: the target of every page's Contact
+-- navigation link, @/#contact@.
+contactId :: B.Id
+contactId = elementId "contact"

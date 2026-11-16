@@ -8,11 +8,12 @@
 -- 2. Selected Work: the remaining featured projects, from content;
 -- 3. Engineering Philosophy: a short typographic statement;
 -- 4. Writing: recent published articles, only when there are any;
--- 5. About and Contact.
+-- 5. Contact (Phase 05): a short invitation and the verified destinations.
+--    The personal profile is the About page; the two are separate.
 --
 -- Everything shown about a project comes from its published content record
 -- ("Site.Content.Types"); the only copy kept here is the introduction, the
--- Black teaser's differentiators, the philosophy and the closing section.
+-- Black teaser's differentiators, the philosophy and the contact invitation.
 -- Copy whose 'CopyStatus' is 'DraftCopy' awaits owner review (see README
 -- "Homepage copy").
 module Site.Pages.Home
@@ -34,6 +35,8 @@ module Site.Pages.Home
   , blackExample
   , BlackExample (..)
   , writingPreviewLimit
+  , ContactCopy (..)
+  , contactCopy
   ) where
 
 import Data.Char (isAlpha, isAlphaNum, isDigit, isUpper)
@@ -50,9 +53,9 @@ import Brigid.Types qualified as B
 import Site.Assets qualified as Asset
 import Site.Components (HeadingLevel (..), decorativeImage, projectCard, sectionHeading)
 import Site.Content.Types
-import Site.Page (Layout (..), Page (..), SiteConfig)
-import Site.Pages.About (aboutEmblem, aboutLede, contactId, contactLinks)
-import Site.Routes (Route (Home, WorkDetail, WorkIndex, WritingArticle, WritingIndex), Slug, elementId, mkSlug, routeUrl)
+import Site.Page (Layout (..), Page (..), SiteConfig (..))
+import Site.Routes (Route (Home, WorkDetail, WorkIndex, WritingArticle, WritingIndex), Slug, contactId, elementId, mkSlug, routeUrl)
+import Site.Settings (Settings (..), contactDisplay, contactHref, contactLabel, contacts, ownerSettings)
 
 --------------------------------------------------------------------------------
 -- Content
@@ -96,7 +99,7 @@ homeContent content =
 -- The page
 
 page :: SiteConfig -> HomeContent -> Page
-page _config home =
+page config home =
   Page
     { pageRoute = Home
     , pageTitle = "Tyler Baum — Software Engineer"
@@ -107,7 +110,7 @@ page _config home =
           <> [ selectedWork (homeSelected home) | hasSelectedWork ]
           <> [ philosophySection ]
           <> [ writingPreview (homeArticles home) | not (null (homeArticles home)) ]
-          <> [ aboutSection ]
+          <> [ contactSection (siteSettings config) ]
     }
   where
     hasSelectedWork = not (null (homeSelected home))
@@ -135,7 +138,7 @@ introduction =
     , introRole = "Software Engineer"
     , introGivenName = "Tyler"
     , introFamilyName = "Baum"
-    , introThesis = "Building precise systems for ambitious ideas."
+    , introThesis = settingsThesis ownerSettings
     , introDisciplines = [ "Language design", "Systems engineering", "Audio technology", "Simulation" ]
     }
 
@@ -185,14 +188,17 @@ hero hasSelectedWork =
         , E.ul [ A.class_ "hero__disciplines", A.aria_label "Areas of work" ]
             (map (\d -> E.li [] [ E.text d ]) (introDisciplines introduction))
         , -- Both targets exist: Selected Work on this page, or the Work index
-          -- when there is no Selected Work; About is always on this page.
+          -- when there is no Selected Work; Contact is always on this page.
+          -- (The secondary label is part of the frozen hero, so it is kept;
+          -- since Phase 05 it leads to the Contact section. Relabelling it
+          -- is left to the owner.)
           E.div [ A.class_ "hero__actions" ]
             [ E.a
                 [ A.class_ "button button--primary"
                 , if hasSelectedWork then A.href selectedWorkId else A.href (routeUrl WorkIndex)
                 ]
                 [ E.span [ A.class_ "button__label" ] [ E.text "Explore selected work" ] ]
-            , E.a [ A.class_ "button button--secondary", A.href aboutId ]
+            , E.a [ A.class_ "button button--secondary", A.href contactId ]
                 [ E.span [ A.class_ "button__label" ] [ E.text "About & contact" ] ]
             ]
         ]
@@ -462,27 +468,45 @@ writingPreview articles =
         ]
 
 --------------------------------------------------------------------------------
--- About / contact (target of the secondary call to action)
+-- Contact (target of the navigation's Contact link and the secondary CTA)
 
-aboutSection :: E.ChildHTML E.Main grandparent
-aboutSection =
-  E.section [ A.class_ "about about--home", A.id aboutId, A.aria_labelledby (NEL.singleton aboutTitleId) ]
-    [ sectionHeading ["section-title--quiet"] aboutTitleId "About"
-    , E.div [ A.class_ "about__body" ]
-        [ aboutEmblem
-        , E.div [ A.class_ "about__text" ]
-            ( aboutLede
-                <> [ E.h3 [ A.class_ "about__subhead", A.id contactId ] [ E.text "Contact" ]
-                   , contactLinks
-                   ]
-            )
+-- | The Contact section's own copy.
+data ContactCopy =
+  ContactCopy
+    { contactStatus :: CopyStatus
+    , contactInvitation :: T.Text
+    }
+
+-- | DRAFT: a short invitation, for the owner's content pass.
+contactCopy :: ContactCopy
+contactCopy =
+  ContactCopy
+    { contactStatus = DraftCopy
+    , contactInvitation = "Questions about a project, or an idea worth building? I’d be glad to hear from you."
+    }
+
+-- | A short invitation and the verified destinations ("Site.Settings"),
+-- each exactly one link. No form and no backend.
+contactSection :: Settings -> E.ChildHTML E.Main grandparent
+contactSection settings =
+  E.section [ A.class_ "contact", A.id contactId, A.aria_labelledby (NEL.singleton contactTitleId) ]
+    [ sectionHeading ["section-title--quiet"] contactTitleId "Contact"
+    , E.p [ A.class_ "contact__invitation" ] [ E.text (contactInvitation contactCopy) ]
+    , E.ul [ A.class_ "contact__links" ]
+        [ E.li [ A.class_ "contact__item" ]
+            [ E.a [ A.class_ "contact__link", A.href (B.mkRawURL (contactHref c)) ]
+                [ E.span [ A.class_ "contact__label" ] [ E.text (contactLabel c) ]
+                , E.span [ A.class_ "contact__display" ] [ E.text (contactDisplay c) ]
+                ]
+            ]
+        | c <- contacts settings
         ]
     ]
 
 --------------------------------------------------------------------------------
 -- Ids
 
-topId, heroTitleId, blackId, blackTitleId, selectedWorkId, workTitleId, philosophyId, philosophyTitleId, writingId, writingTitleId, aboutId, aboutTitleId :: B.Id
+topId, heroTitleId, blackId, blackTitleId, selectedWorkId, workTitleId, philosophyId, philosophyTitleId, writingId, writingTitleId, contactTitleId :: B.Id
 topId = elementId "top"
 heroTitleId = elementId "hero-title"
 blackId = elementId "black"
@@ -493,5 +517,4 @@ philosophyId = elementId "philosophy"
 philosophyTitleId = elementId "philosophy-title"
 writingId = elementId "writing"
 writingTitleId = elementId "writing-title"
-aboutId = elementId "about"
-aboutTitleId = elementId "about-title"
+contactTitleId = elementId "contact-title"

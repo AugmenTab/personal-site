@@ -15,6 +15,7 @@ module Site.Manifest
   , Manifest
   , ManifestError (..)
   , mkManifest
+  , mkManifestWith
   , fromEntries
   , manifestEntries
   , manifestPages
@@ -32,7 +33,7 @@ import System.FilePath ((</>))
 
 import Site.Assets (Asset, assetOutput, assetPath)
 import Site.Content.Types (MediaFile (..), mediaOutput)
-import Site.Path (OutputPath, PathError, collisionKey, outputFilePath, outputText)
+import Site.Path (OutputPath, PathError, collisionKey, mkOutputPath, outputFilePath, outputText)
 import Site.Routes (Route, routeOutput, routePath)
 
 data Source
@@ -40,6 +41,9 @@ data Source
   | AssetSource Asset
   | MediaSource MediaFile
     -- ^ A published content item's media file.
+  | GeneratedSource T.Text
+    -- ^ A text file derived from the site (the sitemap, robots.txt),
+    -- named by its description.
   deriving (Eq, Show)
 
 data Entry =
@@ -58,6 +62,7 @@ data ManifestError
   = InvalidRouteOutput Route PathError
   | InvalidAssetPath Asset PathError
   | InvalidMediaPath MediaFile String
+  | InvalidGeneratedPath T.Text PathError
   | OutputCollision [Entry]
     -- ^ Outputs that would be the same file (case-insensitively).
   | FileUsedAsDirectory Entry Entry
@@ -73,6 +78,8 @@ instance Show ManifestError where
         "asset assets/" <> assetPath asset <> " has an invalid path: " <> show pathErr
       InvalidMediaPath m why ->
         "media " <> mediaRoot m </> outputFilePath (mediaPath m) <> " has an invalid output path: " <> why
+      InvalidGeneratedPath what pathErr ->
+        "generated " <> T.unpack what <> " has an invalid output path: " <> show pathErr
       OutputCollision entries ->
         "output collision: " <> intercalate ", " (map describe entries)
           <> " would all be written to the same file"
@@ -88,10 +95,15 @@ describeSource source =
     PageSource route -> "page " <> T.unpack (routePath route)
     AssetSource asset -> "asset assets/" <> assetPath asset
     MediaSource m -> "media " <> mediaRoot m </> outputFilePath (mediaPath m)
+    GeneratedSource what -> "generated " <> T.unpack what
 
 -- | The manifest for a set of page routes, assets and published media.
 mkManifest :: [Route] -> [Asset] -> [MediaFile] -> Either [ManifestError] Manifest
-mkManifest routes assets media =
+mkManifest routes assets media = mkManifestWith routes assets media []
+
+-- | 'mkManifest' with generated text files: (output path, description).
+mkManifestWith :: [Route] -> [Asset] -> [MediaFile] -> [(FilePath, T.Text)] -> Either [ManifestError] Manifest
+mkManifestWith routes assets media generated =
   -- Report every problem at once: invalid paths, and collisions among the
   -- entries whose paths are valid.
   case (pathErrors, fromEntries entries) of
@@ -102,14 +114,17 @@ mkManifest routes assets media =
     pageResults = [ (route, routeOutput route) | route <- routes ]
     assetResults = [ (asset, assetOutput asset) | asset <- assets ]
     mediaResults = [ (m, mediaOutput (mediaOwner m) (mediaPath m)) | m <- media ]
+    generatedResults = [ (what, mkOutputPath path) | (path, what) <- generated ]
     pathErrors =
       [ InvalidRouteOutput route e | (route, Left e) <- pageResults ]
         <> [ InvalidAssetPath asset e | (asset, Left e) <- assetResults ]
         <> [ InvalidMediaPath m e | (m, Left e) <- mediaResults ]
+        <> [ InvalidGeneratedPath what e | (what, Left e) <- generatedResults ]
     entries =
       [ Entry path (PageSource route) | (route, Right path) <- pageResults ]
         <> [ Entry path (AssetSource asset) | (asset, Right path) <- assetResults ]
         <> [ Entry path (MediaSource m) | (m, Right path) <- mediaResults ]
+        <> [ Entry path (GeneratedSource what) | (what, Right path) <- generatedResults ]
 
 -- | Check a list of entries for collisions and sort it into a manifest.
 fromEntries :: [Entry] -> Either [ManifestError] Manifest

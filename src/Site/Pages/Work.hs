@@ -20,20 +20,40 @@ module Site.Pages.Work
   ) where
 
 import Data.List.NonEmpty qualified as NEL
+import Data.NonEmptyText qualified as NET
 import Data.Text qualified as T
 
 import Brigid.HTML.Attributes qualified as A
 import Brigid.HTML.Elements qualified as E
+import Brigid.HTML.Elements.Safe qualified as Safe
 import Brigid.HTML.Types qualified as HTML
 import Brigid.Types qualified as B
 
+import Site.Assets qualified as Asset
 import Site.Components (HeadingLevel (..), pageHeading, projectCard)
+import Site.Taxonomy (allCategories, categoryId, categoryLabel, topicLabel)
 import Site.Content.Markdown (Document (..), inlineText)
 import Site.Content.Render (MediaUrl, renderBlocks, renderInlines, renderPhrasing)
 import Site.Content.Types
 import Site.Page (Layout (..), Page (..), SiteConfig, sectionTitle)
 import Site.Routes (Route (WorkDetail, WorkIndex), elementId, routeUrl)
 
+-- | The Work index (Phase 05): every published project as a card, in a
+-- two-column grid where there is room, with search and category filters.
+--
+-- The page is complete without JavaScript: every card is in the HTML and
+-- visible, and the search controls are @hidden@. The page's one script
+-- (@assets/scripts/work-filter.js@) reveals the controls and filters the
+-- cards in place, using only what is rendered here:
+--
+-- * each item's @data-category@ (a category id from "Site.Taxonomy") and
+--   @data-search@ (its title, summary, category, technologies and topics,
+--   lowercased with whitespace collapsed; see 'searchText');
+-- * one filter chip per category that a published project uses, in
+--   vocabulary order, after All.
+--
+-- Search and the category filter combine: an item is shown when it is in
+-- the selected category (All: any) and its text contains every word typed.
 indexPage :: SiteConfig -> [Project] -> Page
 indexPage config projects =
   Page
@@ -42,20 +62,98 @@ indexPage config projects =
     , pageDescription = "Libraries, languages and tools by Tyler Baum."
     , pageLayout = Interior
     , pageMain =
-        [ E.section [ A.class_ "work", A.aria_labelledby (NEL.singleton titleId) ]
+        [ E.section [ A.class_ "work work--index", A.aria_labelledby (NEL.singleton titleId) ]
             ( [ pageHeading [] titleId "Work"
               , E.p [ A.class_ "page-lede" ]
                   [ E.text "Libraries, languages and tools I have built or am building." ]
               ]
-                <> [ E.ul [ A.class_ "work__list" ]
-                       (map (\project -> E.li [ A.class_ "work__item" ] [ projectCard Level2 project ]) projects)
-                   | not (null projects)
-                   ]
+                <> ( if null projects
+                       then []
+                       else
+                         [ discoveryControls projects
+                         , E.ul [ A.class_ "work__list work__list--index", A.id workListId ]
+                             (map indexItem projects)
+                         , E.div [ A.class_ "work-filter__empty", A.id workEmptyId, A.hidden ]
+                             [ E.p [ A.class_ "work-filter__empty-text" ] [ E.text "No projects match this search." ]
+                             , E.button [ A.class_ "work-filter__reset" ] [ E.text "Show all projects" ]
+                             ]
+                         ]
+                   )
             )
         ]
+          <> [ E.script [ A.type_ HTML.Module, A.src (Asset.assetUrl Asset.workFilterScript) ] Nothing | not (null projects) ]
     }
   where
     titleId = elementId "work-index-title"
+
+-- | One card, with the data the filter reads.
+indexItem :: Project -> E.ChildHTML E.UnorderedList grandparent
+indexItem project =
+  E.li
+    [ A.class_ "work__item"
+    , A.customData "category" (categoryId (projectCategory project))
+    , A.customData "search" (searchText project)
+    ]
+    [ projectCard Level2 project ]
+
+-- | Everything a search matches, normalised as the script normalises the
+-- query: lowercase, single spaces. One authoritative source: the same
+-- project record the card and the dossier render.
+searchText :: Project -> T.Text
+searchText project =
+  T.unwords . T.words . T.toLower . T.unwords $
+    [ projectTitle project
+    , projectSummary project
+    , categoryLabel (projectCategory project)
+    ]
+      <> projectTechnologies project
+      <> map topicLabel (projectTopics project)
+
+-- | The search field, category chips and live result count. Hidden until
+-- the script runs, so without JavaScript no inert control is shown.
+discoveryControls :: [Project] -> E.ChildHTML E.Section grandparent
+discoveryControls projects =
+  E.search [ A.class_ "work-filter", A.id workFilterId, A.hidden, A.aria_label "Find a project" ]
+    [ E.div [ A.class_ "work-filter__field" ]
+        [ E.label [ A.class_ "work-filter__label", A.for workSearchId ] [ E.text "Search projects" ]
+        , Safe.search
+            [ A.class_ "work-filter__input"
+            , A.id workSearchId
+            , A.placeholder "Title, topic or technology"
+            , A.customAttribute "autocomplete" "off"
+            , A.customAttribute "spellcheck" "false"
+            , A.customAttribute "aria-controls" (idText workListId)
+            ]
+        ]
+    , E.div [ A.class_ "work-filter__chips", A.customAttribute "role" "group", A.aria_label "Filter by category" ]
+        ( chip "" "All" True
+            : [ chip (categoryId c) (categoryLabel c) False | c <- allCategories, c `elem` used ]
+        )
+    , E.p [ A.class_ "work-filter__status", A.id workStatusId, A.aria_live HTML.LivePolite ]
+        [ E.text (countText (length projects)) ]
+    ]
+  where
+    used = map projectCategory projects
+    chip value label pressed =
+      E.button
+        [ A.class_ "work-filter__chip"
+        , A.customData "category" value
+        , A.customAttribute "aria-pressed" (if pressed then "true" else "false")
+        ]
+        [ E.text label ]
+
+countText :: Int -> T.Text
+countText n = T.pack (show n) <> (if n == 1 then " project" else " projects")
+
+workFilterId, workSearchId, workListId, workStatusId, workEmptyId :: B.Id
+workFilterId = elementId "work-filter"
+workSearchId = elementId "work-search"
+workListId = elementId "work-list"
+workStatusId = elementId "work-status"
+workEmptyId = elementId "work-empty"
+
+idText :: B.Id -> T.Text
+idText (B.Id i) = NET.toText i
 
 -- | A project dossier, after the approved project render. One structure
 -- serves every project; a hero only changes what opens the main column:
@@ -69,13 +167,15 @@ indexPage config projects =
 --
 -- On desktop the sidebar spans both rows, beside the opening and the
 -- dossier. Below 900px the three stack in source order: the opening, a
--- compact section index, then the dossier. Source order is reading and
--- keyboard order at every width, which is why the sidebar sits between
--- the opening and the dossier rather than before the article.
+-- compact section index (see 'projectNav'), then the dossier. Source order
+-- is reading and keyboard order at every width, which is why the sidebar
+-- sits between the opening and the dossier rather than before the article.
 --
--- Without a hero, the opening is the plain header and the card art opens
--- the dossier, as in Phase 02. The sections are the body's @##@ sections,
--- each in the layout @project.json@ gives it.
+-- Without a hero, the opening is the plain header (title, summary,
+-- technologies, topics and links) and the dossier follows directly: no
+-- decorative figure stands in for a hero (Phase 05 removed the card-art
+-- fallback). The sections are the body's @##@ sections, each in the
+-- layout @project.json@ gives it.
 projectPage :: SiteConfig -> Project -> Page
 projectPage config project =
   Page
@@ -90,7 +190,7 @@ projectPage config project =
             ]
             [ maybe (projectHeader project) (projectHero' media project) (projectHero project)
             , projectNav project
-            , E.div [ A.class_ "project__body" ] (showcase <> body)
+            , E.div [ A.class_ "project__body" ] body
             ]
         ]
     }
@@ -102,15 +202,6 @@ projectPage config project =
     body =
       [ E.div [ A.class_ "project__lead prose" ] (renderBlocks media lead) | not (null lead) ]
         <> map (dossierSection media) (projectSections project)
-    showcase
-      | hasHero = []
-      | otherwise =
-          case projectShowcase project of
-            Just (ImageShowcase path alt) ->
-              [ E.figure [ A.class_ "project__showcase" ]
-                  [ E.img [ A.src (media path), A.alt alt, A.decoding HTML.DecodeAsync ] ]
-              ]
-            _ -> []
 
 -- | The hero: atmospheric artwork behind the project's real header text.
 -- The artwork is the page's largest image and is fetched first; its crop
@@ -145,6 +236,10 @@ projectHeader project =
       , E.ul [ A.class_ "project__tags", A.aria_label "Technologies" ]
           (map (\tag -> E.li [] [ E.text tag ]) (projectTechnologies project))
       ]
+        <> [ E.ul [ A.class_ "project__topics", A.aria_label "Topics" ]
+               (map (\topic -> E.li [] [ E.text (topicLabel topic) ]) (projectTopics project))
+           | not (null (projectTopics project))
+           ]
         <> [ E.ul [ A.class_ "project__external", A.aria_label "Links" ]
                [ E.li [] [ E.a [ A.href (B.mkRawURL (linkUrl l)) ] [ E.text (linkLabel l) ] ]
                | l <- projectLinks project
@@ -155,6 +250,19 @@ projectHeader project =
 
 -- | The project sidebar: a way back to all projects, the current project,
 -- and one link per section actually on the page.
+--
+-- It has two presentations of the same links, chosen by CSS at 900px:
+--
+-- * desktop: the accepted sidebar (All projects, the current project's
+--   gilded tab, the section list);
+-- * below 900px (Phase 05): All projects, then a collapsed "On this page"
+--   disclosure (native @<details>@: no JavaScript) holding the section
+--   list. The project's title is already in the opening just above, so
+--   the tab is not repeated there.
+--
+-- Both section lists are rendered from the one 'sectionLinks' value, so
+-- they cannot drift apart; the presentation not in use is @display: none@,
+-- so assistive technology and the keyboard meet exactly one of them.
 projectNav :: Project -> E.ChildHTML E.Article grandparent
 projectNav project =
   E.nav [ A.class_ "project-nav", A.aria_label "Project" ]
@@ -169,15 +277,28 @@ projectNav project =
           ]
           [ E.text (projectTitle project) ]
       ]
-        <> [ E.ul [ A.class_ "project-nav__sections", A.aria_label "Sections" ]
-               [ E.li [] [ E.a [ A.href (elementId (dossierId section)) ] [ E.text (inlineText (dossierHeading section)) ] ]
-               | section <- sections
-               ]
-           | not (null sections)
-           ]
+        <> ( if null sections
+               then []
+               else
+                 [ E.ul [ A.class_ "project-nav__sections", A.aria_label "Sections" ] sectionLinks
+                 , E.details [ A.class_ "project-nav__index" ]
+                     [ E.summary [ A.class_ "project-nav__summary" ]
+                         [ E.span [ A.class_ "project-nav__summary-label" ] [ E.text "On this page" ]
+                         , E.span [ A.class_ "project-nav__summary-count" ]
+                             [ E.text (T.pack (show (length sections)) <> (if length sections == 1 then " section" else " sections")) ]
+                         ]
+                     , E.ul [ A.class_ "project-nav__index-list", A.aria_label "Sections" ] sectionLinks
+                     ]
+                 ]
+           )
     )
   where
     sections = sidebarSections project
+    sectionLinks :: [E.ChildHTML E.UnorderedList gp]
+    sectionLinks =
+      [ E.li [] [ E.a [ A.href (elementId (dossierId section)) ] [ E.text (inlineText (dossierHeading section)) ] ]
+      | section <- sections
+      ]
 
 --------------------------------------------------------------------------------
 -- Dossier sections: one renderer per layout

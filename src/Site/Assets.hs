@@ -21,6 +21,7 @@ module Site.Assets
   , heroPlateRight
   , aboutTree
   , blackEmblem
+  , workFilterScript
   ) where
 
 import Data.Text qualified as T
@@ -76,6 +77,11 @@ aboutTree = Asset "images/about-tree.webp"
 blackEmblem :: Asset
 blackEmblem = Asset "images/black-emblem.svg"
 
+-- | The Work index's search and filter enhancement (Phase 05): the site's
+-- only script, loaded only on @/work/@. The page is complete without it.
+workFilterScript :: Asset
+workFilterScript = Asset "scripts/work-filter.js"
+
 -- | Everything copied into @dist/assets/@, including files referenced only
 -- from CSS (fonts, textures, ornaments) and the font licences, which must
 -- travel with the font files.
@@ -90,6 +96,7 @@ allAssets =
   , heroPlateRight
   , aboutTree
   , blackEmblem
+  , workFilterScript
   , Asset "images/texture-grain.svg"
   , Asset "images/ornament-corner.svg"
   , Asset "images/ornament-rule.svg"

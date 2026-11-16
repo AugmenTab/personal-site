@@ -2,10 +2,11 @@
   "slug": "lockdown",
   "title": "Lockdown",
   "summary": "A prototype game engine in Rust: a deterministic, replayable simulation, with gameplay rules as content that can change while the game runs.",
-  "category": "Game engine prototype",
+  "category": "simulation-games",
+  "topics": ["deterministic-simulation", "game-engines"],
   "development_status": "in_development",
   "publication_status": "published",
-  "technologies": ["Rust", "Bevy", "Deterministic simulation"],
+  "technologies": ["Rust", "Bevy"],
   "featured_order": 3,
   "body": "body.md",
   "showcase": {

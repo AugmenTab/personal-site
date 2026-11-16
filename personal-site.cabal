@@ -19,6 +19,7 @@ library
       Site.Content.Render
       Site.Content.Types
       Site.Definition
+      Site.Discovery
       Site.Layout
       Site.Manifest
       Site.Page
@@ -29,7 +30,9 @@ library
       Site.Pages.Writing
       Site.Path
       Site.Routes
+      Site.Settings
       Site.Source
+      Site.Taxonomy
       Site.Validate
   other-modules:
       Paths_personal_site
@@ -89,6 +92,7 @@ test-suite site-test
       ContentTests
       DossierTests
       HomeTests
+      Phase05Tests
       Paths_personal_site
   hs-source-dirs:
       test

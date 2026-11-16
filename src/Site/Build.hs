@@ -54,8 +54,9 @@ import Site.Content.Load (ContentError, loadContent)
 import Site.Content.Types (MediaFile (..))
 import Site.Definition (siteFrom)
 import Site.Layout (renderPage)
-import Site.Manifest (Entry (..), Manifest, ManifestError, manifestAssets, manifestEntries, manifestMedia, manifestPages, mkManifest)
-import Site.Page (Page (..), Site (..))
+import Site.Manifest (Entry (..), Manifest, ManifestError, Source (..), manifestAssets, manifestEntries, manifestMedia, manifestPages, mkManifestWith)
+import Site.Page (GeneratedFile (..), Page (..), Site (..))
+import Site.Settings (ownerSettings, settingsProblems)
 import Site.Path (OutputPath, isWithin, mkOutputPath, outputFilePath, resolveUnder)
 import Site.Source (SourceProblem (..), describeSourceProblem, sourceFileProblem)
 import Site.Routes (Route)
@@ -72,6 +73,8 @@ data BuildConfig =
 data BuildError
   = InvalidContent [ContentError]
     -- ^ Content metadata or Markdown failed validation.
+  | InvalidSettings [String]
+    -- ^ "Site.Settings" (origin, identity, contacts) failed validation.
   | InvalidManifest [ManifestError]
   | MissingAssets [FilePath]
     -- ^ Listed in the manifest but absent from the source tree.
@@ -100,6 +103,8 @@ instance Show BuildError where
     case err of
       InvalidContent errs ->
         "invalid content:\n" <> concatMap show errs
+      InvalidSettings problems ->
+        "invalid site settings (src/Site/Settings.hs):\n" <> bullets problems
       InvalidMedia problems ->
         "published media cannot be copied:\n" <> bullets problems
       InvalidManifest errs ->
@@ -147,6 +152,9 @@ data BuildReport =
 -- site from it. Throws 'InvalidContent' with every content problem found.
 loadSite :: FilePath -> IO Site
 loadSite root = do
+  case settingsProblems ownerSettings of
+    [] -> pure ()
+    problems -> throwIO (InvalidSettings problems)
   loaded <- loadContent root
   either (throwIO . InvalidContent) (pure . siteFrom) loaded
 
@@ -163,7 +171,8 @@ checkSite :: BuildConfig -> Site -> IO CheckReport
 checkSite config s = do
   manifest <-
     either (throwIO . InvalidManifest) pure $
-      mkManifest (map pageRoute (sitePages s)) (siteAssets s) (siteMedia s)
+      mkManifestWith (map pageRoute (sitePages s)) (siteAssets s) (siteMedia s)
+        [ (generatedPath g, generatedDescription g) | g <- siteGenerated s ]
 
   let assetsRoot = sourceRoot config </> "assets"
       sourceOf asset = assetsRoot </> assetPath asset
@@ -233,6 +242,14 @@ buildSite config s = do
       let target = resolveUnder staging path
       Dir.createDirectoryIfMissing True (takeDirectory target)
       Dir.copyFile (sourceRoot config </> mediaRoot m </> outputFilePath (mediaPath m)) target
+    forM_ (manifestEntries manifest) $ \entry ->
+      case entrySource entry of
+        GeneratedSource _ ->
+          forM_ [ g | g <- siteGenerated s, generatedPath g == outputFilePath (entryOutput entry) ] $ \g -> do
+            let target = resolveUnder staging (entryOutput entry)
+            Dir.createDirectoryIfMissing True (takeDirectory target)
+            BS.writeFile target (TE.encodeUtf8 (generatedContents g))
+        _ -> pure ()
     BS.writeFile (staging </> ownershipMarker) ownershipMarkerContents
 
     staged <- listFilesRecursive staging
@@ -246,7 +263,7 @@ buildSite config s = do
     BuildReport
       { reportEntries = manifestEntries manifest
       , reportPageCount = length (checkPages report)
-      , reportAssetCount = length (manifestAssets manifest) + length (manifestMedia manifest)
+      , reportAssetCount = length (manifestEntries manifest) - length (checkPages report)
       , reportHtmlBytes = sum [ fromIntegral (LBS.length html) | (_, _, html) <- checkPages report ]
       }
 

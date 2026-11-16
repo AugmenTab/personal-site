@@ -69,7 +69,7 @@ projectJson slug overrides =
         [ ("slug", Just (Json.String slug))
         , ("title", Just (Json.String ("Project " <> slug)))
         , ("summary", Just "A test project.")
-        , ("category", Just "Test fixture")
+        , ("category", Just "libraries-tooling")
         , ("development_status", Just "implemented")
         , ("publication_status", Just "published")
         , ("technologies", Just (Json.toJSON ["Haskell" :: T.Text]))

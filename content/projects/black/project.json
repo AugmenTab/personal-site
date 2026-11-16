@@ -2,10 +2,11 @@
   "slug": "black",
   "title": "Black",
   "summary": "A correctness-focused programming language whose compiler proves, before a program runs, that its integer arithmetic and conversions fit their types.",
-  "category": "Programming language",
+  "category": "programming-languages",
+  "topics": ["type-systems", "compiler-engineering", "formal-verification"],
   "development_status": "in_development",
   "publication_status": "published",
-  "technologies": ["Haskell", "LLVM IR", "Type systems", "Verification"],
+  "technologies": ["Haskell", "LLVM IR"],
   "featured_order": 1,
   "body": "body.md",
   "showcase": {

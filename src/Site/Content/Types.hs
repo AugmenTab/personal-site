@@ -59,6 +59,7 @@ import Brigid.Types qualified as B
 import Site.Content.Markdown (Block, Document, Inline)
 import Site.Path (OutputPath, mkOutputPath, outputText)
 import Site.Routes (Slug, elementId, slugText)
+import Site.Taxonomy (Category, Topic, categoryLabel)
 
 -- | The state of the actual work. It labels a project truthfully and never
 -- decides whether it is published.
@@ -108,16 +109,20 @@ data Project =
       -- ^ The project's directory, e.g. @content/projects/brigid@.
     , projectTitle :: T.Text
     , projectSummary :: T.Text
-    , projectCategory :: T.Text
-      -- ^ What kind of thing it is, e.g. "Haskell library".
+    , projectCategory :: Category
+      -- ^ The primary classification ("Site.Taxonomy").
+    , projectTopics :: [Topic]
+      -- ^ Cross-cutting subjects, in vocabulary order, without duplicates.
     , projectDevelopment :: DevelopmentStatus
     , projectPublication :: PublicationStatus
     , projectTechnologies :: [T.Text]
+      -- ^ Concrete languages, frameworks and tools, as written.
     , projectFeatured :: Maybe Int
       -- ^ Position among featured projects (homepage); 'Nothing' if not featured.
     , projectLinks :: [ExternalLink]
     , projectShowcase :: Maybe Showcase
-      -- ^ Card art (decorative on cards; a figure on hero-less pages).
+      -- ^ Card art: shown (decoratively) on the project's cards only. The
+      -- dossier never shows it; evidence belongs in a section artifact.
     , projectHero :: Maybe Hero
     , projectBody :: Document
       -- ^ The parsed Markdown body; its lead opens the dossier.
@@ -304,10 +309,10 @@ data CodeExcerpt =
 sidebarSections :: Project -> [DossierSection]
 sidebarSections = filter dossierInSidebar . projectSections
 
--- | "Haskell library · In development".
+-- | "Libraries & Tooling · In development".
 projectKicker :: Project -> T.Text
 projectKicker project =
-  projectCategory project <> " · " <> developmentLabel (projectDevelopment project)
+  categoryLabel (projectCategory project) <> " · " <> developmentLabel (projectDevelopment project)
 
 -- | The id of the project's title, @{slug}-title@.
 projectTitleId :: Project -> B.Id
@@ -326,7 +331,12 @@ data Article =
     , articleMedia :: [MediaFile]
     }
 
-data MediaOwner = ProjectMedia Slug | ArticleMedia Slug
+data MediaOwner
+  = ProjectMedia Slug
+  | ArticleMedia Slug
+  | SiteMedia
+    -- ^ A site-level document published at the root of the site under its
+    -- own name (the résumé: @content/resume.pdf@ to @/resume.pdf@).
   deriving (Eq, Ord, Show)
 
 -- | A media file belonging to one content item.
@@ -341,17 +351,15 @@ data MediaFile =
     }
   deriving (Eq, Show)
 
--- | Where a media file is published: @media/projects/{slug}/{path}@ or
--- @media/writing/{slug}/{path}@.
+-- | Where a media file is published: @media/projects/{slug}/{path}@,
+-- @media/writing/{slug}/{path}@, or (site documents) @{path}@ itself.
 mediaOutput :: MediaOwner -> OutputPath -> Either String OutputPath
 mediaOutput owner path =
   either (Left . show) Right . mkOutputPath $
-    "media/" <> ownerDir owner <> "/" <> outputText path
-  where
-    ownerDir o =
-      case o of
-        ProjectMedia slug -> "projects/" <> T.unpack (slugText slug)
-        ArticleMedia slug -> "writing/" <> T.unpack (slugText slug)
+    case owner of
+      ProjectMedia slug -> "media/projects/" <> T.unpack (slugText slug) <> "/" <> outputText path
+      ArticleMedia slug -> "media/writing/" <> T.unpack (slugText slug) <> "/" <> outputText path
+      SiteMedia -> outputText path
 
 -- | The root-absolute URL of a media file.
 mediaUrl :: MediaOwner -> OutputPath -> B.RawURL
@@ -364,13 +372,17 @@ data Content =
   Content
     { contentProjects :: [Project]
     , contentArticles :: [Article]
+    , contentResume :: Maybe MediaFile
+      -- ^ The résumé PDF, when @content/resume.pdf@ exists (validated). It
+      -- is published at @/resume.pdf@ and linked from the navigation and
+      -- footer; without it, no résumé link exists anywhere.
     , contentWarnings :: [String]
       -- ^ Accepted, but worth an author's attention (e.g. a hero over its
       -- size budget). Printed by @site check@ and @site build@.
     }
 
 emptyContent :: Content
-emptyContent = Content [] [] []
+emptyContent = Content [] [] Nothing []
 
 -- | Published projects for the Work index: featured ones first, by
 -- featured order, then the rest by title, then slug. Never by directory

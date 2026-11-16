@@ -27,7 +27,6 @@ import Site.Build
 import Site.Layout (renderPage)
 import Site.Manifest
 import Site.Page (Layout (..), Page (..), Site (..))
-import Site.Pages.About (contactId)
 import Site.Path
 import Site.Routes
 import Site.Validate (PageProblem (..), activeContent, attributeValues, validatePages)
@@ -36,6 +35,7 @@ import System.IO.Unsafe (unsafePerformIO)
 import ContentTests (contentTests)
 import DossierTests (dossierTests)
 import HomeTests (homeTests)
+import Phase05Tests (phase05Tests)
 
 main :: IO ()
 main =
@@ -49,6 +49,7 @@ main =
       , contentTests
       , homeTests
       , dossierTests
+      , phase05Tests
       ]
 
 --------------------------------------------------------------------------------
@@ -82,7 +83,7 @@ count :: T.Text -> T.Text -> Int
 count needle haystack = length (T.breakOnAll needle haystack)
 
 -- | A minimal valid page for synthetic sites. It carries the @#contact@
--- id, which the shared navigation links to on the About page.
+-- id, which the shared navigation links to on the homepage.
 stubPage :: Route -> [E.ChildHTML E.Main E.Body] -> Page
 stubPage route body =
   Page
@@ -231,7 +232,7 @@ renderTests =
     , testCase "shared navigation links to routes, marking only the current page" $
         forM_ allRoutes $ \r -> do
           let html = htmlOf r
-          forM_ ["/\"", "/work/\"", "/about/\"", "/about/#contact\""] $ \href ->
+          forM_ ["/\"", "/work/\"", "/about/\"", "/#contact\""] $ \href ->
             assertBool (show r <> " nav " <> T.unpack href) (("class=\"site-nav__link\" href=\"" <> href) `T.isInfixOf` html)
           let header = fst (T.breakOn "</header>" html)
               current = [ label | (label, route) <- [("Home", Home), ("Work", WorkIndex), ("About", About)], route == r ]
@@ -242,30 +243,36 @@ renderTests =
         let html = htmlOf Home
         forM_ [ "class=\"stage\"", "class=\"stage__art\"", "hero-plate-centre.webp", "hero-plate-left.webp", "hero-plate-right.webp"
               , "class=\"hero__divider\"", "id=\"top\"", "id=\"black\"", "class=\"feature__code\"", "id=\"selected-work\""
-              , "class=\"project-card\"", "id=\"philosophy\"", "id=\"about\"", "id=\"contact\"" ] $ \frag ->
+              , "class=\"project-card\"", "id=\"philosophy\"", "id=\"contact\"" ] $ \frag ->
           assertBool (T.unpack frag) (frag `T.isInfixOf` html)
-        forM_ ["href=\"#selected-work\"", "href=\"#about\""] $ \frag ->
+        forM_ ["href=\"#selected-work\"", "class=\"button button--secondary\" href=\"#contact\""] $ \frag ->
           assertBool (T.unpack frag) (frag `T.isInfixOf` html)
+        -- About is its own page now (Phase 05): no About section here
+        assertBool "no #about" (not ("id=\"about\"" `T.isInfixOf` html))
     , testCase "every <img> has an alt attribute" $
         forM_ allRoutes $ \r ->
           forM_ (drop 1 (T.splitOn "<img " (htmlOf r))) $ \tag ->
             assertBool (show r <> " img alt") ("alt=" `T.isInfixOf` T.takeWhile (/= '>') tag)
-    , testCase "pages are static: no scripts, forms or controls" $
-        forM_ allRoutes $ \r ->
-          forM_ ["<script", "<form", "<button", "<textarea", "<input", "<iframe"] $ \frag ->
+    , testCase "pages are static: no scripts, forms or controls (the Work index's filter excepted)" $ do
+        forM_ (filter (/= WorkIndex) allRoutes) $ \r ->
+          forM_ ["<script", "<form", "<button", "<textarea", "<input", "<iframe", "<select"] $ \frag ->
             assertBool (show r <> ": unexpected " <> T.unpack frag) (not (frag `T.isInfixOf` htmlOf r))
+        let work = htmlOf WorkIndex
+        count "<script" work @?= 1
+        assertBool "one external module script" ("<script type=\"module\" src=\"/assets/scripts/work-filter.js\"></script>" `T.isInfixOf` work)
+        count "<input" work @?= 1
+        forM_ ["<form", "<textarea", "<iframe", "<select"] $ \frag ->
+          assertBool ("work: unexpected " <> T.unpack frag) (not (frag `T.isInfixOf` work))
     , testCase "the monogram appears once per page, inside the navigation medallion" $
         forM_ allRoutes $ \r -> do
           let html = htmlOf r
           count "monogram" html @?= 1
           let nav = fst (T.breakOn "</nav>" (snd (T.breakOn "<nav " html)))
           assertBool (show r <> " monogram in nav") ("site-nav__mark-img\" src=\"/assets/brand/monogram-simple.svg\"" `T.isInfixOf` nav)
-    , testCase "the tree emblem is in About content only" $ do
-        assertBool "home about" ("about__tree" `T.isInfixOf` snd (T.breakOn "id=\"about\"" (htmlOf Home)))
-        assertBool "home: not before about" (not ("about__tree" `T.isInfixOf` fst (T.breakOn "id=\"about\"" (htmlOf Home))))
-        assertBool "about page" ("about__tree" `T.isInfixOf` htmlOf About)
-        forM_ (filter (`notElem` [Home, About]) allRoutes) $ \r ->
-          assertBool (show r <> " has no tree") (not ("about__tree" `T.isInfixOf` htmlOf r))
+    , testCase "the tree emblem is on the About page only" $ do
+        count "about-tree.webp" (htmlOf About) @?= 1
+        forM_ (filter (/= About) allRoutes) $ \r ->
+          assertBool (show r <> " has no tree") (not ("about-tree" `T.isInfixOf` htmlOf r))
     , testCase "the Brigid page has its content, source link and a way back to Work" $ do
         let html = htmlOf brigidRoute
         forM_ [ "href=\"https://github.com/AugmenTab/brigid\"", "href=\"/work/\"", "BSD-3-Clause", "Haskell"
@@ -284,7 +291,7 @@ renderTests =
     , testCase "every sidebar section link has a section, and every section a link" $ do
         let html = htmlOf brigidRoute
             sidebar = fst (T.breakOn "</nav>" (snd (T.breakOn "<nav class=\"project-nav\"" html)))
-            sectionList = snd (T.breakOn "project-nav__sections" sidebar)
+            sectionList = fst (T.breakOn "</ul>" (snd (T.breakOn "project-nav__sections" sidebar)))
             links = [ T.drop 1 h | h <- attributeValues "href" sectionList ]
             sectionIds = [ i | (_, rest) <- T.breakOnAll "<h2 class=\"project__section-title\" id=\"" html
                              , let i = T.takeWhile (/= '"') (T.drop (T.length "<h2 class=\"project__section-title\" id=\"") rest) ]

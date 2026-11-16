@@ -26,8 +26,8 @@ import Site.Content.Types
 import Site.Definition (siteFrom)
 import Site.Layout (renderPage)
 import Site.Page (Page (..), Site (..))
-import Site.Pages.About (ContactLink (..), contacts)
 import Site.Pages.Home
+import Site.Settings (contactHref, contacts, ownerSettings)
 import Site.Routes
 import Site.Validate (attributeValues)
 
@@ -154,13 +154,13 @@ realSiteTests =
         let teaser = sectionOf "black" (render s Home)
         attributeValues "href" teaser @?= ["/work/black/"]
         assertBool "status from the record" ("In development · Playground planned" `T.isInfixOf` teaser)
-    , testCase "contact links are the verified destinations only" $ do
-        map contactUrl contacts @?= ["https://github.com/AugmenTab"]
+    , testCase "contact links are the verified destinations only, each one control" $ do
+        map contactHref (contacts ownerSettings) @?= ["https://github.com/AugmenTab"]
         s <- realSite
-        let about = sectionOf "about" (render s Home)
-        attributeValues "href" (snd (T.breakOn "about__links" about)) @?= ["https://github.com/AugmenTab"]
-        forM_ ["mailto:", "linkedin", "résumé", "resume", ".pdf"] $ \frag ->
-          assertBool (T.unpack frag) (not (frag `T.isInfixOf` T.toLower about))
+        let contact = sectionOf "contact" (render s Home)
+        attributeValues "href" contact @?= ["https://github.com/AugmenTab"]
+        forM_ ["mailto:", "linkedin", "résumé", "resume", ".pdf", "/about/"] $ \frag ->
+          assertBool (T.unpack frag) (not (frag `T.isInfixOf` T.toLower contact))
     , testCase "the real site has no Writing preview" $ do
         s <- realSite
         let html = render s Home
@@ -287,10 +287,10 @@ structureTests =
   testGroup "structure"
     [ testCase "sections appear in the required order" $ do
         (_, html) <- homeOf (featured "one" 1 <> article "post" "published" (Just "2026-10-01"))
-        let order = [ i | i <- ["top", "black", "selected-work", "philosophy", "writing", "about"]
+        let order = [ i | i <- ["top", "black", "selected-work", "philosophy", "writing", "contact"]
                         , ("id=\"" <> i <> "\"") `T.isInfixOf` html ]
             position i = T.length (fst (T.breakOn ("id=\"" <> i <> "\"") html))
-        order @?= ["top", "black", "selected-work", "philosophy", "writing", "about"]
+        order @?= ["top", "black", "selected-work", "philosophy", "writing", "contact"]
         map position order @?= sort (map position order)
     , testCase "one h1, and heading levels never skip" $
         forM_ [[], featured "one" 1 <> article "post" "published" (Just "2026-10-01")] $ \files -> do
@@ -303,7 +303,7 @@ structureTests =
             assertBool ("h" <> show a <> " then h" <> show b) (b <= a + 1)
     , testCase "every section is labelled by its heading" $ do
         (_, html) <- homeOf (featured "one" 1 <> article "post" "published" (Just "2026-10-01"))
-        forM_ ["hero-title", "black-title", "work-title", "philosophy-title", "writing-title", "about-title"] $ \hid -> do
+        forM_ ["hero-title", "black-title", "work-title", "philosophy-title", "writing-title", "contact-title"] $ \hid -> do
           assertBool (T.unpack hid) (("aria-labelledby=\"" <> hid <> "\"") `T.isInfixOf` html)
           count ("id=\"" <> hid <> "\"") html @?= 1
     , testCase "the philosophy section is complete and calm: no images, no frames" $ do
@@ -317,11 +317,16 @@ structureTests =
         philosophyStatus philosophy @?= DraftCopy
         teaserStatus blackTeaser @?= DraftCopy
         introStatus introduction @?= DraftCopy
-    , testCase "the tree emblem appears once on the homepage, in About" $ do
+        contactStatus contactCopy @?= DraftCopy
+    , testCase "the homepage has a Contact section, not an About section, and no tree emblem" $ do
         s <- realSite
         let html = render s Home
-        count "about-tree.webp" html @?= 1
-        assertBool "in about" ("about-tree.webp" `T.isInfixOf` sectionOf "about" html)
+        count "id=\"contact\"" html @?= 1
+        assertBool "no about section" (not ("id=\"about\"" `T.isInfixOf` html))
+        assertBool "no tree" (not ("about-tree" `T.isInfixOf` html))
+        assertBool "invitation" (contactInvitation contactCopy `T.isInfixOf` textOf (sectionOf "contact" html))
+        -- the Contact section ends the page: the footer follows it
+        assertBool "contact is last in main" ("</section></main><footer" `T.isInfixOf` snd (T.breakOn "id=\"contact\"" html))
     ]
 
 --------------------------------------------------------------------------------
