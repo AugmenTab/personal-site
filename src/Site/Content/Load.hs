@@ -15,6 +15,9 @@
 module Site.Content.Load
   ( ContentError (..)
   , loadContent
+  , loadContentWith
+  , HeroSizePolicy (..)
+  , defaultHeroSizePolicy
   , decodeProjectMeta
   , ProjectMeta (..)
   ) where
@@ -33,6 +36,7 @@ import Data.Maybe (catMaybes)
 import Data.Scientific (floatingOrInteger)
 import Data.Text qualified as T
 import Data.Text.Encoding qualified as TE
+import Numeric (showFFloat)
 import System.Directory qualified as Dir
 import System.FilePath (takeExtension, (</>))
 
@@ -53,20 +57,24 @@ instance Show ContentError where
 -- Discovery
 
 loadContent :: FilePath -> IO (Either [ContentError] Content)
-loadContent root = do
+loadContent = loadContentWith defaultHeroSizePolicy
+
+loadContentWith :: HeroSizePolicy -> FilePath -> IO (Either [ContentError] Content)
+loadContentWith policy root = do
   (projectDirErrs, projectDirs) <- discover root "content/projects"
   (articleDirErrs, articleDirs) <- discover root "content/writing"
-  projects <- forM projectDirs (uncurry (loadProject root))
+  projects <- forM projectDirs (uncurry (loadProject policy root))
   articles <- forM articleDirs (uncurry (loadArticle root))
   let (projectErrs, loadedProjects) = partitionEithers projects
       (articleErrs, loadedArticles) = partitionEithers articles
       errors =
         projectDirErrs <> articleDirErrs <> concat projectErrs <> concat articleErrs
           <> featuredConflicts loadedProjects
-  pure $
-    case errors of
-      [] -> Right Content { contentProjects = loadedProjects, contentArticles = loadedArticles }
-      _ -> Left errors
+  case errors of
+    [] -> do
+      warnings <- concat <$> forM loadedProjects (heroWarnings policy root)
+      pure (Right Content { contentProjects = loadedProjects, contentArticles = loadedArticles, contentWarnings = warnings })
+    _ -> pure (Left errors)
 
 -- | The content directories of one kind, sorted by name.
 discover :: FilePath -> FilePath -> IO ([ContentError], [(Slug, FilePath)])
@@ -166,8 +174,8 @@ decodeProjectMeta value = do
       <*> (maybe Map.empty id <$> optionalField obj "sections" sectionPlans)
          )
 
-loadProject :: FilePath -> Slug -> FilePath -> IO (Either [ContentError] Project)
-loadProject root slug dir = do
+loadProject :: HeroSizePolicy -> FilePath -> Slug -> FilePath -> IO (Either [ContentError] Project)
+loadProject policy root slug dir = do
   let metaFile = dir </> "project.json"
   decoded <- readJson root dir "project.json" decodeProjectMeta
   case decoded of
@@ -188,7 +196,7 @@ loadProject root slug dir = do
           heroMedia = [ p | Just (HeroMeta p _ _) <- [metaHero meta] ]
       body <- loadBody root dir metaFile (metaBody meta) [ "main", slugText slug <> "-title" ]
       mediaErrs <- checkMedia root dir "field \"showcase\"" showcaseMedia
-      heroErrs <- checkHero root dir heroMedia
+      heroErrs <- checkHero policy root dir heroMedia
       case body of
         Left bodyErrs ->
           pure (Left (fileErrors metaFile (slugErrs <> showcaseErrs <> mediaErrs <> heroErrs) <> bodyErrs))
@@ -225,16 +233,30 @@ loadProject root slug dir = do
 --------------------------------------------------------------------------------
 -- Dossier sections and heroes
 
--- | The largest hero file accepted. The hero is the page's largest image
--- and is loaded eagerly, so an unoptimized export is an error, not a
--- silent slowdown (see README "Hero artwork").
-heroByteLimit :: Integer
-heroByteLimit = 1024 * 1024
+-- | How large a hero image may be (see README "Hero artwork"). The hero is
+-- the page's largest image and is fetched eagerly, so size matters, but
+-- painterly art must not be crushed to meet a number:
+--
+-- * up to the budget, it is accepted silently;
+-- * over the budget and up to the ceiling, it is accepted with a warning
+--   that @site check@ and @site build@ print (size and budget);
+-- * over the ceiling, the build fails.
+data HeroSizePolicy =
+  HeroSizePolicy
+    { heroBudgetBytes :: Integer
+    , heroCeilingBytes :: Integer
+    }
+  deriving (Eq, Show)
+
+-- | 1 MiB budget (the optimization target; @tools/art/promote_hero.py@ aims
+-- for it), 8 MiB ceiling.
+defaultHeroSizePolicy :: HeroSizePolicy
+defaultHeroSizePolicy = HeroSizePolicy (1024 * 1024) (8 * 1024 * 1024)
 
 -- | The hero must be an image inside the project directory, within the
--- size limit.
-checkHero :: FilePath -> FilePath -> [OutputPath] -> IO [String]
-checkHero root dir paths = do
+-- size ceiling.
+checkHero :: HeroSizePolicy -> FilePath -> FilePath -> [OutputPath] -> IO [String]
+checkHero policy root dir paths = do
   problems <- checkMedia root dir "field \"hero\": image" paths
   case problems of
     _ : _ -> pure problems
@@ -242,10 +264,31 @@ checkHero root dir paths = do
       fmap catMaybes . forM paths $ \path -> do
         size <- Dir.getFileSize (root </> dir </> outputFilePath path)
         pure $
-          if size > heroByteLimit
-            then Just ("field \"hero\": image " <> show (outputText path) <> " is " <> show size
-                         <> " bytes; the limit is " <> show heroByteLimit <> " (re-export it with tools/art/promote_hero.py)")
+          if size > heroCeilingBytes policy
+            then Just ("field \"hero\": image " <> show (outputText path) <> " is " <> describeBytes size
+                         <> "; the ceiling is " <> describeBytes (heroCeilingBytes policy)
+                         <> " (budget " <> describeBytes (heroBudgetBytes policy)
+                         <> "). Re-export it from the source PNG with tools/art/promote_hero.py")
             else Nothing
+
+-- | A warning for a hero over the budget (it is within the ceiling, or the
+-- project would not have loaded).
+heroWarnings :: HeroSizePolicy -> FilePath -> Project -> IO [String]
+heroWarnings policy root project =
+  case projectHero project of
+    Nothing -> pure []
+    Just hero -> do
+      size <- Dir.getFileSize (root </> projectSource project </> outputFilePath (heroImage hero))
+      pure
+        [ projectSource project </> "project.json" <> ": field \"hero\": image " <> show (outputText (heroImage hero))
+            <> " is " <> describeBytes size <> ", over the " <> describeBytes (heroBudgetBytes policy)
+            <> " budget (accepted up to " <> describeBytes (heroCeilingBytes policy) <> ")"
+        | size > heroBudgetBytes policy
+        ]
+
+-- | e.g. @"1.50 MiB (1572864 bytes)"@.
+describeBytes :: Integer -> String
+describeBytes n = showFFloat (Just 2) (fromIntegral n / (1024 * 1024) :: Double) " MiB (" <> show n <> " bytes)"
 
 -- | Give every @##@ section of the body its layout. Returns errors about
 -- @project.json@, errors about the body's structure, and the sections.
@@ -660,7 +703,8 @@ showcase value =
     decodeWith allowed decode =
       either (Left . unwords) Right (objectWith allowed value >>= runV . decode)
 
--- | @hero@: @{ "src", "alt" | "decorative": true, "focus"? }@. The alt text
+-- | @hero@: @{ "src", "alt" | "decorative": true, "focus"? }@ (see
+-- 'heroFocusField'). The alt text
 -- policy is explicit: exactly one of @alt@ and @decorative@.
 heroField :: Json.Value -> Either String HeroMeta
 heroField value = do
@@ -674,13 +718,60 @@ heroField value = do
                (False, False) -> Left ["missing \"alt\" (a short description of the artwork) or \"decorative\": true (atmosphere only)"]
                (True, False) -> runV (HeroDescribed <$> field obj "alt" attributeText)
                (False, True) -> runV (field obj "decorative" decorativeFlag))
-      <*> (maybe FocusCenter id <$> optionalField obj "focus" (enum [ (heroFocusName f, f) | f <- [minBound .. maxBound] ]))
+      <*> (maybe defaultHeroFocus id <$> optionalField obj "focus" heroFocusField)
   where
     decorativeFlag v =
       case v of
         Json.Bool True -> Right HeroDecorative
         Json.Bool False -> Left "false is not allowed; describe the artwork with \"alt\" instead"
         other -> Left ("expected true, got " <> jsonType other)
+
+-- | @focus@, in one of three forms:
+--
+-- * @{ "desktop": {"x", "y"}, "mobile": {"x", "y"} }@: separate points for
+--   wide screens and phones (either may be omitted: desktop defaults to the
+--   centre, mobile to the desktop point);
+-- * @{ "x", "y" }@: one point everywhere;
+-- * @"center" | "top" | "bottom"@: the Phase 04 keywords.
+--
+-- An omitted axis is 50 (the centre).
+heroFocusField :: Json.Value -> Either String HeroFocus
+heroFocusField value =
+  case value of
+    Json.String s ->
+      case lookup s legacyHeroFocus of
+        Just p -> Right (HeroFocus p p)
+        Nothing -> Left ("invalid value " <> show s <> "; expected one of: " <> T.unpack (T.intercalate ", " (map fst legacyHeroFocus))
+                           <> ", or an object such as {\"x\": 65, \"y\": 35} or {\"desktop\": {…}, \"mobile\": {…}}")
+    Json.Object obj
+      | any (\k -> KeyMap.member k obj) ["desktop", "mobile"] -> do
+          o <- either (Left . unwords) Right (objectWith ["desktop", "mobile"] value)
+          either (Left . unwords) Right . runV $
+            (\d m -> HeroFocus d (maybe d id m))
+              <$> (maybe focusCentre id <$> optionalField o "desktop" focusPointField)
+              <*> optionalField o "mobile" focusPointField
+      | otherwise -> (\p -> HeroFocus p p) <$> focusPointField value
+    other -> Left ("expected a keyword or an object, got " <> jsonType other)
+
+-- | @{ "x", "y" }@, each a whole percentage from 0 to 100 in steps of 5.
+focusPointField :: Json.Value -> Either String FocusPoint
+focusPointField value = do
+  obj <- either (Left . unwords) Right (objectWith ["x", "y"] value)
+  if KeyMap.null obj
+    then Left "give \"x\", \"y\" or both (percent of the artwork's width and height)"
+    else either (Left . unwords) Right . runV $
+      FocusPoint
+        <$> (maybe (focusX focusCentre) id <$> optionalField obj "x" percentField)
+        <*> (maybe (focusY focusCentre) id <$> optionalField obj "y" percentField)
+  where
+    percentField v =
+      case v of
+        Json.Number n ->
+          case floatingOrInteger n :: Either Double Integer of
+            Right i | i >= 0 && i <= 100 -> mkFocusPercent (fromInteger i)
+            Right i -> Left ("must be from 0 to 100, got " <> show i)
+            Left _ -> Left ("expected a whole number from 0 to 100, got " <> show n)
+        other -> Left ("expected a number, got " <> jsonType other)
 
 -- | @sections@: an object from a body section's id to its presentation.
 sectionPlans :: Json.Value -> Either String (Map.Map T.Text SectionPlan)

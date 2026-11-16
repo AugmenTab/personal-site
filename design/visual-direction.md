@@ -207,7 +207,7 @@ only the hero and the mix of section layouts differ.
 
 | Element | Treatment |
 | --- | --- |
-| Hero (optional) | Full-bleed painted banner under the header (as the homepage stage), cropped by `object-fit` with a per-project focus. Veils darken the nav band, the lower left (where the title sits) and the foot. A hairline frame with the Deco corner fans sits inside it. Title in gilded Cinzel (the homepage name's gradient), summary in italic Garamond, tags as hairline cartouches. A ruled diamond hands over to the sidebar and sections |
+| Hero (optional) | *(Revised in the layout remediation.)* The opening of the main column, beside the sidebar, as in render 03; not full-bleed. Shallow (`clamp(20rem, 46vh, 28rem)`), with no frame: a mask fades the art into the page on every side. Veils darken the lower left (where the text sits) and the foot. The text shares the dossier's left edge. It is cropped by `object-fit` at a validated focus point, with separate points for desktop and phones. Edge to edge and taller on phones. Title in gilded Cinzel (the homepage name's gradient), summary in italic Garamond, tags as hairline cartouches. A ruled diamond hands over to the first section |
 | Overview | Prose, then a ruled fact strip: verdigris labels over bone values in hairline-divided columns (a two-column definition table on phones) |
 | Wide exhibit | The artifact in the card's 9-slice Deco frame at full column width; the copy below as a caption, led by a short gold rule |
 | Split | Prose (2 parts) beside the framed artifact (3 parts), side chosen per section; stacked in reading order below 1180px |
@@ -227,3 +227,6 @@ only the hero and the mix of section layouts differ.
 | Diagram text | SVG text uses serif fallbacks (Georgia/Times), not Cinzel and EB Garamond | An SVG loaded through `<img>` cannot use the page's web fonts |
 | Phone diagram | Scrolls sideways inside its frame | At 390px the full diagram's labels would be about 6px; a legible minimum width plus a full-size link is more useful |
 | Heading rules on phones | A wrapped section title leaves its gold rule beside the last line | Pre-existing Phase 02 behaviour of `.project__section-title`; left unchanged (hidden only for the hero kicker) |
+| Hero frame and corner fans (remediation) | Removed | The remediation brief asks for an atmospheric hero with no frame around the artwork; render 03 has none |
+| Phone order (remediation) | The project header or hero now comes before the compact section index (it was index first) | The brief's suggested mobile order. Source order follows it, so reading and keyboard order match (ADR 0003, decision 11) |
+| Long project names in the sidebar tab | A single word longer than the tab (about 11 capitals) overflows its chamfer where the browser cannot hyphenate (`hyphens: auto` is set; headless Chromium has no dictionary) | No real project name comes close; found with a stress-test title in the preview only |

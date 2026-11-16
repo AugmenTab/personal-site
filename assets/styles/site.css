@@ -1401,16 +1401,28 @@ ul {
 }
 
 /* Project pages, after the approved project render: a project sidebar in a
-   dedicated left column beside the project's content. Shared by every
-   project; only the section links differ. */
+   dedicated left column, starting under the global navigation beside the
+   project's opening (hero or header) and continuing beside its dossier.
+   One grid for every project, with or without a hero; the article is the
+   grid, and its source order (opening, sidebar, dossier) is the stacked
+   order below 900px. */
 .project-layout {
   display: grid;
   grid-template-columns: 13.5rem minmax(0, 1fr);
-  gap: clamp(2rem, 4vw, 4rem);
-  max-width: 76rem;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "nav opening"
+    "nav body";
+  column-gap: clamp(2rem, 4vw, 4rem);
+  max-width: 82rem;
   margin: 0 auto;
   padding: 0 var(--gutter) var(--space-6);
 }
+
+.project-layout > .project-nav { grid-area: nav; }
+.project-layout > .project__header,
+.project-layout > .project-hero { grid-area: opening; }
+.project-layout > .project__body { grid-area: body; }
 
 /* Sidebar: All projects, the current project as a gilded tab, sections */
 .project-nav {
@@ -1466,6 +1478,7 @@ ul {
   text-transform: uppercase;
   text-decoration: none;
   color: var(--bone);
+  hyphens: auto;   /* where the browser can hyphenate English, a long name stays in the tab */
 }
 
 .project-nav__current::before,
@@ -1523,9 +1536,9 @@ ul {
 }
 
 /* Project content */
-.project {
+.project__header,
+.project__body {
   min-width: 0;
-  max-width: 48rem;
 }
 
 .project__kicker {
@@ -1623,12 +1636,18 @@ ul {
   text-align: center;
 }
 
-/* Tablet and mobile: the sidebar becomes a compact section index above the
-   content (no JavaScript; it wraps rather than scrolls sideways). */
+/* Tablet and mobile: one column in source order: the opening (hero or
+   header), the sidebar as a compact section index (no JavaScript; it
+   wraps rather than scrolls sideways), then the dossier. */
 @media (max-width: 900px) {
   .project-layout {
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-4);
+    grid-template-rows: none;
+    grid-template-areas:
+      "opening"
+      "nav"
+      "body";
+    row-gap: var(--space-4);
   }
 
   .project-nav {
@@ -2514,33 +2533,45 @@ code {
    frames). A project may add a symbolic hero, and presents each section in
    one of five layouts: overview, wide exhibit, split, grid, resources. */
 
-/* -- Hero: painted artwork under the header, the real title over it ----- */
+/* -- Hero: the opening of the main column -----------------------------------
+
+   An atmospheric environment, not a framed picture: the artwork fills the
+   main column's opening (beside the sidebar), fades out at its edges into
+   the page, and is darkened behind the title, summary and tags, which are
+   real HTML over it. Shallow and cinematic: it never fills the viewport,
+   so the first section starts within the first screen on desktop. */
 
 .interior--dossier {
-  padding-top: 0;
-  background: none;
-}
-
-.project.project--hero {
-  max-width: none;
+  background: none;     /* the artwork brings its own light */
 }
 
 .project-hero {
-  --hero-inner: calc(84rem - 2 * var(--gutter));
   position: relative;
   isolation: isolate;
   display: grid;
   align-items: end;
-  min-height: clamp(32rem, 76vh, 48rem);
-  padding: calc(var(--header-h) + var(--space-6)) var(--gutter) clamp(3rem, 6vw, 4.5rem);
-  overflow: hidden;
+  min-height: clamp(20rem, 46vh, 28rem);
+  margin-bottom: var(--space-5);
+  /* the text shares the dossier's left edge; the art's faded edge lies
+     under it */
+  padding: var(--space-5) clamp(1.25rem, 3vw, 2.5rem) clamp(1.5rem, 3vw, 2.25rem) 0;
 }
 
 .project-hero__art {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: var(--void);
+  overflow: hidden;
+  /* soft edges: the art dissolves into the page on every side, so it
+     reads as part of the page's environment rather than a picture */
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent 0, #000 12%, #000 93%, transparent 100%),
+    linear-gradient(180deg, transparent 0, #000 9%, #000 70%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(90deg, transparent 0, #000 12%, #000 93%, transparent 100%),
+    linear-gradient(180deg, transparent 0, #000 9%, #000 70%, transparent 100%);
+  mask-composite: intersect;
 }
 
 .project-hero__img {
@@ -2548,69 +2579,42 @@ code {
   height: 100%;
   max-width: none;
   object-fit: cover;
-  object-position: 50% 50%;
+  object-position: var(--hero-x, 50%) var(--hero-y, 50%);
 }
 
-.project-hero--focus-top .project-hero__img {
-  object-position: 50% 12%;
-}
-
-.project-hero--focus-bottom .project-hero__img {
-  object-position: 50% 88%;
-}
-
-/* Veils: dark under the navigation, toward the title at the lower left,
-   and into the page at the foot, so the art never competes with text. */
+/* Veils: darkest behind the text at the lower left, lifting toward the
+   artwork's subject; a deep shadow at the foot hands over to the page. */
 .project-hero__art::after {
   content: "";
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgb(11 11 13 / 0.82), rgb(11 11 13 / 0.2) 18%, transparent 34%),
-    linear-gradient(0deg, var(--void) 0, rgb(11 11 13 / 0.9) 14%, rgb(11 11 13 / 0.35) 46%, transparent 68%),
-    linear-gradient(90deg, rgb(11 11 13 / 0.78) 0, rgb(11 11 13 / 0.4) 38%, transparent 66%);
+    linear-gradient(0deg, rgb(11 11 13 / 0.92) 0, rgb(11 11 13 / 0.55) 30%, transparent 62%),
+    linear-gradient(90deg, rgb(11 11 13 / 0.86) 0, rgb(11 11 13 / 0.6) 34%, rgb(11 11 13 / 0.12) 64%, transparent 82%);
 }
 
-/* An Art Deco frame inside the banner: hairline border, corner fans */
-.project-hero::before,
+/* The hero hands over to the dossier with a ruled diamond */
 .project-hero::after {
   content: "";
   position: absolute;
+  bottom: calc(-1 * var(--space-5) / 2);
+  left: 50%;
+  width: min(28rem, 70%);
+  height: 9px;
+  transform: translate(-50%, 50%);
   pointer-events: none;
-}
-
-.project-hero {
-  --hero-frame-x: max(calc(var(--gutter) * 0.4), calc((100% - var(--hero-inner)) / 2 - 1.5rem));
-  --hero-frame-top: calc(var(--header-h) + 1.75rem);
-  --hero-fan: clamp(3.5rem, 7vw, 6rem);
-}
-
-/* the frame and its top-left fan */
-.project-hero::before {
-  inset: var(--hero-frame-top) var(--hero-frame-x) 1.25rem;
-  border: 1px solid var(--gold-hairline);
-  background: url("../images/ornament-corner.svg") left top / var(--hero-fan) no-repeat;
-}
-
-/* the top-right fan: the same ornament, mirrored */
-.project-hero::after {
-  top: var(--hero-frame-top);
-  right: var(--hero-frame-x);
-  width: var(--hero-fan);
-  aspect-ratio: 1;
-  background: url("../images/ornament-corner.svg") center / contain no-repeat;
-  transform: scaleX(-1);
+  background:
+    var(--diamond) center / 9px 9px no-repeat,
+    linear-gradient(90deg, transparent, var(--gold-line) 30%, var(--gold-line) 70%, transparent) center / 100% 1px no-repeat;
 }
 
 .project-hero__inner {
   position: relative;
-  width: 100%;
-  max-width: var(--hero-inner);
-  margin: 0 auto;
+  min-width: 0;
 }
 
 .project-hero .project__header {
-  max-width: 46rem;
+  max-width: 40rem;
 }
 
 .project-hero .project__kicker {
@@ -2619,9 +2623,12 @@ code {
 }
 
 .project-hero .project__title {
-  margin-top: 0.8rem;
-  font-size: clamp(3rem, 1.6rem + 5vw, 5.6rem);
+  margin-top: 0.7rem;
+  font-size: clamp(2.25rem, 1.2rem + 3.8vw, 4.6rem);
   letter-spacing: 0.09em;
+  /* a long word is hyphenated rather than clipped or split arbitrarily */
+  hyphens: auto;
+  overflow-wrap: break-word;
   filter:
     drop-shadow(0 2px 0 rgb(0 0 0 / 0.65))
     drop-shadow(0 0 22px rgb(11 11 13 / 0.85));
@@ -2651,40 +2658,59 @@ code {
   text-shadow: 0 1px 2px #000;
 }
 
-/* The hero hands over to the dossier with a ruled diamond */
-.project--hero .project-layout {
-  position: relative;
-  max-width: 84rem;
-  padding-top: var(--space-5);
-}
-
-.project--hero .project-layout::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: min(28rem, 70%);
-  height: 9px;
-  transform: translateX(-50%);
-  background:
-    var(--diamond) center / 9px 9px no-repeat,
-    linear-gradient(90deg, transparent, var(--gold-line) 30%, var(--gold-line) 70%, transparent) center / 100% 1px no-repeat;
-}
-
-.project__body {
-  min-width: 0;
-}
-
 .project__body > .project__section:first-child,
 .project__body > .project__lead:first-child {
   margin-top: 0;
 }
 
-/* -- Shared section rhythm ----------------------------------------------- */
+/* Focus: one class per axis and screen, from validated project.json
+   values (0-100 in steps of 5); no CSS text comes from content. x/y are
+   used above 640px, mx/my on phones (where the hero is taller than wide). */
+.project-hero--x-0 { --hero-x: 0%; }      .project-hero--y-0 { --hero-y: 0%; }
+.project-hero--x-5 { --hero-x: 5%; }      .project-hero--y-5 { --hero-y: 5%; }
+.project-hero--x-10 { --hero-x: 10%; }    .project-hero--y-10 { --hero-y: 10%; }
+.project-hero--x-15 { --hero-x: 15%; }    .project-hero--y-15 { --hero-y: 15%; }
+.project-hero--x-20 { --hero-x: 20%; }    .project-hero--y-20 { --hero-y: 20%; }
+.project-hero--x-25 { --hero-x: 25%; }    .project-hero--y-25 { --hero-y: 25%; }
+.project-hero--x-30 { --hero-x: 30%; }    .project-hero--y-30 { --hero-y: 30%; }
+.project-hero--x-35 { --hero-x: 35%; }    .project-hero--y-35 { --hero-y: 35%; }
+.project-hero--x-40 { --hero-x: 40%; }    .project-hero--y-40 { --hero-y: 40%; }
+.project-hero--x-45 { --hero-x: 45%; }    .project-hero--y-45 { --hero-y: 45%; }
+.project-hero--x-50 { --hero-x: 50%; }    .project-hero--y-50 { --hero-y: 50%; }
+.project-hero--x-55 { --hero-x: 55%; }    .project-hero--y-55 { --hero-y: 55%; }
+.project-hero--x-60 { --hero-x: 60%; }    .project-hero--y-60 { --hero-y: 60%; }
+.project-hero--x-65 { --hero-x: 65%; }    .project-hero--y-65 { --hero-y: 65%; }
+.project-hero--x-70 { --hero-x: 70%; }    .project-hero--y-70 { --hero-y: 70%; }
+.project-hero--x-75 { --hero-x: 75%; }    .project-hero--y-75 { --hero-y: 75%; }
+.project-hero--x-80 { --hero-x: 80%; }    .project-hero--y-80 { --hero-y: 80%; }
+.project-hero--x-85 { --hero-x: 85%; }    .project-hero--y-85 { --hero-y: 85%; }
+.project-hero--x-90 { --hero-x: 90%; }    .project-hero--y-90 { --hero-y: 90%; }
+.project-hero--x-95 { --hero-x: 95%; }    .project-hero--y-95 { --hero-y: 95%; }
+.project-hero--x-100 { --hero-x: 100%; }  .project-hero--y-100 { --hero-y: 100%; }
 
-.project {
-  max-width: 60rem;
-}
+.project-hero--mx-0 { --hero-mx: 0%; }      .project-hero--my-0 { --hero-my: 0%; }
+.project-hero--mx-5 { --hero-mx: 5%; }      .project-hero--my-5 { --hero-my: 5%; }
+.project-hero--mx-10 { --hero-mx: 10%; }    .project-hero--my-10 { --hero-my: 10%; }
+.project-hero--mx-15 { --hero-mx: 15%; }    .project-hero--my-15 { --hero-my: 15%; }
+.project-hero--mx-20 { --hero-mx: 20%; }    .project-hero--my-20 { --hero-my: 20%; }
+.project-hero--mx-25 { --hero-mx: 25%; }    .project-hero--my-25 { --hero-my: 25%; }
+.project-hero--mx-30 { --hero-mx: 30%; }    .project-hero--my-30 { --hero-my: 30%; }
+.project-hero--mx-35 { --hero-mx: 35%; }    .project-hero--my-35 { --hero-my: 35%; }
+.project-hero--mx-40 { --hero-mx: 40%; }    .project-hero--my-40 { --hero-my: 40%; }
+.project-hero--mx-45 { --hero-mx: 45%; }    .project-hero--my-45 { --hero-my: 45%; }
+.project-hero--mx-50 { --hero-mx: 50%; }    .project-hero--my-50 { --hero-my: 50%; }
+.project-hero--mx-55 { --hero-mx: 55%; }    .project-hero--my-55 { --hero-my: 55%; }
+.project-hero--mx-60 { --hero-mx: 60%; }    .project-hero--my-60 { --hero-my: 60%; }
+.project-hero--mx-65 { --hero-mx: 65%; }    .project-hero--my-65 { --hero-my: 65%; }
+.project-hero--mx-70 { --hero-mx: 70%; }    .project-hero--my-70 { --hero-my: 70%; }
+.project-hero--mx-75 { --hero-mx: 75%; }    .project-hero--my-75 { --hero-my: 75%; }
+.project-hero--mx-80 { --hero-mx: 80%; }    .project-hero--my-80 { --hero-my: 80%; }
+.project-hero--mx-85 { --hero-mx: 85%; }    .project-hero--my-85 { --hero-my: 85%; }
+.project-hero--mx-90 { --hero-mx: 90%; }    .project-hero--my-90 { --hero-my: 90%; }
+.project-hero--mx-95 { --hero-mx: 95%; }    .project-hero--my-95 { --hero-my: 95%; }
+.project-hero--mx-100 { --hero-mx: 100%; }  .project-hero--my-100 { --hero-my: 100%; }
+
+/* -- Shared section rhythm ----------------------------------------------- */
 
 .dossier-section {
   margin-top: var(--space-6);
@@ -3004,8 +3030,17 @@ code {
 }
 
 @media (max-width: 900px) {
-  .project--hero .project-layout {
-    padding-top: var(--space-4);
+  /* the stacked opening, index and dossier are spaced by the grid's gap */
+  .project-hero {
+    margin-bottom: 0;
+  }
+
+  .project-hero::after {
+    display: none;
+  }
+
+  .project__body > .project__showcase:first-child {
+    margin-top: 0;
   }
 
   .dossier-section {
@@ -3020,18 +3055,22 @@ code {
 }
 
 @media (max-width: 640px) {
+  /* Phones: the hero runs edge to edge, taller than it is wide, and the
+     art is placed by the mobile focus point. The text sits on a deep
+     shadow at the foot, so the artwork shows above it. */
   .project-hero {
-    min-height: clamp(30rem, 82vh, 40rem);
-    padding-bottom: var(--space-4);
+    min-height: clamp(24rem, 62vh, 32rem);
+    margin-inline: calc(-1 * var(--gutter));
+    padding: var(--space-5) var(--gutter) var(--space-3);
   }
 
-  .project-hero {
-    --hero-frame-x: 0.6rem;
-    --hero-frame-top: calc(var(--header-h) + 1rem);
+  .project-hero__img {
+    object-position: var(--hero-mx, var(--hero-x, 50%)) var(--hero-my, var(--hero-y, 50%));
   }
 
-  .project-hero::before {
-    bottom: 0.75rem;
+  .project-hero__art {
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 12%, #000 80%, transparent 100%);
+    mask-image: linear-gradient(180deg, transparent 0, #000 12%, #000 80%, transparent 100%);
   }
 
   /* a wrapped kicker would strand its rule beside the second line */
@@ -3041,8 +3080,7 @@ code {
 
   .project-hero__art::after {
     background:
-      linear-gradient(180deg, rgb(11 11 13 / 0.82), rgb(11 11 13 / 0.25) 16%, transparent 30%),
-      linear-gradient(0deg, var(--void) 0, rgb(11 11 13 / 0.92) 30%, rgb(11 11 13 / 0.45) 60%, transparent 82%);
+      linear-gradient(0deg, rgb(11 11 13 / 0.95) 0, rgb(11 11 13 / 0.85) 34%, rgb(11 11 13 / 0.3) 62%, transparent 80%);
   }
 
   .dossier-facts {
@@ -3110,9 +3148,7 @@ code {
 
 @media (forced-colors: active) {
   .project-hero__art::after,
-  .project-hero::before,
-  .project-hero::after,
-  .project--hero .project-layout::before {
+  .project-hero::after {
     display: none;
   }
 

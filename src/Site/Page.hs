@@ -34,8 +34,9 @@ data Layout
   | Interior
     -- ^ Every other page: content is pushed below the header.
   | Dossier
-    -- ^ A project page with a hero: the artwork starts under the header,
-    -- as the homepage stage does.
+    -- ^ A project page with a hero: spaced as 'Interior' (the sidebar and
+    -- the hero both start under the header), without the interior glow,
+    -- since the artwork brings its own light.
   deriving (Eq, Show)
 
 data Page =
@@ -57,6 +58,9 @@ data Site =
     , siteAssets :: [Asset]
     , siteMedia :: [MediaFile]
       -- ^ Media of published content only; drafts' files are never listed.
+    , siteWarnings :: [String]
+      -- ^ Content problems that do not fail the build (see
+      -- 'Site.Content.Types.contentWarnings').
     }
 
 -- | A title of the form @"Work — Tyler Baum"@.

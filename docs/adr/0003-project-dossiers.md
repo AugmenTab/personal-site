@@ -76,3 +76,59 @@ layouts.
 - The hero art is the remaining open deliverable: until it arrives, the
   three published dossiers use the plain header. The banner's composition
   was verified with stand-in art, which was not committed as a hero.
+
+## Amendment — layout remediation (2026-11-15)
+
+Decision 8 placed the hero as a full-width banner above the project
+layout, so the sidebar began below it. That contradicts the approved
+project render, in which the sidebar starts under the global navigation
+beside the project's opening. Decisions 8 and 9 are amended as follows;
+the rest stands.
+
+11. **One layout, with or without a hero.** The article is the layout grid:
+    `article.project.project-layout` holds the opening (`header.project-hero`
+    or `div.project__header`), then `nav.project-nav`, then
+    `div.project__body`. On desktop the sidebar spans both rows of the left
+    column, beside the opening and the dossier, and is sticky. Below 900px
+    the three stack in source order. Adding or removing a hero never moves
+    the sidebar (tested: its markup is byte-identical either way).
+
+    *Deviation from the handoff's sketch,* which shows the sidebar as a
+    sibling before the article: the sidebar is inside the article, between
+    the opening and the body. Placing it before the article would make the
+    phone order sidebar → hero, or need CSS reordering (`order` or
+    `display: contents`). Both make visual order differ from keyboard and
+    reading order, which is worse for accessibility. With this source order,
+    one sequence (title, section index, dossier) is correct at every width.
+    The cost: on desktop, a hero's external links come before the sidebar
+    in tab order.
+
+12. **The hero is an environment, not a banner.** It is confined to the
+    main column and is shallow (`clamp(20rem, 46vh, 28rem)`). It has no
+    frame: a mask fades its edges into the page. Veils darken it behind the
+    text, and a ruled diamond hands over to the first section. The `Dossier`
+    layout now differs from `Interior` only by dropping the interior glow.
+
+13. **Focus is a validated two-dimensional point per screen class.**
+    `HeroFocus { focusDesktop, focusMobile :: FocusPoint }`, with each axis
+    a `FocusPercent` (0–100 in steps of 5, built only by `mkFocusPercent`).
+    JSON accepts `{desktop, mobile}`, a single `{x, y}`, or the Phase 04
+    keywords (`center`, `top`, `bottom`), which map to (50, 50), (50, 10)
+    and (50, 90). Values become fixed classes (`project-hero--x-65` …)
+    defined in the stylesheet, so content never supplies CSS text, and
+    there are no inline styles, which keeps a future strict CSP possible.
+    The step of 5 bounds that class list (84 one-line rules). The mobile
+    point applies at 640px and below, where the hero changes shape.
+
+14. **A size budget and a ceiling replace the 1 MiB hard limit.**
+    `HeroSizePolicy` (default: 1 MiB budget, 8 MiB ceiling). Over the
+    budget is accepted with a warning carried as `contentWarnings` →
+    `siteWarnings` and printed by the CLI. Over the ceiling fails the
+    build. `promote_hero.py` aims for the budget but never goes below WebP
+    quality 80 or downscales for size, and refuses lossy sources.
+
+15. **Heroes are previewed outside `content/`.** `site build --root`
+    builds a throwaway copy (`tools/art/hero_preview.py` →
+    `.local/hero-preview/`), served by a separate `hero-preview` service.
+    Stand-in art never enters the repository's content tree; a test fails
+    if a stand-in-named file appears under `content/`.

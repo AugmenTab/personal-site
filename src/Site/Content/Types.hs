@@ -15,7 +15,14 @@ module Site.Content.Types
   , Hero (..)
   , HeroDescription (..)
   , HeroFocus (..)
-  , heroFocusName
+  , FocusPoint (..)
+  , FocusPercent
+  , mkFocusPercent
+  , focusPercent
+  , focusCentre
+  , defaultHeroFocus
+  , legacyHeroFocus
+  , heroFocusClasses
   , DossierSection (..)
   , DossierBody (..)
   , Fact (..)
@@ -142,16 +149,67 @@ data HeroDescription
     -- ^ Purely atmospheric: empty @alt@, hidden from assistive technology.
   deriving (Eq, Show)
 
--- | Which part of the artwork stays in view when the banner crops it.
-data HeroFocus = FocusCenter | FocusTop | FocusBottom
-  deriving (Eq, Show, Bounded, Enum)
+-- | Which point of the artwork stays in view when the hero crops it, on
+-- wide screens and on phones (where the hero is much taller than it is
+-- wide, so a different point usually matters).
+data HeroFocus =
+  HeroFocus
+    { focusDesktop :: FocusPoint
+    , focusMobile :: FocusPoint
+    }
+  deriving (Eq, Show)
 
-heroFocusName :: HeroFocus -> T.Text
-heroFocusName focus =
-  case focus of
-    FocusCenter -> "center"
-    FocusTop -> "top"
-    FocusBottom -> "bottom"
+-- | A point of the artwork: @x@ from the left edge, @y@ from the top, each
+-- in percent. It becomes the image's @object-position@, so the point x% of
+-- the way across the artwork sits x% of the way across the hero.
+data FocusPoint =
+  FocusPoint
+    { focusX :: FocusPercent
+    , focusY :: FocusPercent
+    }
+  deriving (Eq, Show)
+
+-- | 0 to 100 in steps of 5 (the stylesheet has one class per value, so no
+-- CSS text ever comes from content). Built only by 'mkFocusPercent'.
+newtype FocusPercent = FocusPercent Int
+  deriving (Eq, Ord, Show)
+
+focusStep :: Int
+focusStep = 5
+
+mkFocusPercent :: Int -> Either String FocusPercent
+mkFocusPercent n
+  | n < 0 || n > 100 = Left ("must be from 0 to 100, got " <> show n)
+  | n `mod` focusStep /= 0 = Left ("must be a multiple of " <> show focusStep <> " (e.g. " <> show (focusStep * (n `div` focusStep)) <> " or " <> show (min 100 (focusStep * (n `div` focusStep + 1))) <> "), got " <> show n)
+  | otherwise = Right (FocusPercent n)
+
+focusPercent :: FocusPercent -> Int
+focusPercent (FocusPercent n) = n
+
+-- | The centre of the artwork: the default on both axes.
+focusCentre :: FocusPoint
+focusCentre = FocusPoint (FocusPercent 50) (FocusPercent 50)
+
+-- | Centred everywhere (when @focus@ is omitted).
+defaultHeroFocus :: HeroFocus
+defaultHeroFocus = HeroFocus focusCentre focusCentre
+
+-- | The Phase 04 keywords, kept for compatibility: each names one point
+-- used on every screen.
+legacyHeroFocus :: [(T.Text, FocusPoint)]
+legacyHeroFocus =
+  [ ("center", focusCentre)
+  , ("top", FocusPoint (FocusPercent 50) (FocusPercent 10))
+  , ("bottom", FocusPoint (FocusPercent 50) (FocusPercent 90))
+  ]
+
+-- | The hero's focus classes, e.g.
+-- @project-hero--x-65 project-hero--y-35 project-hero--mx-80 project-hero--my-45@.
+heroFocusClasses :: HeroFocus -> [T.Text]
+heroFocusClasses (HeroFocus desktop mobile) =
+  [ cls "x" (focusX desktop), cls "y" (focusY desktop), cls "mx" (focusX mobile), cls "my" (focusY mobile) ]
+  where
+    cls axis p = "project-hero--" <> axis <> "-" <> T.pack (show (focusPercent p))
 
 -- | One @##@ section of a project body, with the layout it is presented in.
 data DossierSection =
@@ -306,10 +364,13 @@ data Content =
   Content
     { contentProjects :: [Project]
     , contentArticles :: [Article]
+    , contentWarnings :: [String]
+      -- ^ Accepted, but worth an author's attention (e.g. a hero over its
+      -- size budget). Printed by @site check@ and @site build@.
     }
 
 emptyContent :: Content
-emptyContent = Content [] []
+emptyContent = Content [] [] []
 
 -- | Published projects for the Work index: featured ones first, by
 -- featured order, then the rest by title, then slug. Never by directory

@@ -43,6 +43,7 @@ siteFrom content =
              ]
     , siteAssets = allAssets
     , siteMedia = concatMap projectMedia projects <> concatMap articleMedia articles
+    , siteWarnings = contentWarnings content
     }
   where
     config = siteConfiguration content

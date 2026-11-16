@@ -5,7 +5,8 @@
 -- Every project page uses one layout, after the approved project render
 -- (@design/references/project-render-03.jpg@): the global navigation, then
 -- a project sidebar (All projects, the current project, and links to the
--- page's sections) beside the project's content.
+-- page's sections) beside the project's opening (hero or header) and
+-- content.
 --
 -- The page's content comes from the project's metadata (hero and header)
 -- and its Markdown body (sections). Each section is presented in one of
@@ -56,11 +57,25 @@ indexPage config projects =
   where
     titleId = elementId "work-index-title"
 
--- | A project dossier. With a hero, the page opens on the symbolic artwork
--- (title, summary and tags as real HTML over it), then the sidebar beside
--- the sections. Without one, the header sits beside the sidebar, above the
--- card art, as in Phase 02. Either way the sections are the body's @##@
--- sections, each in the layout @project.json@ gives it.
+-- | A project dossier, after the approved project render. One structure
+-- serves every project; a hero only changes what opens the main column:
+--
+-- @
+-- article.project.project-layout     (two columns on desktop, one below 900px)
+--   header.project-hero | div.project__header   the opening   (main column)
+--   nav.project-nav                             the sidebar   (left column)
+--   div.project__body                           the dossier   (main column)
+-- @
+--
+-- On desktop the sidebar spans both rows, beside the opening and the
+-- dossier. Below 900px the three stack in source order: the opening, a
+-- compact section index, then the dossier. Source order is reading and
+-- keyboard order at every width, which is why the sidebar sits between
+-- the opening and the dossier rather than before the article.
+--
+-- Without a hero, the opening is the plain header and the card art opens
+-- the dossier, as in Phase 02. The sections are the body's @##@ sections,
+-- each in the layout @project.json@ gives it.
 projectPage :: SiteConfig -> Project -> Page
 projectPage config project =
   Page
@@ -69,49 +84,40 @@ projectPage config project =
     , pageDescription = projectSummary project
     , pageLayout = maybe Interior (const Dossier) (projectHero project)
     , pageMain =
-        case projectHero project of
-          Just hero ->
-            [ E.article [ A.class_ "project project--hero", A.aria_labelledby (NEL.singleton titleId) ]
-                [ projectHero' media project hero
-                , E.div [ A.class_ "project-layout" ]
-                    [ projectNav project
-                    , E.div [ A.class_ "project__body" ] body
-                    ]
-                ]
+        [ E.article
+            [ A.class_ (HTML.Class (T.unwords ("project" : "project-layout" : [ "project--hero" | hasHero ])))
+            , A.aria_labelledby (NEL.singleton titleId)
             ]
-          Nothing ->
-            [ E.div [ A.class_ "project-layout" ]
-                [ projectNav project
-                , E.article [ A.class_ "project", A.aria_labelledby (NEL.singleton titleId) ]
-                    ( [ projectHeader project ]
-                        <> showcase
-                        <> body
-                    )
-                ]
+            [ maybe (projectHeader project) (projectHero' media project) (projectHero project)
+            , projectNav project
+            , E.div [ A.class_ "project__body" ] (showcase <> body)
             ]
+        ]
     }
   where
+    hasHero = maybe False (const True) (projectHero project)
     titleId = projectTitleId project
     media = mediaUrl (ProjectMedia (projectSlug project))
     lead = documentLead (projectBody project)
-    body :: (E.ValidChild E.Section parent grandparent, E.ValidChild E.Division parent grandparent)
-         => [E.ChildHTML parent grandparent]
     body =
       [ E.div [ A.class_ "project__lead prose" ] (renderBlocks media lead) | not (null lead) ]
         <> map (dossierSection media) (projectSections project)
-    showcase =
-      case projectShowcase project of
-        Just (ImageShowcase path alt) ->
-          [ E.figure [ A.class_ "project__showcase" ]
-              [ E.img [ A.src (media path), A.alt alt, A.decoding HTML.DecodeAsync ] ]
-          ]
-        _ -> []
+    showcase
+      | hasHero = []
+      | otherwise =
+          case projectShowcase project of
+            Just (ImageShowcase path alt) ->
+              [ E.figure [ A.class_ "project__showcase" ]
+                  [ E.img [ A.src (media path), A.alt alt, A.decoding HTML.DecodeAsync ] ]
+              ]
+            _ -> []
 
--- | The hero banner: the artwork, then the project's real header text over
--- it. The artwork is the page's largest image and is fetched first.
+-- | The hero: atmospheric artwork behind the project's real header text.
+-- The artwork is the page's largest image and is fetched first; its crop
+-- follows the validated focus points (one class per axis and screen).
 projectHero' :: MediaUrl -> Project -> Hero -> E.ChildHTML E.Article grandparent
 projectHero' media project hero =
-  E.header [ A.class_ (HTML.Class ("project-hero project-hero--focus-" <> heroFocusName (heroFocus hero))) ]
+  E.header [ A.class_ (HTML.Class (T.unwords ("project-hero" : heroFocusClasses (heroFocus hero)))) ]
     [ E.div ( A.class_ "project-hero__art" : [ A.aria_hidden True | decorative ] )
         [ E.img
             [ A.class_ "project-hero__img"
@@ -128,6 +134,8 @@ projectHero' media project hero =
         HeroDecorative -> (True, "")
         HeroDescribed alt -> (False, alt)
 
+-- | The project's real header text: the opening itself without a hero,
+-- and the text over the artwork with one.
 projectHeader :: E.ValidChild E.Division parent grandparent => Project -> E.ChildHTML parent grandparent
 projectHeader project =
   E.div [ A.class_ "project__header" ]
@@ -147,7 +155,7 @@ projectHeader project =
 
 -- | The project sidebar: a way back to all projects, the current project,
 -- and one link per section actually on the page.
-projectNav :: Project -> E.ChildHTML E.Division grandparent
+projectNav :: Project -> E.ChildHTML E.Article grandparent
 projectNav project =
   E.nav [ A.class_ "project-nav", A.aria_label "Project" ]
     ( [ E.a [ A.class_ "project-nav__back", A.href (routeUrl WorkIndex) ]
