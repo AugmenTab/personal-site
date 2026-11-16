@@ -699,8 +699,14 @@ settingsContacts =
 ```
 
 Each kind may appear once; they always display in the order GitHub,
-LinkedIn, Email, each as **one** link (label and destination inside the
-same control). The constructors fix the scheme and host, and validation
+LinkedIn, Email. On the homepage each is **one** card that is itself the
+link: a small icon beside the label ("GitHub"). The URL or address is not
+shown, but it stays in the link as visually hidden text, so screen readers
+still announce the destination. The icons are `assets/images/icon-{github,linkedin,email}.svg`,
+used as CSS masks, so they take the text colour on hover and in forced
+colours. There is no copy-to-clipboard control; one for the email
+address, if added later, must be a separate button beside the card, never
+inside the link. The constructors fix the scheme and host, and validation
 rejects anything but a plain username, profile id or address (no display
 names, queries or uppercase domains), so a contact cannot point anywhere
 unexpected. The footer repeats the destinations on every page except the

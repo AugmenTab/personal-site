@@ -1202,38 +1202,50 @@ ul {
   margin-top: var(--space-4);
 }
 
+/* Each card is one link: an icon beside its label, in a row (Phase 05
+   update 1; the full URL is no longer shown). */
 .contact__link {
   display: inline-flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  min-width: 14rem;
-  padding: 0.8rem 1.3rem 0.85rem;
-  border: 1px solid var(--gold-hairline);
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-width: 11rem;
+  min-height: 3.25rem;
+  padding: 0.75rem 1.5rem;
+  border: 1px solid var(--gold-line);
   background: linear-gradient(180deg, rgb(26 22 25 / 0.8), rgb(18 16 19 / 0.8));
+  color: var(--text-gold);
   text-decoration: none;
-  transition: border-color 160ms ease;
+  transition: border-color 160ms ease, color 160ms ease;
 }
 
 .contact__link:hover {
-  border-color: var(--gold-line);
+  border-color: var(--gold);
+  color: var(--gold-bright);
 }
+
+/* The icon is a mask filled with the link's colour, so it follows hover
+   and forced-colours states with the text. */
+.contact__icon {
+  flex: none;
+  width: 1.15rem;
+  height: 1.15rem;
+  background-color: currentColor;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+.contact__icon--github { --icon: url("../images/icon-github.svg"); }
+.contact__icon--linkedin { --icon: url("../images/icon-linkedin.svg"); }
+.contact__icon--email { --icon: url("../images/icon-email.svg"); }
 
 .contact__label {
   font-family: var(--font-display);
-  font-size: var(--step--2);
+  font-size: var(--step--1);
   letter-spacing: var(--tracking-caps);
+  line-height: 1;
   text-transform: uppercase;
-  color: var(--text-faint);
-}
-
-.contact__display {
-  font-size: var(--step-1);
-  color: var(--text-gold);
-  overflow-wrap: anywhere;
-}
-
-.contact__link:hover .contact__display {
-  color: var(--gold-bright);
 }
 
 /* Footer (Phase 05): identity, site links, contact destinations, then the
@@ -2693,6 +2705,11 @@ ul {
 @media (forced-colors: active) {
   .contact__link {
     border: 1px solid LinkText;
+  }
+
+  .contact__icon {
+    forced-color-adjust: none;
+    background-color: LinkText;
   }
 }
 

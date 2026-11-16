@@ -97,6 +97,9 @@ allAssets =
   , aboutTree
   , blackEmblem
   , workFilterScript
+  , Asset "images/icon-github.svg"
+  , Asset "images/icon-linkedin.svg"
+  , Asset "images/icon-email.svg"
   , Asset "images/texture-grain.svg"
   , Asset "images/ornament-corner.svg"
   , Asset "images/ornament-rule.svg"

@@ -20,6 +20,7 @@ module Site.Settings
   , Contact (..)
   , contacts
   , contactLabel
+  , contactKind
   , contactDisplay
   , contactHref
   , contactKey
@@ -100,7 +101,16 @@ contactLabel contact =
     LinkedIn _ -> "LinkedIn"
     Email _ -> "Email"
 
--- | The destination as shown, e.g. @github.com/AugmenTab@.
+-- | A stable lowercase name for the destination's kind, used for its icon
+-- class (@contact__icon--github@).
+contactKind :: Contact -> T.Text
+contactKind contact =
+  case contact of
+    GitHub _ -> "github"
+    LinkedIn _ -> "linkedin"
+    Email _ -> "email"
+
+-- | The destination written out, e.g. @github.com/AugmenTab@.
 contactDisplay :: Contact -> T.Text
 contactDisplay contact =
   case contact of

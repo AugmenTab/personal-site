@@ -688,7 +688,7 @@
     "fromProject": {
       "path": "/",
       "hash": "#contact",
-      "top": 157,
+      "top": 188,
       "inView": true,
       "fixedUi": []
     },
@@ -700,12 +700,57 @@
     "controls/desktop": [
       "https://github.com/AugmenTab"
     ],
+    "cards/desktop": [
+      {
+        "label": "GitHub",
+        "iconVisible": true,
+        "iconBeforeLabel": true,
+        "centred": true,
+        "inside": true,
+        "width": 176,
+        "height": 52
+      }
+    ],
+    "focus/desktop": {
+      "text": "GitHub: github.com/AugmenTab",
+      "ring": true
+    },
     "controls/mobile": [
       "https://github.com/AugmenTab"
     ],
+    "cards/mobile": [
+      {
+        "label": "GitHub",
+        "iconVisible": true,
+        "iconBeforeLabel": true,
+        "centred": true,
+        "inside": true,
+        "width": 152,
+        "height": 52
+      }
+    ],
+    "focus/mobile": {
+      "text": "GitHub: github.com/AugmenTab",
+      "ring": true
+    },
     "controls/narrow": [
       "https://github.com/AugmenTab"
-    ]
+    ],
+    "cards/narrow": [
+      {
+        "label": "GitHub",
+        "iconVisible": true,
+        "iconBeforeLabel": true,
+        "centred": true,
+        "inside": true,
+        "width": 152,
+        "height": 52
+      }
+    ],
+    "focus/narrow": {
+      "text": "GitHub: github.com/AugmenTab",
+      "ring": true
+    }
   },
   "footer": {
     "footer/about/desktop": {

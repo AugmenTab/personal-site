@@ -348,8 +348,30 @@ def contact_checks(browser, base, failures):
         report[f"controls/{vp_name}"] = controls
         if controls != ["https://github.com/AugmenTab"]:
             failures.append(f"contact/{vp_name}: controls {controls}")
+        # Update 1: icon and label side by side; no visible URL.
+        cards = page.evaluate("""() => [...document.querySelectorAll('#contact .contact__link')].map(a => {
+            const i = a.querySelector('.contact__icon').getBoundingClientRect();
+            const l = a.querySelector('.contact__label').getBoundingClientRect();
+            const box = a.getBoundingClientRect();
+            const shown = [...a.querySelectorAll('span:not(.visually-hidden)')].map(s => s.textContent).join('');
+            return { label: shown, iconVisible: i.width > 0 && i.height > 0,
+                     iconBeforeLabel: i.right <= l.left, centred: Math.abs((i.top + i.bottom) / 2 - (l.top + l.bottom) / 2) <= 3,
+                     inside: i.left >= box.left && l.right <= box.right, width: Math.round(box.width), height: Math.round(box.height) }; })""")
+        report[f"cards/{vp_name}"] = cards
+        for card in cards:
+            if "github.com" in card["label"] or not (card["iconVisible"] and card["iconBeforeLabel"] and card["centred"] and card["inside"]):
+                failures.append(f"contact/{vp_name}: card layout {card}")
         page.locator("#contact").scroll_into_view_if_needed()
         element_shot(page, "#contact", f"contact/home-contact-{vp_name}.png")
+        # Keyboard: the card takes a visible focus ring.
+        page.focus("#contact .contact__link")
+        ring = page.evaluate(FOCUS_RING_JS)
+        report[f"focus/{vp_name}"] = ring
+        if not ring["ring"]:
+            failures.append(f"contact/{vp_name}: no visible focus ring on the card")
+        if vp_name in ("desktop", "mobile"):
+            page.wait_for_timeout(250)
+            element_shot(page, "#contact", f"contact/home-contact-{vp_name}-focus.png")
         page.close()
     return report
 

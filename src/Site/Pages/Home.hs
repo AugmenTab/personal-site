@@ -55,7 +55,7 @@ import Site.Components (HeadingLevel (..), decorativeImage, projectCard, section
 import Site.Content.Types
 import Site.Page (Layout (..), Page (..), SiteConfig (..))
 import Site.Routes (Route (Home, WorkDetail, WorkIndex, WritingArticle, WritingIndex), Slug, contactId, elementId, mkSlug, routeUrl)
-import Site.Settings (Settings (..), contactDisplay, contactHref, contactLabel, contacts, ownerSettings)
+import Site.Settings (Settings (..), contactDisplay, contactHref, contactKind, contactLabel, contacts, ownerSettings)
 
 --------------------------------------------------------------------------------
 -- Content
@@ -487,6 +487,11 @@ contactCopy =
 
 -- | A short invitation and the verified destinations ("Site.Settings"),
 -- each exactly one link. No form and no backend.
+--
+-- Each card is the link itself: a small icon beside the destination's
+-- label ("GitHub"). The full URL is not shown (Phase 05 update 1); it is
+-- kept as visually hidden text so the link's accessible name still says
+-- where it goes. The icon is a decorative CSS mask (see site.css).
 contactSection :: Settings -> E.ChildHTML E.Main grandparent
 contactSection settings =
   E.section [ A.class_ "contact", A.id contactId, A.aria_labelledby (NEL.singleton contactTitleId) ]
@@ -495,8 +500,9 @@ contactSection settings =
     , E.ul [ A.class_ "contact__links" ]
         [ E.li [ A.class_ "contact__item" ]
             [ E.a [ A.class_ "contact__link", A.href (B.mkRawURL (contactHref c)) ]
-                [ E.span [ A.class_ "contact__label" ] [ E.text (contactLabel c) ]
-                , E.span [ A.class_ "contact__display" ] [ E.text (contactDisplay c) ]
+                [ E.span [ A.class_ (HTML.Class ("contact__icon contact__icon--" <> contactKind c)), A.aria_hidden True ] []
+                , E.span [ A.class_ "contact__label" ] [ E.text (contactLabel c) ]
+                , E.span [ A.class_ "visually-hidden" ] [ E.text (": " <> contactDisplay c) ]
                 ]
             ]
         | c <- contacts settings

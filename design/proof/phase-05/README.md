@@ -13,7 +13,7 @@ fixture site (`.local/fixture-site/`, :8082). Full machine-readable results:
 | `home/` | Homepage first view, desktop and mobile (the full pages, with the new Contact section and footer, are in `../phase-03/home-*-full.png`, refreshed by this run) |
 | `work/` | Work index full pages at 1920, 1440, 1280, 768, 390 and 320; search (`haskell`), category filter, no results, keyboard-selected chip (first views); no-JavaScript full page |
 | `project/` | Desktop first views (sidebar, all three hero-less dossiers); compact index collapsed and expanded at 768, 390 and 320 (Black for every width, Brigid and Lockdown at 390); Black mobile first view |
-| `contact/` | `/#contact` reached from a project page; the homepage Contact section at 1440, 390 and 320 |
+| `contact/` | `/#contact` reached from a project page; the homepage Contact section at 1440, 390 and 320, plus the focused card at 1440 and 390 (update 1: icon beside label, no visible URL); `fixture-all-kinds-{desktop,mobile}.png` shows GitHub, LinkedIn and Email cards on a throwaway review page with placeholder targets (only GitHub is configured on the real site) |
 | `footer/` | Footer on About at every width, and on the homepage (no contact column) |
 | `about/` | About full page and the emblem composition, desktop and mobile |
 | `pages/` | Home, Work, About and Black at 320px (every page is checked at 1920, 1280 and 320; only the narrowest is kept) |
@@ -42,7 +42,9 @@ fixture site (`.local/fixture-site/`, :8082). Full machine-readable results:
   keyboard order is back link, summary (Enter opens it), then the links.
 - Contact: from a project page lands on `/#contact` in view, with no fixed
   or sticky UI over it; on the homepage, no reload. One control per
-  destination.
+  destination. Each card shows only an icon and its label: the icon is
+  left of the label and vertically centred with it (within 3px), the URL
+  is not visible, and the card takes a visible focus ring.
 - Footer: no images, no overflow, text at least 11px, every link resolves.
 - Discovery: every sitemap URL is served; robots.txt names the sitemap;
   the canonical URL is the production URL.

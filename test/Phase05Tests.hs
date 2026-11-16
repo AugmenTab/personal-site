@@ -19,7 +19,7 @@ import System.FilePath ((</>))
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (Assertion, assertBool, assertFailure, testCase, (@?=))
 
-import Site.Assets (assetPath)
+import Site.Assets (allAssets, assetPath)
 import Site.Build
 import Site.Content.Load (ContentError (..), loadContent)
 import Site.Content.Types
@@ -454,7 +454,27 @@ settingsTests =
         attributeValues "href" section @?= expected
         attributeValues "href" (between "site-footer__contact" "</ul>" (footerOf about)) @?= expected
         forM_ expected $ \href -> count ("href=\"" <> href <> "\"") home @?= 1
-        assertBool "display" ("<span class=\"contact__display\">name@example.com</span>" `T.isInfixOf` section)
+        -- Phase 05 update 1: each card is one link holding an icon and the
+        -- label; the address is screen-reader text only
+        assertBool "email card"
+          ("<a class=\"contact__link\" href=\"mailto:name@example.com\"><span class=\"contact__icon contact__icon--email\" aria-hidden=\"true\"></span><span class=\"contact__label\">Email</span><span class=\"visually-hidden\">: name@example.com</span></a>" `T.isInfixOf` section)
+        forM_ ["github", "linkedin", "email"] $ \kind -> count ("contact__icon--" <> kind) section @?= 1
+        count "<a " section @?= 3
+    , testCase "contact cards show an icon and the label, never the URL (Phase 05 update 1)" $ do
+        s <- realSite
+        let section = between "id=\"contact\"" "</section>" (render s Home)
+            visible = T.concat [ fst (T.breakOn "<" t) | t <- drop 1 (T.splitOn ">" (T.replace "<span class=\"visually-hidden\">: github.com/AugmenTab</span>" "" section)) ]
+        assertBool "card" ("<a class=\"contact__link\" href=\"https://github.com/AugmenTab\"><span class=\"contact__icon contact__icon--github\" aria-hidden=\"true\"></span><span class=\"contact__label\">GitHub</span><span class=\"visually-hidden\">: github.com/AugmenTab</span></a>" `T.isInfixOf` section)
+        assertBool ("no visible URL in: " <> T.unpack visible) (not ("github.com" `T.isInfixOf` visible))
+        assertBool "no display span" (not ("contact__display" `T.isInfixOf` section))
+        -- the icon is decorative and the card is the only control
+        count "<a " section @?= 1
+        count "<img" section @?= 0
+    , testCase "every contact icon is a listed asset referenced by the stylesheet" $ do
+        css <- TE.decodeUtf8 <$> BS.readFile "assets/styles/site.css"
+        forM_ ["github", "linkedin", "email"] $ \kind -> do
+          assertBool (T.unpack kind) (("images/icon-" <> T.unpack kind <> ".svg") `elem` map assetPath allAssets)
+          assertBool (T.unpack kind) (("url(\"../images/icon-" <> kind <> ".svg\")") `T.isInfixOf` css)
     , testCase "invalid settings are reported as a build failure naming the file" $
         -- loadSite runs settingsProblems on the compiled settings before
         -- loading anything; this is the message the CLI prints.
