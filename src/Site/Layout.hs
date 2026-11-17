@@ -99,6 +99,11 @@ headContent config page =
            ]
        ]
   where
+    -- No font preloads (measured in Phase 06): preloading the two shared
+    -- faces cut the font-swap layout shift slightly (CLS 0.031 -> 0.022 on
+    -- the desktop homepage, already far under 0.1) but delayed first paint
+    -- and LCP on a throttled phone by ~150-200 ms, because the preloads
+    -- compete with the render-blocking stylesheet.
     route = pageRoute page
     indexable = route /= NotFound
     url = canonicalUrl (siteSettings config) route

@@ -24,6 +24,8 @@ import json
 import os
 from urllib.parse import urljoin, urlparse
 
+import stable
+
 PHASE05_OUT = "design/proof/latest/phase-05"
 FIXTURE = os.environ.get("FIXTURE_URL", "http://fixture-preview/")
 
@@ -86,11 +88,13 @@ CLS_JS = """
 
 def shot(page, name, **kwargs):
     os.makedirs(os.path.dirname(f"{PHASE05_OUT}/{name}") or PHASE05_OUT, exist_ok=True)
+    stable.settle(page)   # Phase 06: never capture mid-transition
     page.screenshot(path=f"{PHASE05_OUT}/{name}", **kwargs)
 
 
 def element_shot(page, selector, name):
     os.makedirs(os.path.dirname(f"{PHASE05_OUT}/{name}") or PHASE05_OUT, exist_ok=True)
+    stable.settle(page)
     page.locator(selector).first.screenshot(path=f"{PHASE05_OUT}/{name}")
 
 
@@ -212,7 +216,6 @@ def work_index_checks(browser, base, ready, failures):
     state = expect("keyboard chip", ["Black"], "1 of 3 projects")
     if ring["text"] != "Programming Languages" or not ring["ring"]:
         failures.append(f"work keyboard: focus on {ring}")
-    page.wait_for_timeout(250)
     shot(page, "work/work-keyboard-chip.png", full_page=False)
     steps["keyboardFocus"] = ring
     page.keyboard.press("Shift+Tab")
@@ -321,7 +324,7 @@ def contact_checks(browser, base, failures):
     page.goto(urljoin(base, "/work/lockdown/"), wait_until="networkidle")
     page.click(".site-nav a[href='/#contact']")
     page.wait_for_load_state("networkidle")
-    page.wait_for_timeout(900)   # smooth scrolling settles
+    stable.scroll_settled(page)   # smooth scrolling settles (was a 900 ms sleep)
     state = page.evaluate("""() => { const r = document.getElementById('contact').getBoundingClientRect();
         const fixed = [...document.querySelectorAll('body *')].filter(e => ['fixed', 'sticky'].includes(getComputedStyle(e).position) && e.getBoundingClientRect().height > 0)
           .map(e => e.className);
@@ -333,7 +336,7 @@ def contact_checks(browser, base, failures):
     # On the homepage: the same link scrolls without a reload.
     page.evaluate("() => { window.__phase05 = 'kept'; window.scrollTo(0, 0); }")
     page.click(".site-nav a[href='/#contact']")
-    page.wait_for_timeout(900)
+    stable.scroll_settled(page)
     same = page.evaluate("() => ({ kept: window.__phase05 === 'kept', hash: location.hash, inView: document.getElementById('contact').getBoundingClientRect().top < innerHeight })")
     report["onHomepage"] = same
     if not (same["kept"] and same["hash"] == "#contact" and same["inView"]):
@@ -370,7 +373,6 @@ def contact_checks(browser, base, failures):
         if not ring["ring"]:
             failures.append(f"contact/{vp_name}: no visible focus ring on the card")
         if vp_name in ("desktop", "mobile"):
-            page.wait_for_timeout(250)
             element_shot(page, "#contact", f"contact/home-contact-{vp_name}-focus.png")
         page.close()
     return report

@@ -20,6 +20,7 @@ from urllib.parse import urldefrag, urljoin, urlparse
 
 from playwright.sync_api import sync_playwright
 
+import stable
 from phase04 import PHASE04_OUT, phase04_captures
 from phase05 import PHASE05_OUT, phase05_checks
 
@@ -94,9 +95,13 @@ async () => {
 
 
 def ready(page, path="/"):
+    """Load a page for a static capture: lazy images loaded, fonts ready,
+    and (Phase 06) deterministic mode, so no capture is taken mid-transition
+    (see stable.py; the site itself is unchanged)."""
     response = page.goto(urljoin(BASE, path), wait_until="networkidle")
     page.evaluate("document.fonts.ready")
     page.evaluate(LOAD_ALL_JS)
+    stable.settle(page)
     return response
 
 
@@ -263,6 +268,8 @@ def project_sidebar_checks(browser, failures):
                 if compact and not page.evaluate("() => document.querySelector('.project-nav__index').open"):
                     page.click(".project-nav__summary")
                 page.click(f"{link_selector}[href='{href}']")
+                # JavaScript is disabled in this context (so no rAF-based
+                # readiness check), and scrolling is instant (INSTANT_SCROLL_JS).
                 page.wait_for_timeout(100)
                 state = page.evaluate(
                     """(id) => { const t = document.getElementById(id); if (!t) return null;
@@ -315,6 +322,7 @@ def project_sidebar_checks(browser, failures):
             if stops != expected:
                 failures.append(f"{page_name}/{vp_name}: sidebar keyboard order {stops}, expected {expected}")
             if vp_name == "desktop":
+                stable.settle(page)
                 page.screenshot(path=f"{PAGES_OUT}/{page_name}-sidebar-focus.png", full_page=False)
             page.close()
             report[page_name][vp_name] = entry
@@ -528,7 +536,7 @@ def main() -> int:
         # skip link, Home, Work, monogram, About, Contact, primary CTA
         for _ in range(7):
             page.keyboard.press("Tab")
-        page.wait_for_timeout(500)  # let focus/hover transitions (<= 200ms) finish
+        stable.settle(page)  # transitions to their end state (was a 500 ms sleep)
         page.screenshot(path=f"{OUT}/keyboard-focus.png", full_page=False)
         # Keep tabbing (secondary CTA, Explore Black, ...) to the first
         # Selected Work card link; every stop on the way must show a ring.
@@ -551,7 +559,7 @@ def main() -> int:
         if not homeStops or not homeStops[-1]["card"]:
             failures.append("home keyboard: never reached a Selected Work card")
         page.evaluate("document.activeElement.closest('article').scrollIntoView({block: 'center', behavior: 'instant'})")
-        page.wait_for_timeout(500)
+        stable.settle(page)
         page.screenshot(path=f"{OUT}/keyboard-focus-card.png", full_page=False)
         page.close()
 

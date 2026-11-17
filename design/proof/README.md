@@ -43,10 +43,13 @@ docker compose --profile tools run --rm art python3 tools/art/evidence_diff.py
 
 The Phase 05 Writing and Résumé checks also need the fixture site (README,
 "Screenshots"). `evidence_diff.py` compares each committed screenshot with
-its fresh counterpart in `latest/` pixel by pixel. A few captures of
-animated controls (the compact index's caret, the Work filter chips) can
-differ by a few pixels between runs because the screenshot lands
-mid-transition; anything larger needs investigation.
+its fresh counterpart in `latest/` pixel by pixel. Until Phase 06 a few
+captures of animated controls (the compact index's caret, the Work filter
+chips) differed by a few pixels between runs because the screenshot landed
+mid-transition. The capture tools now use the deterministic capture mode
+(`tools/screenshots/stable.py`), so fresh captures repeat exactly. A
+committed capture taken before Phase 06 can still show the old
+mid-transition state; that is the old capture, not a regression.
 
 To refresh curated evidence after an approved change, copy the specific
 files from `latest/` to the same relative path here and commit them with

@@ -282,13 +282,17 @@ layoutTests =
           assertBool (show files) (("media/projects/demo/pipeline.svg") `elem` files)
     , testCase "image artifacts scale; diagrams scroll and link to the full-size file" $ do
         (_, html) <- render fullFiles
-        has html "<div class=\"artifact__viewport\"><img src=\"/media/projects/demo/pipeline.svg\" alt=\"A diagram\""
+        -- Phase 06: the scrolling viewport is keyboard-focusable (WCAG
+        -- 2.1.1) and named, as a group rather than a landmark.
+        has html "<div class=\"artifact__viewport\" tabindex=\"0\" role=\"group\" aria-label=\"Diagram (scrolls sideways on narrow screens)\"><img src=\"/media/projects/demo/pipeline.svg\" alt=\"A diagram\""
         has html "<p class=\"artifact__open\"><a href=\"/media/projects/demo/pipeline.svg\">Open the diagram at full size</a></p>"
         (_, html') <- render
           ( demo "## Figure\n" [sections [("figure", layout "wide-exhibit" [("artifact", imageArtifact "image" "figure.svg")])]]
               <> [ (dir </> "figure.svg", svg) ] )
         has html' "<div class=\"artifact artifact--image\"><img src=\"/media/projects/demo/figure.svg\" alt=\"A diagram\""
         hasNot html' "artifact__open"
+        -- An image never scrolls, so it adds no focus stop.
+        hasNot html' "tabindex"
     ]
 
 --------------------------------------------------------------------------------

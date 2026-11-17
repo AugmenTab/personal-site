@@ -1,0 +1,119 @@
+Phase 06 audit
+==============
+
+axe-core 4.10.2 (wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa, best-practice): 20 page/viewport scans
+  violations: none
+  needs review (incomplete): ['color-contrast']
+
+Lowest text contrast per page (worst = against the lightest 5% of background pixels):
+  home/desktop              4.88 (need 4.5) p.site-footer__copyright "© 2026 Tyler Baum"
+  home/mobile               4.87 (need 4.5) p.site-footer__colophon "Built with Haskell & Brigid."
+  work/desktop              4.88 (need 4.5) p.work-filter__status "3 projects"
+  work/mobile               4.88 (need 4.5) p.work-filter__status "3 projects"
+  black/desktop             4.86 (need 4.5) span.artifact__language "black"
+  black/mobile              4.81 (need 4.5) span.artifact__language "black"
+  brigid/desktop            4.83 (need 4.5) p.site-footer__copyright "© 2026 Tyler Baum"
+  brigid/mobile             4.80 (need 4.5) span.artifact__language "haskell"
+  lockdown/desktop          4.88 (need 4.5) p.site-footer__copyright "© 2026 Tyler Baum"
+  lockdown/mobile           4.88 (need 4.5) p.site-footer__copyright "© 2026 Tyler Baum"
+  about/desktop             4.87 (need 4.5) p.site-footer__copyright "© 2026 Tyler Baum"
+  about/mobile              4.88 (need 4.5) p.about__note "This site is a portfolio in "
+  404/desktop               4.87 (need 4.5) p.site-footer__copyright "© 2026 Tyler Baum"
+  404/mobile                4.88 (need 4.5) p.site-footer__copyright "© 2026 Tyler Baum"
+  fixture-home/desktop      4.88 (need 4.5) p.writing-preview__date "2026-11-15"
+  fixture-home/mobile       4.88 (need 4.5) p.writing-preview__date "2026-11-15"
+  fixture-writing/desktop   4.88 (need 4.5) p.writing__date "2026-11-15"
+  fixture-writing/mobile    4.88 (need 4.5) p.writing__date "2026-11-15"
+  fixture-article/desktop   4.88 (need 4.5) p.article__date "2026-11-15"
+  fixture-article/mobile    4.88 (need 4.5) p.article__date "2026-11-15"
+  gradient display text: {'heroName': {'bg95': 0.0086, 'darkestStop': 4.67, 'note': 'large text (>=24px): 3:1 required; the drop shadow behind the words is excluded'}}
+
+Lowest focus-indicator contrast per page:
+  home/desktop              8.97 a /work/lockdown/
+  home/mobile               8.40 a /work/lockdown/
+  work/desktop              8.67 a /work/brigid/
+  work/mobile               8.49 a /work/black/
+  black/desktop            10.65 a /
+  black/mobile             10.63 a /
+  brigid/desktop           10.65 a /
+  brigid/mobile            10.63 a /
+  lockdown/desktop         10.65 a /
+  lockdown/mobile          10.63 a /
+  about/desktop            10.63 a /
+  about/mobile             10.63 a /
+  404/desktop              10.63 a /
+  404/mobile               10.63 a /
+  fixture-home/desktop      8.97 a /work/lockdown/
+  fixture-home/mobile       8.50 a /work/brigid/
+  fixture-writing/desktop  10.63 a /
+  fixture-writing/mobile   10.63 a /
+  fixture-article/desktop  10.63 a /
+  fixture-article/mobile   10.63 a /
+
+Keyboard walk stops per page:
+  home/desktop             15 stops, problems: none
+  home/mobile              15 stops, problems: none
+  home/narrow              15 stops, problems: none
+  work/desktop             17 stops, problems: none
+  work/mobile              17 stops, problems: none
+  work/narrow              17 stops, problems: none
+  black/desktop            22 stops, problems: none
+  black/mobile             14 stops, problems: none
+  black/narrow             14 stops, problems: none
+  brigid/desktop           20 stops, problems: none
+  brigid/mobile            13 stops, problems: none
+  brigid/narrow            13 stops, problems: none
+  lockdown/desktop         15 stops, problems: none
+  lockdown/mobile          11 stops, problems: none
+  lockdown/narrow          11 stops, problems: none
+  about/desktop            10 stops, problems: none
+  about/mobile             10 stops, problems: none
+  about/narrow             10 stops, problems: none
+  404/desktop              10 stops, problems: none
+  404/mobile               10 stops, problems: none
+  404/narrow               10 stops, problems: none
+  fixture-home/desktop     21 stops, problems: none
+  fixture-home/mobile      21 stops, problems: none
+  fixture-home/narrow      21 stops, problems: none
+  fixture-writing/desktop  14 stops, problems: none
+  fixture-writing/mobile   14 stops, problems: none
+  fixture-writing/narrow   14 stops, problems: none
+  fixture-article/desktop  14 stops, problems: none
+  fixture-article/mobile   14 stops, problems: none
+  fixture-article/narrow   14 stops, problems: none
+
+Targets under 44px (not inline):
+  home/mobile              ['a #main 198x42', 'a / 50x37', 'a /work/ 50x37', 'a /about/ 56x37', 'a /#contact 78x37', 'a /work/ 152x38', 'a /work/ 39x39', 'a /about/ 48x39']
+  home/narrow              ['a #main 198x42', 'a / 50x37', 'a /work/ 50x37', 'a /about/ 56x37', 'a /#contact 78x37', 'a /work/ 152x38', 'a /work/ 39x39', 'a /about/ 48x39']
+  home/desktop             ['a #main 198x42', 'a / 60x40', 'a /work/ 59x40', 'a /about/ 68x40', 'a /#contact 92x40', 'a /work/ 152x38', 'a /work/ 39x39', 'a /about/ 48x39']
+  work/mobile              ['a #main 198x42', 'a / 50x37', 'a /work/ 50x37', 'a /about/ 56x37', 'a /#contact 78x37', 'a /work/ 39x39', 'a /about/ 48x39', 'a https://github.com/AugmenTab 60x39']
+  work/narrow              ['a #main 198x42', 'a / 50x37', 'a /work/ 50x37', 'a /about/ 56x37', 'a /#contact 78x37', 'a /work/ 39x39', 'a /about/ 48x39', 'a https://github.com/AugmenTab 60x39']
+  work/desktop             ['a #main 198x42', 'a / 60x40', 'a /work/ 59x40', 'a /about/ 68x40', 'a /#contact 92x40', 'a /work/ 39x39', 'a /about/ 48x39', 'a https://github.com/AugmenTab 60x39']
+  black/mobile             ['a #main 198x42', 'a / 50x37', 'a /work/ 50x37', 'a /about/ 56x37', 'a /#contact 78x37', 'a /work/ 137x34', 'a #overview 324x37', 'a #design-principles 324x37', 'a #the-compiler-pipeline 324x37', 'a #a-program-white-accepts 324x37', 'a #a-program-white-rejects 324x37', 'a #language-today 324x37', 'a #status-and-limitations 324x37', 'a #resources 324x37', 'a /media/projects/black/pipeline.svg 286x28', 'a /work/ 39x39', 'a /about/ 48x39', 'a https://github.com/AugmenTab 60x39']
+  black/narrow             ['a #main 198x42', 'a / 50x37', 'a /work/ 50x37', 'a /about/ 56x37', 'a /#contact 78x37', 'a /work/ 137x34', 'a #overview 254x37', 'a #design-principles 254x37', 'a #the-compiler-pipeline 254x37', 'a #a-program-white-accepts 254x37', 'a #a-program-white-rejects 254x37', 'a #language-today 254x37', 'a #status-and-limitations 254x37', 'a #resources 254x37', 'a /work/ 39x39', 'a /about/ 48x39', 'a https://github.com/AugmenTab 60x39']
+  black/desktop            ['a #main 198x42', 'a / 60x40', 'a /work/ 59x40', 'a /about/ 68x40', 'a /#contact 92x40', 'a /work/ 137x34', 'a #overview 173x32', 'a #design-principles 173x32', 'a #language-today 173x32', 'a #resources 173x32', 'a /media/projects/black/pipeline.svg 286x28', 'a /work/ 39x39', 'a /about/ 48x39', 'a https://github.com/AugmenTab 60x39']
+  brigid/mobile            ['a #main 198x42', 'a / 50x37', 'a /work/ 50x37', 'a /about/ 56x37', 'a /#contact 78x37', 'a https://github.com/AugmenTab/brigid 174x39', 'a /work/ 137x34', 'a #overview 324x37', 'a #motivation 324x37', 'a #how-the-types-work 324x37', 'a #caught-at-compile-time 324x37', 'a #what-the-types-buy 324x37', 'a #status-and-limitations 324x37', 'a #resources 324x37', 'a https://github.com/AugmenTab/brigid 254x22', 'a /work/ 39x39', 'a /about/ 48x39', 'a https://github.com/AugmenTab 60x39']
+  brigid/narrow            ['a #main 198x42', 'a / 50x37', 'a /work/ 50x37', 'a /about/ 56x37', 'a /#contact 78x37', 'a https://github.com/AugmenTab/brigid 174x39', 'a /work/ 137x34', 'a #overview 254x37', 'a #motivation 254x37', 'a #how-the-types-work 254x37', 'a #caught-at-compile-time 254x37', 'a #what-the-types-buy 254x37', 'a #status-and-limitations 254x37', 'a #resources 254x37', 'a https://github.com/AugmenTab/brigid 254x22', 'a /work/ 39x39', 'a /about/ 48x39', 'a https://github.com/AugmenTab 60x39']
+  brigid/desktop           ['a #main 198x42', 'a / 60x40', 'a /work/ 59x40', 'a /about/ 68x40', 'a /#contact 92x40', 'a https://github.com/AugmenTab/brigid 174x39', 'a /work/ 137x34', 'a #overview 173x32', 'a #motivation 173x32', 'a #resources 173x32', 'a https://github.com/AugmenTab/brigid 254x22', 'a /work/ 39x39', 'a /about/ 48x39', 'a https://github.com/AugmenTab 60x39']
+  lockdown/mobile          ['a #main 198x42', 'a / 50x37', 'a /work/ 50x37', 'a /about/ 56x37', 'a /#contact 78x37', 'a /work/ 137x34', 'a #overview 324x37', 'a #technical-approach 324x37', 'a #current-capabilities 324x37', 'a #limitations-and-status 324x37', 'a /work/ 39x39', 'a /about/ 48x39', 'a https://github.com/AugmenTab 60x39']
+  lockdown/narrow          ['a #main 198x42', 'a / 50x37', 'a /work/ 50x37', 'a /about/ 56x37', 'a /#contact 78x37', 'a /work/ 137x34', 'a #overview 254x37', 'a #technical-approach 254x37', 'a #current-capabilities 254x37', 'a #limitations-and-status 254x37', 'a /work/ 39x39', 'a /about/ 48x39', 'a https://github.com/AugmenTab 60x39']
+  lockdown/desktop         ['a #main 198x42', 'a / 60x40', 'a /work/ 59x40', 'a /about/ 68x40', 'a /#contact 92x40', 'a /work/ 137x34', 'a #overview 173x32', 'a /work/ 39x39', 'a /about/ 48x39', 'a https://github.com/AugmenTab 60x39']
+  about/mobile             ['a #main 198x42', 'a / 50x37', 'a /work/ 50x37', 'a /about/ 56x37', 'a /#contact 78x37', 'a /#contact 158x34', 'a /work/ 39x39', 'a /about/ 48x39', 'a https://github.com/AugmenTab 60x39']
+  about/narrow             ['a #main 198x42', 'a / 50x37', 'a /work/ 50x37', 'a /about/ 56x37', 'a /#contact 78x37', 'a /#contact 158x34', 'a /work/ 39x39', 'a /about/ 48x39', 'a https://github.com/AugmenTab 60x39']
+  about/desktop            ['a #main 198x42', 'a / 60x40', 'a /work/ 59x40', 'a /about/ 68x40', 'a /#contact 92x40', 'a /#contact 158x34', 'a /work/ 39x39', 'a /about/ 48x39', 'a https://github.com/AugmenTab 60x39']
+  404/mobile               ['a #main 198x42', 'a / 50x37', 'a /work/ 50x37', 'a /about/ 56x37', 'a /#contact 78x37', 'a /work/ 39x39', 'a /about/ 48x39', 'a https://github.com/AugmenTab 60x39']
+  404/narrow               ['a #main 198x42', 'a / 50x37', 'a /work/ 50x37', 'a /about/ 56x37', 'a /#contact 78x37', 'a /work/ 39x39', 'a /about/ 48x39', 'a https://github.com/AugmenTab 60x39']
+  404/desktop              ['a #main 198x42', 'a / 60x40', 'a /work/ 59x40', 'a /about/ 68x40', 'a /#contact 92x40', 'a /work/ 39x39', 'a /about/ 48x39', 'a https://github.com/AugmenTab 60x39']
+  fixture-home/mobile      ['a #main 198x42', 'a / 50x32', 'a /work/ 50x32', 'a /writing/ 72x32', 'a /about/ 56x32', 'a /resume.pdf 64x32', 'a /#contact 78x32', 'a /work/ 152x38', 'a /writing/fixture-article/ 56x28', 'a /writing/ 148x38', 'a /work/ 39x39', 'a /writing/ 55x39', 'a /about/ 48x39', 'a /resume.pdf 59x39']
+  fixture-home/narrow      ['a #main 198x42', 'a / 50x32', 'a /work/ 50x32', 'a /writing/ 72x32', 'a /about/ 56x32', 'a /resume.pdf 64x32', 'a /#contact 78x32', 'a /work/ 152x38', 'a /writing/fixture-article/ 56x28', 'a /writing/ 148x38', 'a /work/ 39x39', 'a /writing/ 55x39', 'a /about/ 48x39', 'a /resume.pdf 59x39']
+  fixture-home/desktop     ['a #main 198x42', 'a / 60x40', 'a /work/ 59x40', 'a /writing/ 87x40', 'a /about/ 68x40', 'a /resume.pdf 78x40', 'a /#contact 92x40', 'a /work/ 152x38', 'a /writing/fixture-article/ 56x28', 'a /writing/ 148x38', 'a /work/ 39x39', 'a /writing/ 55x39', 'a /about/ 48x39', 'a /resume.pdf 59x39']
+  fixture-writing/mobile   ['a #main 198x42', 'a / 50x32', 'a /work/ 50x32', 'a /writing/ 72x32', 'a /about/ 56x32', 'a /resume.pdf 64x32', 'a /#contact 78x32', 'a /writing/fixture-article/ 66x35', 'a /work/ 39x39', 'a /writing/ 55x39', 'a /about/ 48x39', 'a /resume.pdf 59x39', 'a https://github.com/AugmenTab 60x39']
+  fixture-writing/narrow   ['a #main 198x42', 'a / 50x32', 'a /work/ 50x32', 'a /writing/ 72x32', 'a /about/ 56x32', 'a /resume.pdf 64x32', 'a /#contact 78x32', 'a /writing/fixture-article/ 66x35', 'a /work/ 39x39', 'a /writing/ 55x39', 'a /about/ 48x39', 'a /resume.pdf 59x39', 'a https://github.com/AugmenTab 60x39']
+  fixture-writing/desktop  ['a #main 198x42', 'a / 60x40', 'a /work/ 59x40', 'a /writing/ 87x40', 'a /about/ 68x40', 'a /resume.pdf 78x40', 'a /#contact 92x40', 'a /writing/fixture-article/ 66x35', 'a /work/ 39x39', 'a /writing/ 55x39', 'a /about/ 48x39', 'a /resume.pdf 59x39', 'a https://github.com/AugmenTab 60x39']
+  fixture-article/mobile   ['a #main 198x42', 'a / 50x32', 'a /work/ 50x32', 'a /writing/ 72x32', 'a /about/ 56x32', 'a /resume.pdf 64x32', 'a /#contact 78x32', 'a /writing/ 146x34', 'a /work/ 39x39', 'a /writing/ 55x39', 'a /about/ 48x39', 'a /resume.pdf 59x39', 'a https://github.com/AugmenTab 60x39']
+  fixture-article/narrow   ['a #main 198x42', 'a / 50x32', 'a /work/ 50x32', 'a /writing/ 72x32', 'a /about/ 56x32', 'a /resume.pdf 64x32', 'a /#contact 78x32', 'a /writing/ 146x34', 'a /work/ 39x39', 'a /writing/ 55x39', 'a /about/ 48x39', 'a /resume.pdf 59x39', 'a https://github.com/AugmenTab 60x39']
+  fixture-article/desktop  ['a #main 198x42', 'a / 60x40', 'a /work/ 59x40', 'a /writing/ 87x40', 'a /about/ 68x40', 'a /resume.pdf 78x40', 'a /#contact 92x40', 'a /writing/ 146x34', 'a /work/ 39x39', 'a /writing/ 55x39', 'a /about/ 48x39', 'a /resume.pdf 59x39', 'a https://github.com/AugmenTab 60x39']
+
+Deterministic captures: 16/16 byte-identical
+
+failures: 0

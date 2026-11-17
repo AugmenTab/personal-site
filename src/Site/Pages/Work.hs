@@ -394,7 +394,16 @@ artifactView media artifact =
         ]
     DiagramArtifact path alt ->
       E.div [ A.class_ "artifact artifact--diagram" ]
-        [ E.div [ A.class_ "artifact__viewport" ]
+        -- On phones the diagram keeps a legible width and scrolls sideways
+        -- inside this viewport, so keyboard users must be able to focus it
+        -- to scroll it (WCAG 2.1.1; Phase 06). A named group, not a
+        -- landmark, so it adds no region to the page outline.
+        [ E.div
+            [ A.class_ "artifact__viewport"
+            , A.tabindex HTML.Reachable
+            , A.customAttribute "role" "group"
+            , A.aria_label "Diagram (scrolls sideways on narrow screens)"
+            ]
             [ E.img
                 [ A.src (media path)
                 , A.alt alt
