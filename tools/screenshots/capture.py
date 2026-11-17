@@ -6,9 +6,9 @@ static preview service:
     docker compose up -d preview
     docker compose --profile tools run --rm screenshots
 
-Homepage captures keep their Phase 00 names in design/proof/ (the visual
-regression check compares desktop-first-view.png with design/regression/).
-Interior pages are captured into design/proof/pages/. Results, including
+Homepage captures keep their Phase 00 names in design/proof/latest/ (the visual
+regression check compares latest/desktop-first-view.png with design/regression/).
+Interior pages are captured into design/proof/latest/pages/. Results, including
 the crawl-based link check and the no-JavaScript navigation walk, go to
 design/proof/checks.txt. Exits 1 if any check fails.
 """
@@ -24,7 +24,7 @@ from phase04 import PHASE04_OUT, phase04_captures
 from phase05 import PHASE05_OUT, phase05_checks
 
 BASE = os.environ.get("PREVIEW_URL", "http://localhost:8080/")
-OUT = "design/proof"
+OUT = "design/proof/latest"
 PAGES_OUT = f"{OUT}/pages"
 
 # Every generated page, by capture name. The 404 document is also requested
@@ -389,7 +389,7 @@ def phase03_captures(browser, failures):
     """Phase 03 evidence: full-page and per-section captures of the
     homepage at every viewport (plus a wide desktop), its section order,
     the Selected Work cards' destinations, and the Black teaser's lack of
-    controls. Writes into design/proof/phase-03/."""
+    controls. Writes into design/proof/latest/phase-03/."""
     os.makedirs(PHASE03_OUT, exist_ok=True)
     report = {}
     viewports = dict(VIEWPORTS, wide={"width": 1920, "height": 1080})

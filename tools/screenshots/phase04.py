@@ -20,14 +20,14 @@ at desktop, tablet and mobile it records and checks:
     frame on mobile, and the page never does;
   - keyboard: every link in the dossier body takes a visible focus ring.
 
-Writes design/proof/phase-04/: full pages, first views, hero close-ups and
+Writes design/proof/latest/phase-04/: full pages, first views, hero close-ups and
 one capture of each layout kind per viewport.
 """
 
 import os
 from urllib.parse import urljoin
 
-PHASE04_OUT = "design/proof/phase-04"
+PHASE04_OUT = "design/proof/latest/phase-04"
 
 STRUCTURE_JS = """
 () => {

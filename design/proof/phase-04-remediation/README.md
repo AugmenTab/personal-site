@@ -6,6 +6,14 @@ built from a throwaway copy of the sources in `.local/hero-preview/` (README
 "Previewing a hero"). The repository's `content/` never contained it, and no
 committed page has a hero.
 
+> **Pruned 2026-11-16 (post-Phase 05 remediation).** The full-page and
+> tablet captures named below (for example `black-desktop-full.png`) were
+> removed from the working tree; first views, hero close-ups, the focus
+> capture, both comparison sheets and every `checks.json` remain. The full
+> set is in Git history at tag `evidence-archive-2026-11-16`:
+> `git show evidence-archive-2026-11-16:design/proof/phase-04-remediation/right-focus/black-desktop-full.png > black-desktop-full.png`.
+> See [`../README.md`](../README.md).
+
 ## Comparisons
 
 | File | Shows |

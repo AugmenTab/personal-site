@@ -31,6 +31,7 @@ dependencies:
   - ogma
   - parsec        # source positions in commonmark errors (already a commonmark dependency)
   - text
+  - time          # Gregorian calendar validation of publication dates (GHC boot package)
 
 library:
   source-dirs: src

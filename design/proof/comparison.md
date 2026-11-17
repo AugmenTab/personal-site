@@ -24,7 +24,7 @@
 | 7 | Left / right cloud banks | `compare/07-clouds-left.png`, `compare/07-clouds-right.png` |
 | 8 | Eclipse and corona | `compare/08-eclipse.png` |
 | 9 | Grayscale luminance comparison | `compare/09-luminance.png` |
-| 10 | Desktop, tablet and mobile captures | `desktop.png`, `desktop-first-view.png`, `tablet*.png`, `mobile*.png` |
+| 10 | Desktop, tablet and mobile captures | `desktop.png`, `desktop-first-view.png`, `tablet-first-view.png`, `mobile-first-view.png` (the tablet and mobile full pages were pruned on 2026-11-16; they are at tag `evidence-archive-2026-11-16`, and `design/proof/latest/` has fresh ones after a capture run) |
 | 11 | About section with the tree emblem | `about-section.png` (1440), `about-section-mobile.png` (390) |
 | 12 | Nav monogram and the divider beneath the name | `branding-nav-divider.png` |
 | — | What was removed from the render, and the cleaned artwork | `hero-mask.png` (magenta = inpainted text/UI, blue = synthesised panel area), `hero-cleaned.png` |

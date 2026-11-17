@@ -36,6 +36,7 @@ import Data.Maybe (catMaybes)
 import Data.Scientific (floatingOrInteger)
 import Data.Text qualified as T
 import Data.Text.Encoding qualified as TE
+import Data.Time.Calendar (fromGregorianValid)
 import Numeric (showFFloat)
 import System.Directory qualified as Dir
 import System.FilePath (takeExtension, (</>))
@@ -660,16 +661,13 @@ text value =
     other -> Left ("expected a string, got " <> jsonType other)
 
 -- | Text that will be placed in an HTML attribute (summaries become the
--- page's meta description; alt text becomes @alt@). Brigid (at the pinned
--- commit) does not escape @"@ inside attribute values, so a straight double
--- quote could end the attribute and inject another. It is rejected here;
--- typographic quotes are fine.
+-- page's meta description; alt text becomes @alt@). It is ordinary text:
+-- any punctuation, straight quotes included, is accepted unchanged.
+-- Escaping is Brigid's job at serialization time (fixed upstream at the
+-- pinned commit e0f4d45); nothing is pre-escaped here. The rendered-page
+-- validator ("Site.Validate") still checks that no attribute breaks out.
 attributeText :: Json.Value -> Either String T.Text
-attributeText value = do
-  t <- text value
-  if T.any (== '"') t
-    then Left "must not contain a straight double quote (\"); use typographic quotes (“ ”) instead"
-    else Right t
+attributeText = text
 
 list :: (Json.Value -> Either String a) -> Json.Value -> Either String [a]
 list decode value =
@@ -941,18 +939,24 @@ interactiveApp value = do
   app <- text value
   Left ("unknown interactive application " <> show app <> " (none are implemented yet)")
 
+-- | A publication date: exactly @YYYY-MM-DD@ (ASCII digits) naming a day
+-- that exists in the proleptic Gregorian calendar, so @2024-02-29@ is
+-- accepted and @2026-02-29@, @2026-02-31@ and @2026-04-31@ are not. The
+-- original text is kept unchanged: it is what the page shows and what
+-- article sorting compares (zero-padded ISO dates sort chronologically).
 isoDate :: Json.Value -> Either String T.Text
 isoDate value = do
   raw <- text value
   case T.splitOn "-" raw of
     [y, m, d]
       | T.length y == 4, T.length m == 2, T.length d == 2
-      , T.all isDigit (y <> m <> d)
-      , inRange 1 12 m, inRange 1 31 d ->
-          Right raw
+      , T.all isDigit (y <> m <> d) -> -- Data.Char.isDigit is ASCII 0-9 only
+          case fromGregorianValid (number y) (fromInteger (number m)) (fromInteger (number d)) of
+            Just _ -> Right raw
+            Nothing -> Left ("invalid date " <> show raw <> "; that day does not exist in the calendar")
     _ -> Left ("invalid date " <> show raw <> "; expected YYYY-MM-DD")
   where
-    inRange lo hi t = let n = read (T.unpack t) :: Int in n >= lo && n <= hi
+    number t = read (T.unpack t) :: Integer
 
 jsonType :: Json.Value -> String
 jsonType value =

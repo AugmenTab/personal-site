@@ -3,17 +3,22 @@
     docker compose --profile tools run --rm art python3 tools/art/phase03_sheet.py
 
 Reads the approved Phase 00 baseline, the pre-Phase 03 captures saved in
-design/proof/phase-03/before/, and the latest captures, and writes:
+design/proof/phase-03/before/, and the latest captures (design/proof/latest/,
+written by the screenshots service), and writes into design/proof/latest/phase-03/:
 
-- design/proof/phase-03/compare-hero.png: approved hero | current hero |
+- compare-hero.png: approved hero | current hero |
   |difference| x4, for the hero band (rows above the Black teaser frame);
-- design/proof/phase-03/compare-home-desktop.png: the whole homepage at
+- compare-home-desktop.png: the whole homepage at
   1440 wide, before and after Phase 03, side by side.
+
+The committed copies in design/proof/phase-03/ are curated evidence; copy a
+new sheet there only deliberately (see design/proof/README.md).
 """
 
 from PIL import Image, ImageDraw, ImageChops
 
-OUT = "design/proof/phase-03"
+OUT = "design/proof/latest/phase-03"
+BEFORE = "design/proof/phase-03/before"  # curated, committed
 HERO_ROWS = 416
 GAP = 24
 INK = (194, 164, 106)
@@ -35,7 +40,7 @@ def labelled(images, labels, gap=GAP):
 
 def main():
     approved = Image.open("design/regression/desktop-1440x900.png").convert("RGB")
-    current = Image.open("design/proof/desktop-first-view.png").convert("RGB")
+    current = Image.open("design/proof/latest/desktop-first-view.png").convert("RGB")
     box = (0, 0, approved.width, HERO_ROWS)
     a, c = approved.crop(box), current.crop(box)
     diff = ImageChops.difference(a, c).point(lambda v: min(255, v * 4))
@@ -44,7 +49,7 @@ def main():
                      ["Phase 00 approved hero", "Phase 03 hero", "|difference| x4 (black = identical)"])
     sheet.save(f"{OUT}/compare-hero.png")
 
-    before = Image.open(f"{OUT}/before/home-desktop-full.png").convert("RGB")
+    before = Image.open(f"{BEFORE}/home-desktop-full.png").convert("RGB")
     after = Image.open(f"{OUT}/home-desktop-full.png").convert("RGB")
     scale = lambda i: i.resize((i.width * 2 // 5, i.height * 2 // 5), Image.LANCZOS)
     labelled([scale(before), scale(after)], ["Before Phase 03 (baseline af78a2e)", "Phase 03"]).save(

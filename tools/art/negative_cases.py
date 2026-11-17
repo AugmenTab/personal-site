@@ -43,12 +43,22 @@ CASES = {
     "duplicate-technology": lambda c: edit_project(c, "brigid", lambda m: m.update(technologies=["Haskell", "haskell"])),
     "resume-not-pdf": lambda c: write(c, "content/resume.pdf", b"<html>this is not a PDF</html>\n"),
     "missing-script": lambda c: os.remove(f"{ROOT}/{c}/assets/scripts/work-filter.js"),
+    # post-Phase 05 remediation
+    "impossible-date": lambda c: write(c, "content/writing/fixture/article.json", json.dumps({
+        "slug": "fixture", "title": "Fixture", "summary": "A fixture.", "publication_status": "published",
+        "date": "2026-02-31", "body": "body.md"}).encode()) or write(c, "content/writing/fixture/body.md", b"Text.\n"),
+    "handler-like-summary": lambda c: edit_project(c, "brigid", lambda m: m.update(summary='description" onerror="alert(1)')),
+}
+
+# Cases that must pass `site check` (positive controls for the remediation).
+ACCEPTED = {
+    "quoted-summary": lambda c: edit_project(c, "brigid", lambda m: m.update(summary='A "correctness-first" programming language.')),
 }
 
 
 def main() -> int:
     shutil.rmtree(ROOT, ignore_errors=True)
-    for case, breakit in CASES.items():
+    for case, breakit in {**CASES, **ACCEPTED}.items():
         for name in ("content", "assets"):
             shutil.copytree(name, f"{ROOT}/{case}/{name}", symlinks=False)
         breakit(case)

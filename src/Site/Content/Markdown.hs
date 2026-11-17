@@ -16,8 +16,9 @@
 --   decoded form. Link titles are dropped.
 -- * __Images__ must be relative paths to media files inside the content
 --   item's own directory (checked later by the loader) and must have
---   non-empty alt text without straight double quotes (Brigid does not
---   escape @"@ inside attribute values).
+--   non-empty alt text. Alt text may contain any ordinary punctuation,
+--   straight quotes included: Brigid escapes attribute values when it
+--   serializes the page, so nothing is pre-escaped or refused here.
 -- * __Headings__: the page owns the @<h1>@, so Markdown may use @##@ to
 --   @####@ only, at the top level of the document, starting at @##@ and
 --   never skipping a level. Each @##@ starts a section (and a sidebar entry).
@@ -303,9 +304,6 @@ checkInline line x =
           alt = T.strip (inlineText altInlines)
           altErrs =
             [ err line ("image " <> show source <> " has no alt text; describe the image in ![…]") | T.null alt ]
-              -- Alt text becomes an attribute, and Brigid does not escape
-              -- '"' in attribute values: refuse it (typographic quotes are fine).
-              <> [ err line ("image " <> show source <> ": alt text must not contain a straight double quote (\"); use “ ” instead") | T.any (== '"') alt ]
        in case imagePath source of
             Left why -> (err line why : errs <> altErrs, [])
             Right path -> (errs <> altErrs, [Image path alt])

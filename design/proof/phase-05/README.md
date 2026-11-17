@@ -6,11 +6,19 @@ fixture site (`.local/fixture-site/`, :8082). Full machine-readable results:
 [`checks.json`](checks.json) here and [`../checks.txt`](../checks.txt)
 (all phases). **Result: `failures: []`.**
 
+> **Pruned 2026-11-16 (post-Phase 05 remediation).** Full-page captures
+> were removed except the Work index at 1440 and 320 and its no-JavaScript
+> page: `pages/`, `about/*-full.png`, `fixture/*-full.png` and the Work
+> index at 1920, 1280, 768 and 390. They are at tag
+> `evidence-archive-2026-11-16`, and every capture run regenerates them in
+> `design/proof/latest/phase-05/`. `checks.json` is unchanged. The table
+> below describes the folders as captured.
+
 ## Index
 
 | Folder | What |
 | --- | --- |
-| `home/` | Homepage first view, desktop and mobile (the full pages, with the new Contact section and footer, are in `../phase-03/home-*-full.png`, refreshed by this run) |
+| `home/` | Homepage first view, desktop and mobile (the full pages, with the new Contact section and footer, were `../phase-03/home-*-full.png`; now regenerated in `../latest/phase-03/`) |
 | `work/` | Work index full pages at 1920, 1440, 1280, 768, 390 and 320; search (`haskell`), category filter, no results, keyboard-selected chip (first views); no-JavaScript full page |
 | `project/` | Desktop first views (sidebar, all three hero-less dossiers); compact index collapsed and expanded at 768, 390 and 320 (Black for every width, Brigid and Lockdown at 390); Black mobile first view |
 | `contact/` | `/#contact` reached from a project page; the homepage Contact section at 1440, 390 and 320, plus the focused card at 1440 and 390 (update 1: icon beside label, no visible URL); `fixture-all-kinds-{desktop,mobile}.png` shows GitHub, LinkedIn and Email cards on a throwaway review page with placeholder targets (only GitHub is configured on the real site) |
