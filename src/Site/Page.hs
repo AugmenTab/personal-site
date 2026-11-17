@@ -28,9 +28,6 @@ data SiteConfig =
     , siteName :: T.Text
       -- ^ Used in page titles and the footer.
     , siteLanguage :: Ogma.BCP_47
-    , siteHasWriting :: Bool
-      -- ^ Whether published writing exists; only then does the navigation
-      -- link to it.
     , siteResumeUrl :: Maybe B.RawURL
       -- ^ The published résumé PDF, when one exists; only then do the
       -- navigation and footer link to it.

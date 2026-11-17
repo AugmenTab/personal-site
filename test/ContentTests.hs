@@ -523,17 +523,24 @@ publishingTests =
             html <- concat <$> forM (filter (".html" `isSuffixOf`) files) (readFile . (out </>))
             assertBool "card for live" ("/work/live/" `isInfixOf` html)
             assertBool "nothing links to the draft" (not ("secret" `isInfixOf` html))
-    , testCase "draft articles stay absent and no Writing section exists" $
+    , testCase "draft articles stay absent; the Writing index says Coming soon" $
         withSource
           [ ("content/writing/notes/article.json", articleJson "notes" "draft")
           , ("content/writing/notes/body.md", "## Draft\n") ] $ \root -> do
             s <- loadSite root
             let routes = map pageRoute (sitePages s)
-            assertBool "no writing index" (WritingIndex `notElem` routes)
+                render p = TE.decodeUtf8 (LBS.toStrict (renderPage (siteConfig s) p))
+            assertBool "writing index" (WritingIndex `elem` routes)
             assertBool "no article" (WritingArticle (slugOf "notes") `notElem` routes)
-            forM_ [ p | p <- sitePages s, pageRoute p == Home ] $ \home ->
-              assertBool "no Writing nav"
-                (not ("/writing/" `T.isInfixOf` TE.decodeUtf8 (LBS.toStrict (renderPage (siteConfig s) home))))
+            forM_ [ p | p <- sitePages s, pageRoute p == WritingIndex ] $ \index -> do
+              let html = render index
+              assertBool "coming soon" ("Coming soon." `T.isInfixOf` html)
+              assertBool "no list" (not ("writing__list" `T.isInfixOf` html))
+              assertBool "no draft" (not ("notes" `T.isInfixOf` html))
+            forM_ [ p | p <- sitePages s, pageRoute p == Home ] $ \home -> do
+              assertBool "Writing nav"
+                ("class=\"site-nav__link\" href=\"/writing/\">Writing</a>" `T.isInfixOf` render home)
+              assertBool "no homepage preview" (not ("id=\"writing\"" `T.isInfixOf` render home))
     , testCase "one published article creates the Writing routes and nav entry" $
         withSource
           [ ("content/writing/first-post/article.json", articleJson "first-post" "published")
@@ -551,9 +558,14 @@ publishingTests =
             assertBool "Writing nav" ("class=\"site-nav__link\" href=\"/writing/\">Writing</a>" `isInfixOf` home)
             article <- readFile (out </> "writing/first-post/index.html")
             assertBool "article heading" ("id=\"part-one\">Part one</h2>" `isInfixOf` article)
-    , testCase "the real site has no Writing section" $ do
+            index <- readFile (out </> "writing/index.html")
+            assertBool "lists the article" ("href=\"/writing/first-post/\"" `isInfixOf` index)
+            assertBool "no Coming soon once published" (not ("Coming soon." `isInfixOf` index))
+    , testCase "the real site has a Writing index with no articles: Coming soon" $ do
         s <- loadSite "."
-        assertBool "writing route" (WritingIndex `notElem` map pageRoute (sitePages s))
+        let routes = map pageRoute (sitePages s)
+        assertBool "writing route" (WritingIndex `elem` routes)
+        [ r | r@(WritingArticle _) <- routes ] @?= []
     , testCase "Work index order: featured by position, then by title, never by directory" $
         withSource
           [ ("content/projects/a-first/project.json", projectJson "a-first" [("title", Just "Zebra")])

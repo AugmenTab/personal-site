@@ -1,9 +1,9 @@
 {-# LANGUAGE DataKinds #-}
 
--- | Writing: an index and one page per published article. Both exist only
--- when at least one article is published ("Site.Definition"), and only
--- then does the navigation link to them. Draft articles are never
--- rendered, listed or linked.
+-- | Writing: an index and one page per published article. The index always
+-- exists and is always in the navigation; with no published article it
+-- says "Coming soon." and lists nothing (no empty grid, no sample posts).
+-- Draft articles are never rendered, listed or linked.
 module Site.Pages.Writing
   ( indexPage
   , articlePage
@@ -30,13 +30,17 @@ indexPage config articles =
     , pageLayout = Interior
     , pageMain =
         [ E.section [ A.class_ "writing", A.aria_labelledby (NEL.singleton titleId) ]
-            [ pageHeading [] titleId "Writing"
-            , E.p [ A.class_ "page-lede" ] [ E.text "Notes and essays, newest first." ]
-            , E.ul [ A.class_ "writing__list" ] (map entry articles)
-            ]
+            ( pageHeading [] titleId "Writing" : body )
         ]
     }
   where
+    body
+      | null articles =
+          [ E.p [ A.class_ "page-lede writing__empty" ] [ E.text "Coming soon." ] ]
+      | otherwise =
+          [ E.p [ A.class_ "page-lede" ] [ E.text "Notes and essays, newest first." ]
+          , E.ul [ A.class_ "writing__list" ] (map entry articles)
+          ]
     titleId = elementId "writing-title"
     -- Date first (as on the homepage preview), then title, summary and a
     -- single link per article.

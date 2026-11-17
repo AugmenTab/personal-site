@@ -1455,9 +1455,9 @@ ul {
     height: auto;
   }
 
-  /* Five or six links (Writing or Résumé published): each side gets its
-     own centred row under the monogram, and the header grows to fit. The
-     standard four-link header above is unchanged. */
+  /* Five or six links (Writing is always present; Resume when a PDF is
+     published): each side gets its own centred row under the monogram,
+     and the header grows to fit. */
   .page--nav-extended {
     --header-h: 9.75rem;
     /* Phase 06: 5.5rem put the third row of links on the corona's

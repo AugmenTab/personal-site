@@ -167,7 +167,7 @@ a side effect.
 | --- | --- |
 | Haskell tests | `docker compose run --rm site-build stack test` |
 | Content, routes and rendered-page validation | `docker compose run --rm site-build stack exec -- site check` |
-| Release guardrail tests: 48 cases with fake `docker`, `git` and `wrangler`, which never reach Docker, Git, the network or Cloudflare | `docker compose --profile release run --rm -T release sh tests/release/run-tests.sh` |
+| Release guardrail tests: 54 cases with fake `docker`, `git` and `wrangler`, which never reach Docker, Git, the network or Cloudflare | `docker compose --profile release run --rm -T release sh tests/release/run-tests.sh` |
 | Browser suites (Phases 03 to 06) | see the README, "Screenshots" and "Accessibility, performance and deterministic captures" |
 
 `scripts/release.sh check` runs the first two, plus:
@@ -236,11 +236,12 @@ completed `dist/` after a successful build.
 
 ### What gets published
 
-There are 40 files: the generator's 39 plus `_headers`.
+There are 41 files: the generator's 40 plus `_headers`. Since post-Phase 07
+update 1, `writing/` is always published; it was 40 before.
 
 | Group | Files |
 | --- | --- |
-| Pages | 7 HTML pages: `index.html`, `404.html`, `about/`, `work/`, `work/black/`, `work/brigid/`, `work/lockdown/` |
+| Pages | 8 HTML pages: `index.html`, `404.html`, `about/`, `work/`, `work/black/`, `work/brigid/`, `work/lockdown/`, `writing/` (a "Coming soon." page until an article is published) |
 | Generated | `sitemap.xml`, `robots.txt` |
 | Assets | 26 files under `assets/`: brand, fonts and their OFL licences, images, `styles/site.css`, `scripts/work-filter.js` |
 | Media | 4 project SVGs under `media/` |
@@ -300,8 +301,14 @@ scripts/release.sh deploy --confirm "$(git rev-parse HEAD)"
 first failure:
 
 1. **Preconditions:**
-   - `SHA` is a full 40-character commit that exists, is `HEAD`, and is on
-     `main`;
+   - `SHA` is a full 40-character commit that exists;
+   - the current branch is `main` (a detached HEAD is refused, even at a
+     commit that appears in `main`'s history), and `SHA` is its checked-out
+     tip, so an older ancestor of `main` cannot be deployed;
+   - local `main` equals the last-fetched `origin/main`.
+     - The comparison uses local refs only. It makes no network request,
+       so run `git fetch` first for an up-to-date comparison.
+     - With no `origin/main` ref, the deploy prints a note and continues;
    - no tracked changes and no untracked files;
    - the configuration passes the checks above;
    - both credential variables are set.
@@ -551,8 +558,8 @@ response, with browsers revalidating, observed locally as
   year, so **there is deliberately no immutable or long-lived caching on
   `/assets/*`**. The smoke test fails if `immutable` ever appears.
 - **Cost:** one conditional request per asset per page view, answered by
-  304 with no body. That is acceptable at this site's size: 40 files,
-  about 620 KiB.
+  304 with no body. That is acceptable at this site's size: 41 files,
+  about 625 KiB.
 - **Later:** fingerprinted asset names (a content hash in the file name,
   with the generator rewriting references and the manifest and tests
   updated together) would make long immutable caching safe. That is a

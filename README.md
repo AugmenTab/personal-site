@@ -27,8 +27,10 @@ canonical and social metadata):
   see [Project dossiers](#project-dossiers)): Black, Brigid and Lockdown;
 - an About page: the personal profile, with the tree-and-eclipse emblem;
 - a 404 document;
-- a Writing section, generated only when published articles exist (none
-  do yet);
+- a Writing index at `/writing/`, always published. Until an article is
+  published (none is yet) it says "Coming soon." and lists nothing. Each
+  published article gets its own page, and the homepage Writing preview
+  appears only once one exists;
 - a résumé PDF at `/resume.pdf`, published only when `content/resume.pdf`
   exists (none does yet);
 - `/sitemap.xml` and `/robots.txt`, generated from the published routes
@@ -68,6 +70,7 @@ docker compose --profile tools run --rm art python3 tools/art/phase03_sheet.py  
 docker compose --profile tools run --rm screenshots python3 tools/screenshots/phase06.py           # axe-core, contrast, focus, keyboard, targets, zoom/reflow, motion, no-JS, determinism
 docker compose --profile tools run --rm screenshots python3 tools/screenshots/phase06.py keyboard  # one step only (axe, contrast, focusIndicator, keyboard, targets, reflow, motion, noJavaScript, determinism)
 docker compose --profile tools run --rm screenshots python3 tools/screenshots/perf.py LABEL 5      # cold + warm loads, throttled phone and desktop, 5 runs each
+docker compose --profile tools run --rm screenshots python3 tools/screenshots/nav_check.py         # final nav order, Writing page and Resume, real and fixture sites, 5 widths
 ```
 
 See [Accessibility, performance and deterministic captures](#accessibility-performance-and-deterministic-captures)
@@ -545,14 +548,15 @@ Put the PDF at **`content/resume.pdf`** and build. Nothing else is needed:
 
 - it is published at **`/resume.pdf`** (a stable URL; replace the file to
   update it);
-- the navigation and the footer gain a **Résumé** link, announced to
-  assistive technology as "Résumé (PDF)";
+- the navigation (between About and Contact) and the footer gain a
+  **Resume** link (no accent in the label), announced to assistive
+  technology as "Resume (PDF)", which opens `/resume.pdf` directly;
 - the build checks that it is a regular file inside `content/` (not a
   symlink out of it), that it starts with the PDF signature `%PDF-`, and
   that it is at most 10 MiB; anything else fails the build;
 - it is not listed in the sitemap, which lists pages.
 
-Without the file there is no Résumé link anywhere, so the site never links
+Without the file there is no Resume link anywhere, so the site never links
 to a missing document. One résumé only; there are no role-specific
 variants.
 
@@ -756,14 +760,18 @@ real list so a change is deliberate.
 
 ## Navigation and footer
 
-The global navigation is `Home · Work · [Writing]` (monogram) `About ·
-[Résumé] · Contact`. Writing appears only with a published article, and
-Résumé only with `content/resume.pdf`. Contact is `/#contact` from every
+The global navigation is `Home · Work · Writing` (monogram) `About ·
+[Resume] · Contact`. Writing is always present: its index exists before any
+article is published (post-Phase 07 update 1). Resume appears only with
+`content/resume.pdf`. The footer's site links follow the same rule: Work,
+Writing, About, then Resume when it exists. Contact is `/#contact` from every
 page, the 404 included: on the homepage it scrolls to the section without a
 reload. The header scrolls away with the page (it is not fixed), so nothing
 covers the section. Only page links are marked current: on the homepage,
-Home alone. With five or six links, phones stack each side's links on its
-own row; the standard four-link header is unchanged.
+Home alone. Every page now has five or six links, so phones (640px and
+below) stack each side's links on its own row under the monogram; five do
+not fit a single row at 390px. Wider screens keep one row either side of
+the monogram.
 
 The footer is the same on every page: the name and thesis; site links
 (Work, [Writing], About, [Résumé]); the contact destinations (not on the

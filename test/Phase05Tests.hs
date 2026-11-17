@@ -245,11 +245,11 @@ workIndexTests =
 navigationTests :: TestTree
 navigationTests =
   testGroup "navigation"
-    [ testCase "every page: Home, Work, About and Contact (/#contact); the target exists on the homepage" $ do
+    [ testCase "every page: Home, Work, Writing | monogram | About, Contact (/#contact); the target exists on the homepage" $ do
         s <- realSite
         forM_ (realRoutes s) $ \r -> do
           let header = headerOf (render s r)
-          attributeValues "href" header @?= ["/", "/work/", "/", "/about/", "/#contact"]
+          attributeValues "href" header @?= ["/", "/work/", "/writing/", "/", "/about/", "/#contact"]
         count "id=\"contact\"" (render s Home) @?= 1
     , testCase "on the homepage only Home is current, never Contact" $ do
         s <- realSite
@@ -257,12 +257,32 @@ navigationTests =
         count "aria-current=\"page\"" header @?= 1
         assertBool "home current" ("href=\"/\" aria-current=\"page\">Home</a>" `T.isInfixOf` header)
         assertBool "contact not current" ("href=\"/#contact\">Contact</a>" `T.isInfixOf` header)
-    , testCase "Writing appears only with published writing, before the monogram" $ do
+    , testCase "Writing is always in the nav, before the monogram, with or without published writing" $ do
         withSite (article "draft-only" "draft") $ \_ s ->
-          assertBool "no writing" (not ("/writing/" `T.isInfixOf` render s Home))
-        withSite (article "first" "published") $ \_ s -> do
-          let header = headerOf (render s Home)
-          attributeValues "href" header @?= ["/", "/work/", "/writing/", "/", "/about/", "/#contact"]
+          attributeValues "href" (headerOf (render s Home)) @?= ["/", "/work/", "/writing/", "/", "/about/", "/#contact"]
+        withSite (article "first" "published") $ \_ s ->
+          attributeValues "href" (headerOf (render s Home)) @?= ["/", "/work/", "/writing/", "/", "/about/", "/#contact"]
+    , testCase "the real Writing page: heading, Coming soon, valid metadata, no list or fake entries" $ do
+        s <- realSite
+        let html = render s WritingIndex
+            main = between "<main" "</main>" html
+        assertBool "heading" ("<span class=\"section-title__text\">Writing</span></h1>" `T.isInfixOf` main)
+        assertBool "coming soon" ("<p class=\"page-lede writing__empty\">Coming soon.</p>" `T.isInfixOf` main)
+        forM_ ["writing__list", "writing__item", "<ul", "<article", "href="] $ \needle ->
+          assertBool ("empty state has " <> T.unpack needle) (not (needle `T.isInfixOf` main))
+        assertBool "canonical" ("<link rel=\"canonical\" href=\"https://tylerbaum.dev/writing/\"/>" `T.isInfixOf` html)
+        assertBool "og:url" ("content=\"https://tylerbaum.dev/writing/\"" `T.isInfixOf` html)
+        assertBool "description" ("<meta name=\"description\" content=\"Technical writing by Tyler Baum.\"/>" `T.isInfixOf` html)
+        assertBool "current page" ("href=\"/writing/\" aria-current=\"page\">Writing</a>" `T.isInfixOf` headerOf html)
+    , testCase "final order with every destination: Home Work Writing | monogram | About Resume Contact" $
+        withSite (("content/resume.pdf", pdf) : article "first" "published") $ \_ s -> do
+          let header = headerOf (render s About)
+              labels = [ T.strip (fst (T.breakOn "<" (T.drop 1 (snd (T.breakOn ">" rest)))))
+                       | rest <- drop 1 (T.splitOn "class=\"site-nav__link\"" header) ]
+          attributeValues "href" header @?= ["/", "/work/", "/writing/", "/", "/about/", "/resume.pdf", "/#contact"]
+          labels @?= ["Home", "Work", "Writing", "About", "Resume", "Contact"]
+          assertBool "monogram between Writing and About"
+            (T.isInfixOf "/writing/" (fst (T.breakOn "site-nav__mark" header)) && T.isInfixOf "/about/" (snd (T.breakOn "site-nav__mark" header)))
     , testCase "the About page is a profile: no contact destinations, but a way to Contact" $ do
         s <- realSite
         let about = render s About
@@ -287,14 +307,15 @@ resumeTests =
         s <- realSite
         siteResumeUrl (siteConfig s) @?= Nothing
         forM_ (realRoutes s) $ \r ->
-          forM_ ["resume", "Résumé", ".pdf"] $ \needle ->
+          forM_ ["resume", "Resume", "Résumé", ".pdf"] $ \needle ->
             assertBool (show r <> " " <> T.unpack needle) (not (needle `T.isInfixOf` render s r))
     , testCase "a valid content/resume.pdf is published at /resume.pdf and linked from the nav and footer" $
         withSite (("content/resume.pdf", pdf) : project "demo" []) $ \root s -> do
           forM_ (realRoutes s) $ \r -> do
             let html = render s r
-            assertBool (show r <> " nav") ("href=\"/resume.pdf\">Résumé<span class=\"visually-hidden\"> (PDF)</span></a>" `T.isInfixOf` headerOf html)
-            assertBool (show r <> " footer") ("href=\"/resume.pdf\">Résumé" `T.isInfixOf` footerOf html)
+            assertBool (show r <> " nav") ("href=\"/resume.pdf\">Resume<span class=\"visually-hidden\"> (PDF)</span></a>" `T.isInfixOf` headerOf html)
+            assertBool (show r <> " footer") ("href=\"/resume.pdf\">Resume<span class=\"visually-hidden\"> (PDF)</span></a>" `T.isInfixOf` footerOf html)
+            assertBool (show r <> " no accented label") (not ("Résumé" `T.isInfixOf` html))
           let out = root </> "dist"
           _ <- buildSite BuildConfig { sourceRoot = root, outputDir = out } s
           BS.readFile (out </> "resume.pdf") >>= (@?= pdf)
@@ -398,7 +419,7 @@ footerTests =
                 , "<p class=\"site-footer__copyright\">© 2026 Tyler Baum</p>"
                 , "<p class=\"site-footer__colophon\">Built with Haskell &#38; Brigid.</p>" ] $ \needle ->
             assertBool (show r <> ": " <> T.unpack needle) (needle `T.isInfixOf` footer)
-          attributeValues "href" (between "site-footer__nav" "</nav>" footer) @?= ["/work/", "/about/"]
+          attributeValues "href" (between "site-footer__nav" "</nav>" footer) @?= ["/work/", "/writing/", "/about/"]
           forM_ ["monogram", "about-tree", "<img"] $ \needle ->
             assertBool (show r <> ": footer has " <> T.unpack needle) (not (needle `T.isInfixOf` footer))
     , testCase "contact destinations: in the footer everywhere except the homepage, where Contact sits directly above" $ do
@@ -529,7 +550,7 @@ discoveryTests =
     [ testCase "the real sitemap lists every page but the 404, sorted by path" $ do
         s <- realSite
         let sitemap = contentsOf s "sitemap.xml"
-        urls sitemap @?= map ("https://tylerbaum.dev" <>) ["/", "/about/", "/work/", "/work/black/", "/work/brigid/", "/work/lockdown/"]
+        urls sitemap @?= map ("https://tylerbaum.dev" <>) ["/", "/about/", "/work/", "/work/black/", "/work/brigid/", "/work/lockdown/", "/writing/"]
         assertBool "xml declaration" ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" `T.isPrefixOf` sitemap)
         assertBool "namespace" ("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">" `T.isInfixOf` sitemap)
         assertBool "no 404" (not ("404" `T.isInfixOf` sitemap))

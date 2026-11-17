@@ -52,7 +52,8 @@ run() {
   (
     cd "$BOX" || exit 99
     export PATH="$FAKE_BIN:$PATH" FAKE_BIN="$FAKE_BIN" FAKE_LOG="$LOG" FAKE_FIXTURE="$FIXTURE"
-    export FAKE_HEAD="$SHA" FAKE_KNOWN="$SHA $OTHER" FAKE_ON_MAIN=1
+    # Default: a clean checkout of main at $SHA, in step with origin/main.
+    export FAKE_HEAD="$SHA" FAKE_KNOWN="$SHA $OTHER" FAKE_BRANCH=main FAKE_ORIGIN_MAIN="$SHA"
     export CLOUDFLARE_API_TOKEN="" CLOUDFLARE_ACCOUNT_ID="" RELEASE_NONINTERACTIVE_CONFIRM=""
     while [ "$1" != "--" ]; do
       export "$1"
@@ -243,13 +244,36 @@ CASE="an unknown release commit is rejected"
 sandbox; run $CREDS $CONFIRM -- deploy --confirm fedcba9876543210fedcba9876543210fedcba98
 expect_rc 2 && expect_out "unknown release commit" && expect_no_call "wrangler" && ok
 
-CASE="a known commit that is not checked out is rejected"
-sandbox; run $CREDS -- deploy --confirm "$OTHER"
-expect_rc 2 && expect_out "is not checked out" && expect_no_call "wrangler" && ok
+CASE="a SHA that does not match the checked-out HEAD is rejected"
+sandbox; run $CREDS FAKE_HEAD=$OTHER FAKE_ORIGIN_MAIN=$OTHER -- deploy --confirm "$SHA"
+expect_rc 2 && expect_out "is not the checked-out tip of main (HEAD is $OTHER)" && expect_no_call "wrangler" && ok
 
-CASE="a commit that is not on main is rejected"
-sandbox; run $CREDS $CONFIRM FAKE_ON_MAIN= -- deploy --confirm "$SHA"
-expect_rc 2 && expect_out "not on the main branch" && expect_no_call "wrangler" && ok
+CASE="a detached HEAD at the supplied commit is rejected"
+sandbox; run $CREDS $CONFIRM FAKE_BRANCH= -- deploy --confirm "$SHA"
+expect_rc 2 && expect_out "HEAD is detached" && expect_no_call "wrangler" && ok
+
+CASE="an older ancestor of main checked out detached is rejected"
+sandbox; run $CREDS "RELEASE_NONINTERACTIVE_CONFIRM=deploy-tylerbaum-89abcdef0123" FAKE_HEAD=$OTHER FAKE_BRANCH= -- deploy --confirm "$OTHER"
+expect_rc 2 && expect_out "HEAD is detached" && expect_no_call "wrangler" && ok
+
+CASE="an older ancestor commit while main is checked out is rejected (SHA is not the tip)"
+sandbox; run $CREDS -- deploy --confirm "$OTHER"
+expect_rc 2 && expect_out "is not the checked-out tip of main" && expect_no_call "wrangler" && ok
+
+CASE="a branch other than main is rejected"
+sandbox; run $CREDS $CONFIRM FAKE_BRANCH=phase-07 -- deploy --confirm "$SHA"
+expect_rc 2 && expect_out "the current branch is phase-07, not main" && expect_no_call "wrangler" && ok
+
+CASE="local main that differs from the last-fetched origin/main is rejected"
+sandbox; run $CREDS $CONFIRM FAKE_ORIGIN_MAIN=$OTHER -- deploy --confirm "$SHA"
+expect_rc 2 && expect_out "differs from origin/main" && expect_no_call "wrangler" && ok
+
+CASE="the remote comparison uses local refs only (no fetch, pull or ls-remote)"
+if grep -Eq "^git (fetch|pull|ls-remote|remote update)" "$LOG"; then bad "network git call: $(grep -E '^git (fetch|pull|ls-remote)' "$LOG")"; else ok; fi
+
+CASE="without an origin/main ref, a clean main checkout proceeds with a note"
+sandbox; run $CREDS $CONFIRM FAKE_ORIGIN_MAIN= -- deploy --confirm "$SHA"
+expect_rc 0 && expect_out "no origin/main ref" && expect_call "wrangler-deploy: wrangler deploy --" && ok
 
 CASE="missing credentials prevent production deployment"
 sandbox; run $CONFIRM -- deploy --confirm "$SHA"

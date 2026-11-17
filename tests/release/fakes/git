@@ -15,6 +15,14 @@ case "$*" in
     want=${3%^\{commit\}}
     case " ${FAKE_KNOWN:-} " in *" $want "*) exit 0 ;; *) exit 1 ;; esac
     ;;
-  merge-base\ --is-ancestor\ *) [ -n "${FAKE_ON_MAIN:-}" ] ;;
+  "symbolic-ref --quiet --short HEAD")
+    # Empty FAKE_BRANCH means a detached HEAD.
+    [ -n "${FAKE_BRANCH:-}" ] || exit 1
+    echo "$FAKE_BRANCH"
+    ;;
+  "rev-parse --verify --quiet refs/remotes/origin/main")
+    [ -n "${FAKE_ORIGIN_MAIN:-}" ] || exit 1
+    echo "$FAKE_ORIGIN_MAIN"
+    ;;
   *) echo "fake git: unexpected $*" >&2; exit 1 ;;
 esac

@@ -1,0 +1,456 @@
+{
+  "real": {
+    "desktop /": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "desktop /writing/": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "desktop /about/": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "laptop /": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "laptop /writing/": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "laptop /about/": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "tablet /": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "tablet /writing/": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "tablet /about/": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "mobile /": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "mobile /writing/": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "mobile /about/": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "narrow /": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "narrow /writing/": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "narrow /about/": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "writingPage": {
+      "h1": "Writing",
+      "empty": "Coming soon.",
+      "items": [],
+      "canonical": "https://tylerbaum.dev/writing/",
+      "current": "/writing/"
+    },
+    "resumeLinks": [],
+    "links": {
+      "sitemap": 200,
+      "pagesAndFilesChecked": 10
+    },
+    "sitemapHasWriting": true
+  },
+  "fixture": {
+    "desktop /": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Resume",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "desktop /writing/": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Resume",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "desktop /about/": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Resume",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "laptop /": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Resume",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "laptop /writing/": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Resume",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "laptop /about/": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Resume",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "tablet /": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Resume",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "tablet /writing/": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Resume",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "tablet /about/": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Resume",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "mobile /": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Resume",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "mobile /writing/": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Resume",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "mobile /about/": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Resume",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "narrow /": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Resume",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "narrow /writing/": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Resume",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "narrow /about/": {
+      "labels": [
+        "Home",
+        "Work",
+        "Writing",
+        "About",
+        "Resume",
+        "Contact"
+      ],
+      "extended": true,
+      "overlaps": [],
+      "outside": [],
+      "overflow": false
+    },
+    "writingPage": {
+      "h1": "Writing",
+      "empty": null,
+      "items": [
+        "/writing/fixture-article/"
+      ],
+      "canonical": "https://tylerbaum.dev/writing/",
+      "current": "/writing/"
+    },
+    "resumeLinks": [
+      {
+        "text": "Resume (PDF)",
+        "region": "nav"
+      },
+      {
+        "text": "Resume (PDF)",
+        "region": "footer"
+      }
+    ],
+    "resumePdf": {
+      "status": 200,
+      "type": "application/pdf",
+      "magic": "%PDF-",
+      "bytes": 72361,
+      "downloaded": 72361
+    },
+    "links": {
+      "sitemap": 200,
+      "pagesAndFilesChecked": 12
+    },
+    "sitemapHasWriting": true
+  },
+  "failures": []
+}

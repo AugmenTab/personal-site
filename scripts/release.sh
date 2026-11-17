@@ -310,10 +310,22 @@ cmd_deploy() {
   step "Release preconditions"
   require_tools
   git cat-file -e "$sha^{commit}" 2>/dev/null || refuse "unknown release commit $sha"
+  # The checkout must be the release branch itself, not a detached HEAD:
+  # an older commit that merely appears in main's history is not a release.
+  branch=$(git symbolic-ref --quiet --short HEAD 2>/dev/null) ||
+    refuse "HEAD is detached; check out $RELEASE_BRANCH (git switch $RELEASE_BRANCH) and deploy its tip"
+  [ "$branch" = "$RELEASE_BRANCH" ] || refuse "the current branch is $branch, not $RELEASE_BRANCH"
   head=$(head_commit)
-  [ "$head" = "$sha" ] || refuse "commit $sha is not checked out (HEAD is $head)"
-  git merge-base --is-ancestor "$sha" "$RELEASE_BRANCH" 2>/dev/null ||
-    refuse "commit $sha is not on the $RELEASE_BRANCH branch"
+  [ "$head" = "$sha" ] || refuse "commit $sha is not the checked-out tip of $RELEASE_BRANCH (HEAD is $head)"
+  # Compare with the last-fetched origin/main using local refs only: this
+  # makes no network request, so it can be stale; `git fetch` first for an
+  # up-to-date comparison. Skipped when there is no origin/main ref.
+  if remote=$(git rev-parse --verify --quiet "refs/remotes/origin/$RELEASE_BRANCH" 2>/dev/null); then
+    [ "$remote" = "$head" ] ||
+      refuse "local $RELEASE_BRANCH ($head) differs from origin/$RELEASE_BRANCH ($remote, as last fetched); push or pull so production matches the shared branch"
+  else
+    say "Note: no origin/$RELEASE_BRANCH ref; the local branch could not be compared with the remote."
+  fi
   [ -z "$(tracked_changes)" ] || refuse "tracked files have uncommitted changes"
   [ -z "$(untracked_files)" ] || refuse "untracked files are present; commit, remove or ignore them first"
   check_config
