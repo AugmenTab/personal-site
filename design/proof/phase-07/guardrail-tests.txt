@@ -1,0 +1,55 @@
+$ docker compose --profile release run --rm -T release sh tests/release/run-tests.sh
+(2026-11-17, at commit 86db0ba; fakes for docker, git and wrangler; packaging runs for real)
+
+Release guardrail tests
+
+PASS  help prints usage and exits 0
+PASS  no command fails closed (exit 2) and calls nothing
+PASS  an unknown command fails closed and never reaches Wrangler
+PASS  'deploy' is not an alias for build: deploy without --confirm refuses before any work
+PASS  deploy --confirm without a SHA refuses
+PASS  deploy SHA without --confirm refuses
+PASS  deploy with an abbreviated SHA refuses
+PASS  smoke needs --url
+PASS  a clean repository produces a release package with exactly the allowlist
+PASS  the ownership marker never enters the public package
+PASS  the file manifest (SHA256SUMS) matches the public package
+PASS  release metadata records the exact source commit, a clean tree and tool versions
+PASS  release metadata contains no credentials or machine paths
+PASS  hashes are deterministic: packaging twice gives identical SHA256SUMS
+PASS  verify accepts the untouched package
+PASS  a failed Haskell test prevents packaging
+PASS  a failed site check prevents packaging
+PASS  a failed build prevents packaging
+PASS  a file in dist/ that is not in the manifest is rejected
+PASS  a manifest that lists the ownership marker is rejected
+PASS  a manifest that lists a source file (Markdown/JSON) is rejected
+PASS  a build-machine path leaking into a page is rejected
+PASS  an unexpected file added to the public staging directory is rejected by verify
+PASS  a modified packaged file is rejected by verify
+PASS  a dirty tree is packaged as UNCOMMITTED, never labelled with the commit
+PASS  a dry run never deploys: only 'deploy --dry-run' on the credential-free service
+PASS  a dry run with failing local smoke tests fails
+PASS  a wrong Worker name in wrangler.toml is rejected
+PASS  an account_id, route or domain committed in wrangler.toml is rejected
+PASS  a dirty tracked tree prevents a production release
+PASS  untracked files prevent a production release
+PASS  an unknown release commit is rejected
+PASS  a known commit that is not checked out is rejected
+PASS  a commit that is not on main is rejected
+PASS  missing credentials prevent production deployment
+PASS  a missing account ID prevents production deployment
+PASS  a token that cannot see the intended account is rejected before deploying
+PASS  without the typed confirmation phrase, deploy refuses after validation
+PASS  a wrong confirmation phrase refuses
+PASS  the credential is never printed or written to evidence
+PASS  a confirmed deploy publishes once, tags the commit and records the version
+PASS  the credential is never printed or written to evidence (successful deploy)
+PASS  post-deployment smoke failures are reported with rollback instructions
+PASS  rollback requires explicit intent (--confirm)
+PASS  rollback with a malformed version ID refuses
+PASS  rollback without credentials refuses
+PASS  rollback without the typed confirmation refuses
+PASS  a confirmed rollback calls Wrangler once and smoke-tests
+
+48 passed, 0 failed

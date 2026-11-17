@@ -1,0 +1,234 @@
+{
+  "buildImage": "sha256:b68ad2106dad401fd19a41ca909e33fa4cfcf7386ad1dbab9417e8cee12558af",
+  "canonicalOrigin": "https://tylerbaum.dev",
+  "commit": "86db0ba6cdf92060bc85a90d434ef5d65c602fdc",
+  "files": [
+    {
+      "bytes": 3112,
+      "path": "404.html",
+      "sha256": "e2747dac750797f56b4f3feda8b85c5cc6043b4965afb4b479eaaf81bd08c44c"
+    },
+    {
+      "bytes": 1674,
+      "path": "_headers",
+      "sha256": "9264c637f5b7ccdc6624277e403d6806104b83ffb7d6daf9aa7b6aedb52af380"
+    },
+    {
+      "bytes": 4222,
+      "path": "about/index.html",
+      "sha256": "13e4686e863e19171a38e6b9bb1b824f5518da7496eab4e1a964f69eb010b708"
+    },
+    {
+      "bytes": 1819,
+      "path": "assets/brand/favicon.svg",
+      "sha256": "24b9c7ff8ce22eead9bc6784a37116ced20c681be080f41774947ad608ed3739"
+    },
+    {
+      "bytes": 5167,
+      "path": "assets/brand/monogram-ornate.svg",
+      "sha256": "3797fc52987d423eca190664f01ff30e3a243bd6b9998031615636b8bf9bc006"
+    },
+    {
+      "bytes": 1994,
+      "path": "assets/brand/monogram-simple.svg",
+      "sha256": "95ee93ff4bc12f5570fcb152866ec608b5c54e3a6db135708b292a4066f6b632"
+    },
+    {
+      "bytes": 4382,
+      "path": "assets/fonts/OFL-cinzel.txt",
+      "sha256": "f5a242cf68ad6ebd0603b3359a74c593ca080318a681035be5296ba2c6b04ae6"
+    },
+    {
+      "bytes": 4396,
+      "path": "assets/fonts/OFL-eb-garamond.txt",
+      "sha256": "ffd028634a27d60f1e510780d440857efe0e26e0f3dbd8f23ab61385512d8463"
+    },
+    {
+      "bytes": 4397,
+      "path": "assets/fonts/OFL-jetbrains-mono.txt",
+      "sha256": "bb1c26eb6fe1839e3759548777c8a35b9495ce4878a4b833b1b63d43ff313a4b"
+    },
+    {
+      "bytes": 13732,
+      "path": "assets/fonts/cinzel-latin-400-normal.woff2",
+      "sha256": "29bffc887e1a255b1bd9f3f6ebf9fc4558bac2eeffa134e503bb25a29cd8b9f0"
+    },
+    {
+      "bytes": 14776,
+      "path": "assets/fonts/cinzel-latin-600-normal.woff2",
+      "sha256": "1c7206d2e9bc595f6b43967784e9be40d562a4744e77351a57ae674a355b9f77"
+    },
+    {
+      "bytes": 22208,
+      "path": "assets/fonts/eb-garamond-latin-400-italic.woff2",
+      "sha256": "fbb1d11c23b78d327b1971b49cbeb1c44aa6de01f912ccbb1017c228d2d0bb46"
+    },
+    {
+      "bytes": 21720,
+      "path": "assets/fonts/eb-garamond-latin-400-normal.woff2",
+      "sha256": "562fb60b9d94f089e2e35c61b86e4c5c135bb96cb814d5e7b32b60427f10a0f6"
+    },
+    {
+      "bytes": 23104,
+      "path": "assets/fonts/eb-garamond-latin-500-normal.woff2",
+      "sha256": "934a8490f74318ff971137800f576728532a3bef9dc7fe2b877db4e010875869"
+    },
+    {
+      "bytes": 21088,
+      "path": "assets/fonts/jetbrains-mono-latin-400-normal.woff2",
+      "sha256": "7c53386f55c866c1b4c9309c4bcf74eda10896aab3a1780b0af5cc4976e27a27"
+    },
+    {
+      "bytes": 210202,
+      "path": "assets/images/about-tree.webp",
+      "sha256": "cc1a6b2394162fee3495508929f34479456268ddb787615a36a5fb26877907d6"
+    },
+    {
+      "bytes": 778,
+      "path": "assets/images/black-emblem.svg",
+      "sha256": "d5de988cce2b50ab45ba33a579f795f112733f54dced5fcc3789d5e945549676"
+    },
+    {
+      "bytes": 31766,
+      "path": "assets/images/hero-plate-centre.webp",
+      "sha256": "04968a6e48fb5b7262cc7c8ad67e580cb879c090da42e705f9411626fa4d71cf"
+    },
+    {
+      "bytes": 41018,
+      "path": "assets/images/hero-plate-left.webp",
+      "sha256": "a76b47bca5ddd6363fb57667fb9627a7e839b9c7b1dbf10e55b8344d9b16693a"
+    },
+    {
+      "bytes": 39980,
+      "path": "assets/images/hero-plate-right.webp",
+      "sha256": "3cf6e32b3992096c854d757ca4e4b3c6367b41e013787f8c5003a9666b7c1557"
+    },
+    {
+      "bytes": 301,
+      "path": "assets/images/icon-email.svg",
+      "sha256": "1303467a7c748fda6703d2ff4d086da5dd2be2f6f675e4b44184dfd67f481247"
+    },
+    {
+      "bytes": 754,
+      "path": "assets/images/icon-github.svg",
+      "sha256": "4ffdcf1b7281f78e5ff53e1291dba885ed47f6fa8da6c588e70453d0e9e70f40"
+    },
+    {
+      "bytes": 501,
+      "path": "assets/images/icon-linkedin.svg",
+      "sha256": "65141bf06342b7359d5eff80c8541d5962b19c5b45381212b415f003ed82af3e"
+    },
+    {
+      "bytes": 927,
+      "path": "assets/images/ornament-corner.svg",
+      "sha256": "8614aadba5de01377d3e1e8e0c00e7a89456fb74693b0406c70a76077f1e5147"
+    },
+    {
+      "bytes": 1329,
+      "path": "assets/images/ornament-frame.svg",
+      "sha256": "eac5d278fcfa79837e40519f1a3a15c93f30f11a3327bd8e1d39a6346c79b6c1"
+    },
+    {
+      "bytes": 520,
+      "path": "assets/images/ornament-rule.svg",
+      "sha256": "7f6c4882396884c30c1792e472f3743ea663ecd391190804f4fc9cb111abf48a"
+    },
+    {
+      "bytes": 562,
+      "path": "assets/images/texture-grain.svg",
+      "sha256": "5c8ba7daae4bc7e24e8d23e57ea6b040a8340dfe059c1c03a0b74ee806ad7437"
+    },
+    {
+      "bytes": 3110,
+      "path": "assets/scripts/work-filter.js",
+      "sha256": "55d0a12306b0965cdcef0b93f0036d690659fde5ff0a5555472be178ea05d73d"
+    },
+    {
+      "bytes": 87961,
+      "path": "assets/styles/site.css",
+      "sha256": "1a1bdee62c10b23a36772fa8d1118d9adcfd783940ef7273441c7e923b847842"
+    },
+    {
+      "bytes": 11464,
+      "path": "index.html",
+      "sha256": "b93095206bb74de9b30af39853ebd1690ebab78bb7c896268b143eb463840707"
+    },
+    {
+      "bytes": 2308,
+      "path": "media/projects/black/card.svg",
+      "sha256": "4f39bb51d3ebf1102430fbed41b898c7b302d3bd83807dc51a16a3d0037959c3"
+    },
+    {
+      "bytes": 5694,
+      "path": "media/projects/black/pipeline.svg",
+      "sha256": "9afa41f1674f27a43841d79fa5dfd1a311a84fe4945e740a3a3a5e9a278e22e4"
+    },
+    {
+      "bytes": 2694,
+      "path": "media/projects/brigid/card.svg",
+      "sha256": "ef7b70abf610df5751ef4e096a5adc1b63acb0fd27555c021fbe1958859554d6"
+    },
+    {
+      "bytes": 2578,
+      "path": "media/projects/lockdown/card.svg",
+      "sha256": "665e0b19d4c4cb97483f21317ac6579482cf508c459b7852dbfcb62f0461d2de"
+    },
+    {
+      "bytes": 67,
+      "path": "robots.txt",
+      "sha256": "01830997a135f5f20a82811e16a3dbe45df38780d8476b380245e286bc62003a"
+    },
+    {
+      "bytes": 440,
+      "path": "sitemap.xml",
+      "sha256": "c228944213017ea88af7beceef09b73c1dc69aa7db45b4d5c0d7a204e39db677"
+    },
+    {
+      "bytes": 15510,
+      "path": "work/black/index.html",
+      "sha256": "7f38954636e939bc600b02b342e37a8d38296ee954b3a57a3d94d98381edfd57"
+    },
+    {
+      "bytes": 12893,
+      "path": "work/brigid/index.html",
+      "sha256": "083a9c1189cae164bc480eb199c5aa7bcc12cedce253195f388b701b3ae35381"
+    },
+    {
+      "bytes": 8297,
+      "path": "work/index.html",
+      "sha256": "55a9debd347a8b9698906e8cb11eac23ca50cadd71620c1b0fa3e1713dfbea28"
+    },
+    {
+      "bytes": 7980,
+      "path": "work/lockdown/index.html",
+      "sha256": "a09dbe5553b5363e2891ab839345b4ee436a2c275b182121328608bd74cb80e7"
+    }
+  ],
+  "ghc": "9.10.3",
+  "package": {
+    "digest": "ab563c0cb17a5f8e7d3d9ad7699e6dc067d07ed7280f29b62822a4dd46eb4845",
+    "directory": ".release/public",
+    "excluded": [
+      ".personal-site-output"
+    ],
+    "fileCount": 40,
+    "providerFiles": [
+      "_headers"
+    ],
+    "totalBytes": 637425
+  },
+  "sourceCommit": "86db0ba6cdf92060bc85a90d434ef5d65c602fdc",
+  "sourceTreeClean": "true",
+  "stack": "3.7.1",
+  "validation": [
+    "haskell tests passed",
+    "site check passed",
+    "site built from a fresh generator run",
+    "dist/ inventory equals the generator manifest plus the ownership marker",
+    "every manifest path passed the publishable-path rules",
+    "no build-machine paths or secret markers in text files",
+    "public package equals the manifest plus provider files, byte for byte"
+  ],
+  "worker": "tylerbaum",
+  "wrangler": "4.156.2"
+}

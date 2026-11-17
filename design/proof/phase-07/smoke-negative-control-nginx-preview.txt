@@ -1,0 +1,50 @@
+Smoke test of http://preview/ (canonical origin https://tylerbaum.dev)
+  sitemap pages: 6, other files: 32
+  404 status: 404
+  redirects: {"/work": {"hops": [[301, "/work/"]], "final": 200}, "/about": {"hops": [[301, "/about/"]], "final": 200}, "/work/black": {"hops": [[301, "/work/black/"]], "final": 200}, "/index.html": {"hops": [], "final": 200}, "/work/index.html": {"hops": [], "final": 200}}
+  leak probes: 19/20 answered 404
+  headers on /: {"content-security-policy": "", "x-content-type-options": "", "referrer-policy": "", "x-frame-options": "", "permissions-policy": "", "cross-origin-opener-policy": "", "cache-control": "", "etag": "\"6afc73b2-2cc8\""}
+  browser: skipped
+FAILED:
+  - /: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /about/: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /work/: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /work/black/: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /work/brigid/: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /work/lockdown/: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /assets/brand/favicon.svg: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /assets/brand/monogram-ornate.svg: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /assets/brand/monogram-simple.svg: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /assets/fonts/OFL-cinzel.txt: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /assets/fonts/OFL-eb-garamond.txt: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /assets/fonts/OFL-jetbrains-mono.txt: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /assets/fonts/cinzel-latin-400-normal.woff2: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /assets/fonts/cinzel-latin-600-normal.woff2: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /assets/fonts/eb-garamond-latin-400-italic.woff2: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /assets/fonts/eb-garamond-latin-400-normal.woff2: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /assets/fonts/eb-garamond-latin-500-normal.woff2: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /assets/fonts/jetbrains-mono-latin-400-normal.woff2: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /assets/images/about-tree.webp: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /assets/images/black-emblem.svg: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /assets/images/hero-plate-centre.webp: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /assets/images/hero-plate-left.webp: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /assets/images/hero-plate-right.webp: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /assets/images/icon-email.svg: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /assets/images/icon-github.svg: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /assets/images/icon-linkedin.svg: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /assets/images/ornament-corner.svg: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /assets/images/ornament-frame.svg: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /assets/images/ornament-rule.svg: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /assets/images/texture-grain.svg: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /assets/scripts/work-filter.js: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /assets/styles/site.css: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /media/projects/black/card.svg: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /media/projects/black/pipeline.svg: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /media/projects/brigid/card.svg: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /media/projects/lockdown/card.svg: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /robots.txt: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /sitemap.xml: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - 404 response: missing headers content-security-policy, cross-origin-opener-policy, permissions-policy, referrer-policy, x-content-type-options, x-frame-options
+  - /index.html: expected one redirect to /, got [] ending in HTTP 200
+  - /work/index.html: expected one redirect to /work/, got [] ending in HTTP 200
+  - /.personal-site-output: HTTP 200 (must not be served)
