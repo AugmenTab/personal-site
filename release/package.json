@@ -1,0 +1,9 @@
+{
+  "name": "personal-site-release-tooling",
+  "private": true,
+  "description": "Deployment tooling only (Wrangler). The site is built by the Haskell generator; nothing here builds or bundles it.",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "wrangler": "4.156.2"
+  }
+}

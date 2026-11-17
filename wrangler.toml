@@ -1,0 +1,32 @@
+# Cloudflare Workers Static Assets configuration (Phase 07).
+#
+# An assets-only Worker: there is no Worker script. Cloudflare serves the
+# files that scripts/release.sh packages into .release/public, exactly as
+# the Haskell generator produced them. Validated against the pinned Wrangler
+# (release/package.json) by `scripts/release.sh dry-run`.
+#
+# Deliberately absent:
+#   - routes / custom domains: tylerbaum.dev is attached by the owner in the
+#     Cloudflare dashboard (docs/operations/deployment.md, "Account and
+#     domain setup"). Nothing here can change DNS.
+#   - account_id: supplied at deploy time as CLOUDFLARE_ACCOUNT_ID, never
+#     committed.
+#   - workers_dev: left at Wrangler's default (see the deployment guide).
+
+name = "tylerbaum"
+
+# Fixed so a Wrangler upgrade cannot silently change runtime behaviour.
+# Change it deliberately, with a dry-run and local smoke test. It must not
+# be later than the newest date the pinned Wrangler's runtime supports
+# (4.156.2 supports up to 2026-11-09; a later date fails `wrangler dev`).
+compatibility_date = "2026-11-09"
+
+[assets]
+directory = "./.release/public"
+# /about/ serves about/index.html; /about redirects to /about/ (307 → see
+# the deployment guide). Matches the generator's routes, all of which end
+# in a slash.
+html_handling = "auto-trailing-slash"
+# Unknown paths serve the nearest 404.html with HTTP status 404. There is no
+# single-page-application fallback.
+not_found_handling = "404-page"

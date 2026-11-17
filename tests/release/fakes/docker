@@ -1,0 +1,79 @@
+#!/bin/sh
+# Fake `docker` for the release guardrail tests. Never touches Docker or the
+# network. Behaviour is chosen by FAKE_* variables (see run-tests.sh); every
+# call is appended to $FAKE_LOG.
+set -eu
+printf 'docker %s\n' "$*" >>"$FAKE_LOG"
+
+[ "${1:-}" = "compose" ] || {
+  # docker image inspect ...
+  [ "${1:-}" = "image" ] && { echo "sha256:fakeimage"; exit 0; }
+  exit 0
+}
+shift
+while [ $# -gt 0 ]; do
+  case $1 in
+    --profile) shift 2 ;;
+    *) break ;;
+  esac
+done
+action=${1:-}
+shift || true
+case $action in
+  version) echo "Docker Compose version v2-fake"; exit 0 ;;
+  up | stop | rm | logs | down) exit 0 ;;
+  run) ;;
+  *) echo "fake docker: unsupported compose action $action" >&2; exit 1 ;;
+esac
+
+while [ $# -gt 0 ]; do
+  case $1 in
+    --rm | -T) shift ;;
+    -e) shift 2 ;;
+    *) break ;;
+  esac
+done
+service=$1
+shift
+
+case $service in
+  site-build)
+    case "$*" in
+      "")
+        [ -z "${FAKE_BUILD_FAIL:-}" ] || { echo "build failed" >&2; exit 1; }
+        rm -rf dist
+        cp -R "$FAKE_FIXTURE/dist" dist
+        echo "Wrote 2 pages"
+        ;;
+      "stack test")
+        [ -z "${FAKE_TEST_FAIL:-}" ] || { echo "1 out of 226 tests failed" >&2; exit 1; }
+        echo "All 226 tests passed"
+        ;;
+      "stack exec -- site check")
+        [ -z "${FAKE_CHECK_FAIL:-}" ] || { echo "page /: broken link /nowhere/" >&2; exit 1; }
+        echo "OK: 2 pages and 1 files validated; nothing written."
+        ;;
+      "stack exec -- site manifest") cat "${FAKE_MANIFEST:-$FAKE_FIXTURE/manifest.txt}" ;;
+      "stack exec -- ghc --numeric-version") echo "9.10.3" ;;
+      "stack --numeric-version") echo "3.7.1" ;;
+      *) echo "fake docker: unexpected site-build command: $*" >&2; exit 1 ;;
+    esac
+    ;;
+  release)
+    case "$*" in
+      *smoke.py*)
+        if [ -n "${FAKE_SMOKE_FAIL:-}" ]; then
+          echo "FAILED:"
+          echo "  - /: HTTP 500"
+          exit 1
+        fi
+        echo "PASS: every smoke check passed"
+        ;;
+      *) exec "$@" ;;
+    esac
+    ;;
+  wrangler | wrangler-dev | wrangler-deploy)
+    SERVICE=$service exec "$FAKE_BIN/wrangler" "$@"
+    ;;
+  *) echo "fake docker: unknown service $service" >&2; exit 1 ;;
+esac
