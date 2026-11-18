@@ -430,7 +430,7 @@ footerTests =
           let footer = footerOf (render s r)
           if r == Home
             then assertBool "home: no contact column" (not ("site-footer__contact" `T.isInfixOf` footer))
-            else attributeValues "href" (between "site-footer__contact" "</ul>" footer) @?= ["https://github.com/AugmenTab"]
+            else attributeValues "href" (between "site-footer__contact" "</ul>" footer) @?= ["https://github.com/AugmenTab", "https://www.linkedin.com/in/thebaum/", "mailto:tyler.baum@protonmail.com"]
         -- each destination is one control within the homepage's Contact section
         count "https://github.com/AugmenTab" (render s Home) @?= 1
     , testCase "optional destinations appear only when configured" $
@@ -445,10 +445,10 @@ footerTests =
 settingsTests :: TestTree
 settingsTests =
   testGroup "settings"
-    [ testCase "the real settings are valid: production origin, GitHub only" $ do
+    [ testCase "the real settings are valid: production origin and verified contacts" $ do
         settingsProblems ownerSettings @?= []
         settingsOrigin ownerSettings @?= "https://tylerbaum.dev"
-        settingsContacts ownerSettings @?= [GitHub "AugmenTab"]
+        settingsContacts ownerSettings @?= [GitHub "AugmenTab", LinkedIn "thebaum", Email "tyler.baum@protonmail.com"]
     , testCase "malformed origins, years and contacts are reported" $ do
         let with f = settingsProblems (f ownerSettings)
             bad label problems = assertBool (label <> ": " <> show problems) (not (null problems))
@@ -486,12 +486,12 @@ settingsTests =
     , testCase "contact cards show an icon and the label, never the URL (Phase 05 update 1)" $ do
         s <- realSite
         let section = between "id=\"contact\"" "</section>" (render s Home)
-            visible = T.concat [ fst (T.breakOn "<" t) | t <- drop 1 (T.splitOn ">" (T.replace "<span class=\"visually-hidden\">: github.com/AugmenTab</span>" "" section)) ]
+            visible = T.concat [ fst (T.breakOn "<" t) | t <- drop 1 (T.splitOn ">" (foldr (\(from, to) acc -> T.replace from to acc) section [ ("<span class=\"visually-hidden\">: github.com/AugmenTab</span>", ""), ("<span class=\"visually-hidden\">: linkedin.com/in/thebaum</span>", ""), ("<span class=\"visually-hidden\">: tyler.baum@protonmail.com</span>", "") ])) ]
         assertBool "card" ("<a class=\"contact__link\" href=\"https://github.com/AugmenTab\"><span class=\"contact__icon contact__icon--github\" aria-hidden=\"true\"></span><span class=\"contact__label\">GitHub</span><span class=\"visually-hidden\">: github.com/AugmenTab</span></a>" `T.isInfixOf` section)
-        assertBool ("no visible URL in: " <> T.unpack visible) (not ("github.com" `T.isInfixOf` visible))
+        assertBool ("no visible URL in: " <> T.unpack visible) (not (any (`T.isInfixOf` visible) ["github.com", "linkedin.com", "protonmail.com"]))
         assertBool "no display span" (not ("contact__display" `T.isInfixOf` section))
         -- the icon is decorative and the card is the only control
-        count "<a " section @?= 1
+        count "<a " section @?= 3
         count "<img" section @?= 0
     , testCase "every contact icon is a listed asset referenced by the stylesheet" $ do
         css <- TE.decodeUtf8 <$> BS.readFile "assets/styles/site.css"
