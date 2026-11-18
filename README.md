@@ -24,15 +24,15 @@ canonical and social metadata):
   [Search and filtering](#search-and-filtering));
 - one dossier per published project, loaded from `content/projects/` (JSON
   metadata and a Markdown body, presented in five typed section layouts;
-  see [Project dossiers](#project-dossiers)): Black, Brigid and Lockdown;
+  see [Project dossiers](#project-dossiers)): Black, Brigid and Paranoia Engine;
 - an About page: the personal profile, with the tree-and-eclipse emblem;
 - a 404 document;
 - a Writing index at `/writing/`, always published. Until an article is
   published (none is yet) it says "Coming soon." and lists nothing. Each
   published article gets its own page, and the homepage Writing preview
   appears only once one exists;
-- a résumé PDF at `/resume.pdf`, published only when `content/resume.pdf`
-  exists (none does yet);
+- a résumé PDF at `/resume.pdf`, published when `content/resume.pdf`
+  exists (the current source tree includes it);
 - `/sitemap.xml` and `/robots.txt`, generated from the published routes
   (see [Metadata and discovery](#metadata-and-discovery)).
 
@@ -243,7 +243,7 @@ hierarchies or synonyms.
 
 The real projects: Black is Programming Languages (Type Systems, Compiler
 Engineering, Formal Verification); Brigid is Libraries & Tooling (Type
-Systems, Web Development); Lockdown is Simulation & Games (Deterministic
+Systems, Web Development); Paranoia Engine is Simulation & Games (Deterministic
 Simulation, Game Engines). "Type systems", "Verification", "Type safety"
 and "Deterministic simulation" moved out of `technologies` into topics.
 
@@ -486,7 +486,7 @@ A separate mobile image is not supported yet. The model leaves room for it:
 focus point.
 
 **Status:** no hero artwork has been delivered yet, so Black, Brigid and
-Lockdown currently use the plain header. The layout was verified with a
+Paranoia Engine currently use the plain header. The layout was verified with a
 development stand-in test card (see `design/proof/phase-04-remediation/`).
 
 ### Previewing a hero
@@ -702,18 +702,19 @@ complete list.
 
 ### Homepage copy: final versus draft
 
-Every editorial record carries a `CopyStatus`. **All of it is `DraftCopy`
-and needs owner review before public launch:**
+Every editorial record carries a `CopyStatus`. All homepage editorial copy
+has now been approved by the owner; the project dossier prose is likewise
+approved, with later technical exhibits and improvements tracked separately.
 
 | Copy | Where | Status |
 | --- | --- | --- |
-| Role, name, thesis, disciplines | `Home.introduction` | Draft (working copy from the approved render; layout frozen) |
-| Black summary and three points | `Home.blackTeaser` | Draft. Each point is an implemented compiler capability, checked against the Black repository |
-| Black excerpt | `Home.blackExample` | **Verified, not draft**: `white/test/conformance/NominalRecord.blk` from Black at `c1a45af`, an `accept` case in the compiler's conformance suite, shown verbatim (a test checks the rendering is lossless) |
-| Engineering Philosophy | `Home.philosophy` | **Placeholder** (owner, 2026-11-15): directional copy only. The section's place on the page and its lack of a link from the navigation are also open, for the owner's content pass |
-| About profile (lede, "Work and interests", note) | `About.profile` | Draft: the verified Phase 03 biography, arranged in sections. Background and motivations are left for the owner to supply |
-| Contact invitation | `Home.contactCopy` | Draft |
-| Black and Lockdown project pages | `content/projects/{black,lockdown}/body.md` | Draft: factual, from each project's repository and README |
+| Role, name, thesis, disciplines | `Home.introduction` | Approved; the hero layout remains frozen |
+| Black summary and three points | `Home.blackTeaser` | Approved, with capabilities grounded in the Black audit |
+| Black excerpt | `Home.blackExample` | **Verified, not illustrative**: `white/test/conformance/NominalRecord.blk` from Black at `c1a45af`, an accepted conformance case |
+| Engineering Philosophy | `Home.philosophy` | Approved; “Confidence isn't evidence.” |
+| About profile | `About.profile` | Approved |
+| Contact invitation | `Home.contactCopy` | Approved |
+| Black, Brigid and Paranoia Engine dossiers | `content/projects/` | Approved; future engineering fixes and exhibits tracked in `docs/operations/post-deploy-project-followups.md` |
 
 ## Site configuration
 
@@ -731,15 +732,14 @@ every check and build (a bad value fails with `invalid site settings`):
 
 ### Contact destinations
 
-Only verified destinations are listed: **GitHub**
-(`https://github.com/AugmenTab`). LinkedIn and email are omitted until the
-owner supplies them. To add one, append it to `settingsContacts`:
+Verified destinations are **GitHub**, **LinkedIn**, and **email**.
+They are configured once in `settingsContacts`:
 
 ```haskell
 settingsContacts =
   [ GitHub "AugmenTab"
-  , LinkedIn "your-public-profile-id"     -- https://www.linkedin.com/in/{id}/
-  , Email "name@example.com"              -- only once mail to it is delivered
+  , LinkedIn "thebaum"
+  , Email "tyler.baum@protonmail.com"
   ]
 ```
 
@@ -749,9 +749,8 @@ link: a small icon beside the label ("GitHub"). The URL or address is not
 shown, but it stays in the link as visually hidden text, so screen readers
 still announce the destination. The icons are `assets/images/icon-{github,linkedin,email}.svg`,
 used as CSS masks, so they take the text colour on hover and in forced
-colours. There is no copy-to-clipboard control; one for the email
-address, if added later, must be a separate button beside the card, never
-inside the link. The constructors fix the scheme and host, and validation
+colours. There is no copy-to-clipboard control; if added later, it must be a
+separate button beside the email card, never inside the link. The constructors fix the scheme and host, and validation
 rejects anything but a plain username, profile id or address (no display
 names, queries or uppercase domains), so a contact cannot point anywhere
 unexpected. The footer repeats the destinations on every page except the
@@ -921,8 +920,8 @@ URLs and output files are both derived from one function,
 | --- | --- | --- |
 | `Home` | `/` | `dist/index.html` |
 | `WorkIndex` | `/work/` | `dist/work/index.html` |
-| `WorkDetail slug` | `/work/{slug}/` | `dist/work/{slug}/index.html` (one per published project; today `black`, `brigid`, `lockdown`) |
-| `WritingIndex` | `/writing/` | `dist/writing/index.html` (only if published writing exists) |
+| `WorkDetail slug` | `/work/{slug}/` | `dist/work/{slug}/index.html` (one per published project; today `black`, `brigid`, `paranoia-engine`) |
+| `WritingIndex` | `/writing/` | `dist/writing/index.html` (always; "Coming soon." until an article is published) |
 | `WritingArticle slug` | `/writing/{slug}/` | `dist/writing/{slug}/index.html` (one per published article) |
 | `About` | `/about/` | `dist/about/index.html` |
 | `NotFound` | `/404.html` | `dist/404.html` |

@@ -1,7 +1,7 @@
 {
   "slug": "black",
   "title": "Black",
-  "summary": "A correctness-focused programming language whose compiler proves, before a program runs, that its integer arithmetic and conversions fit their types.",
+  "summary": "Black is an AI-first programming language designed to be equally approachable to human programmers and autonomous coding agents.",
   "category": "programming-languages",
   "topics": ["type-systems", "compiler-engineering", "formal-verification"],
   "development_status": "in_development",
@@ -30,7 +30,7 @@
       "artifact": {
         "kind": "diagram",
         "src": "pipeline.svg",
-        "alt": "White’s pipeline in four stages. Front end: parse, canonical format, resolve names, unused bindings, types and exhaustiveness. Proof of fit: interval reasoning, every integer result fits its type, every divisor nonzero, each cast proved, contract obligations. Core: elaborate into Core, validate Core by re-deriving the evidence, bind entry points or a native boundary. Back end: emit textual LLVM IR, compile with clang-19, producing an executable or a shared library that a C host loads."
+        "alt": "White’s pipeline in four stages. Front end: parse, resolve imports and names, check unused bindings, types and exhaustiveness. Proof of fit: interval reasoning, every integer result fits its type, every divisor nonzero, each cast proved, contract obligations. Core: elaborate into Core, validate Core by re-deriving the evidence, bind entry points or a native boundary. Back end: emit textual LLVM IR, compile with clang-19, producing an executable or a shared library that a C host loads."
       }
     },
     "a-program-white-accepts": {
@@ -43,6 +43,9 @@
       "artifact_side": "start",
       "artifact": { "kind": "code", "src": "examples/CastUnresolved.blk", "label": "CastUnresolved.blk", "language": "black" }
     },
+    "semantic-tooling-for-agents": { "layout": "overview" },
+    "the-protected-change-gate": { "layout": "overview" },
+    "the-uncheatable-boss": { "layout": "overview" },
     "status-and-limitations": { "layout": "resources" },
     "resources": { "layout": "resources" }
   }

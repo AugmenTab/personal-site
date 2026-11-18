@@ -242,7 +242,7 @@ published at `/resume.pdf`.
 
 | Group | Files |
 | --- | --- |
-| Pages | 8 HTML pages: `index.html`, `404.html`, `about/`, `work/`, `work/black/`, `work/brigid/`, `work/lockdown/`, `writing/` (a "Coming soon." page until an article is published) |
+| Pages | 8 HTML pages: `index.html`, `404.html`, `about/`, `work/`, `work/black/`, `work/brigid/`, `work/paranoia-engine/`, `writing/` (a "Coming soon." page until an article is published) |
 | Generated | `sitemap.xml`, `robots.txt` |
 | Assets | 26 files under `assets/`: brand, fonts and their OFL licences, images, `styles/site.css`, `scripts/work-filter.js` |
 | Media | 4 project SVGs under `media/` |

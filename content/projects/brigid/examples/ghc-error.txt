@@ -1,3 +1,8 @@
-/work/src/Site/Pages/Work.hs:241:11: error: [GHC-64725]
-    • The DescriptionTerm (<dt>) element is not a valid child for the Division (<div>) element.
-    • In the expression: E.dt [] [E.text (factLabel f)]
+Valid nesting (compiles):
+  E.ul [] [E.li [] []]
+
+Invalid nesting (rejected):
+  E.ul [] [E.div [] []]
+
+GHC diagnostic (excerpt, reproduced in the project audit):
+  The Division (<div>) element is not a valid child for the UnorderedList (<ul>) element.

@@ -170,8 +170,8 @@ metadataTests =
         case loaded of
           Left errs -> assertFailure (concatMap show errs)
           Right content -> do
-            map (slugText . projectSlug) (publishedProjects content) @?= ["black", "brigid", "lockdown"]
-            map (slugText . projectSlug) (featuredProjects content) @?= ["black", "brigid", "lockdown"]
+            map (slugText . projectSlug) (publishedProjects content) @?= ["black", "brigid", "paranoia-engine"]
+            map (slugText . projectSlug) (featuredProjects content) @?= ["black", "brigid", "paranoia-engine"]
     , testCase "a missing required field" $
         expectContentError
           [ ("content/projects/demo/project.json", projectJson "demo" [("summary", Nothing)])

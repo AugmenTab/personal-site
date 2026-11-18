@@ -1,98 +1,147 @@
 ## Overview
 
-Black is a programming language, and White is its compiler and developer
-command-line tool. White is written in Haskell and compiles Black to native
-x86-64 Linux code, by way of textual LLVM IR and Clang.
+Black is an AI-first programming language designed to be equally approachable
+to human programmers and autonomous coding agents.
 
-The language’s focus is correctness that the compiler can establish rather
-than assume. Today that means closed data types, exhaustive pattern
-matching, and integer arithmetic and conversions that White must *prove*
-fit their types before it will produce a program.
+Its premise is that AI-native development shouldn't require sacrificing
+readable, expressive code. People should still be able to write programs by
+hand, understand what agents produce, and take responsibility for the software
+they deploy.
 
-Black is an early-stage project. It is developed in phases, each ending in
-a gate of automated checks run in Docker.
+White, Black's compiler and developer toolchain, is written in Haskell. It
+compiles a working subset of Black to native x86-64 Linux code through LLVM
+and provides structured interfaces for inspecting program semantics,
+verification evidence, and the consequences of changes.
+
+The language is in active development. Its compiler, verification tools, and
+agent-driven demonstrations are operational, while much of its intended type
+system and language design remains under construction.
 
 ## Design principles
 
-These are the rules White enforces today, not aspirations for later
-versions.
-
-- **Proved, not assumed.** An integer result must provably fit its type
-  and a divisor must provably be nonzero, or the program does not compile.
-- **Closed by default.** Records and variants are closed. Every match must
-  be exhaustive, and an arm that can never run is an error.
-- **Trust no earlier stage.** The checked program is elaborated into a
-  small core language, and a validator re-derives the evidence recorded
-  before it.
-- **One canonical form.** `white fmt` rewrites source into the one
-  canonical style, and an unused binding is an error unless its name
-  starts with `_`.
-- **Explicit boundaries.** Modules declare their exports, and imports are
-  explicit, qualified or aliased. Native
-  libraries are built against a versioned boundary descriptor that the host
-  application owns.
-- **Evidence as data.** Diagnostics carry stable codes, and `white verify`
-  and the semantic queries report what was established as JSON.
+- **Human and agent authorship.** Black favors readable, declarative programs
+  and Haskell-inspired syntax. Human programmers aren't an afterthought, even
+  when an agent writes the implementation.
+- **Canonical source.** White provides a formatter that establishes one
+  accepted style. Automatic formatting as part of the complete build workflow
+  is planned.
+- **Compiler-authoritative semantics.** Agents can inspect types,
+  declarations, dependencies, and verification obligations through structured
+  compiler interfaces rather than inferring everything from source text.
+- **Explicit guarantees.** Static types, contracts, and proof obligations
+  establish what the compiler can actually verify. Unresolved obligations
+  are not treated as success.
+- **Protected requirements.** An agent authorized to modify an implementation
+  should not be able to silently weaken the requirements used to judge it.
 
 ## The compiler pipeline
 
-Each stage of White has one responsibility, and only validated Core
-reaches the back end. A failure in the front end never invokes Clang, and
-a failed build leaves any existing output untouched.
+White resolves and type-checks Black source, establishes supported arithmetic
+and contract obligations, and elaborates the result into a validated Core
+representation before emitting LLVM IR.
+
+Ordinary integer operations and exact conversions require static evidence
+that their results fit. Function contracts support a limited predicate
+language, checked through interval analysis or exhaustive enumeration of small
+finite domains.
+
+White currently produces Linux executables and native shared libraries. The
+compiler is ahead-of-time; its internal evaluator is used for verification
+and testing rather than as a public interpreter.
 
 ## A program White accepts
 
-This program is a case from White’s conformance suite, which is derived
-from the language specification. It declares a nominal record type, swaps
-its fields with a record update, and reads one back with a record pattern.
+This example from White's conformance suite defines a nominal record type,
+updates its fields, and matches the result.
 
-The suite expects White to accept it, and runs the result: given `0` or
-`200`, the program returns the same value.
+White checks the nominal identity and record operations before compiling the
+program. The conformance suite also executes the resulting native code.
 
 ## A program White rejects
 
-Also from the conformance suite. `cast` is an *exact* conversion, so it
-must be proved to fit. An `Int32` may hold values that do not fit in a
-`UInt8`, so White rejects `narrow` with the diagnostic code
-`CAST_UNPROVEN`, at line 8, column 12.
+Here, a function attempts to convert an arbitrary `Int32` into a `UInt8`.
 
-An unresolved proof is not an accepted proof. To narrow a value that might
-not fit, a program uses `tryCast`, which returns a `Result` that it must
-handle.
+White refuses the conversion because it cannot establish that every possible
+input fits the destination type. The `CAST_UNPROVEN` diagnostic identifies the
+failed obligation.
 
-## Language today
+When conversion failure is expected, `tryCast` provides an explicit,
+recoverable alternative.
 
-- Fixed-width integer types from `Int8` to `UInt64`, and `Boolean`.
-- Nominal types, closed records, and variants with payloads.
-- Exhaustive, nested pattern matching.
-- Modules with explicit exports and qualified imports.
-- Exact `cast` and checked `tryCast` conversions.
-- `requires` and `ensures` contracts on functions, established at compile
-  time for a limited fragment.
-- `white fmt` and `white lint`, and semantic snapshot, query and diff
-  commands with machine-readable output.
-- A small demonstration game whose gameplay logic is written in Black and
-  loaded by a C host.
+## Semantic tooling for agents
+
+White exposes content-addressed semantic snapshots and machine-readable
+queries over declarations, types, dependencies, contracts, and verification
+results.
+
+An agent can inspect a declaration, identify affected dependencies, compare
+revisions, and discover which existing obligations may require fresh
+verification.
+
+Structured diagnostics distinguish invalid programs, disproven properties,
+and unresolved obligations. The semantic interface can also retain
+information from compilation stages that completed before a failure.
+
+## The Protected Change Gate
+
+Black's supporting toolchain includes a prototype authorization system that
+separates permission to modify code from permission to change its
+requirements.
+
+One adversarial test weakens a protected contract from `ensures s <= 7` to
+`ensures s <= 15`.
+
+The altered program verifies against its weakened contract and produces a
+byte-for-byte identical native library. The Protected Change Gate
+nevertheless rejects it because the protected obligation has changed.
+
+The current prototype uses restricted fixture authority and operating-system
+write boundaries. It demonstrates policy-protected changes, not a general
+security guarantee against arbitrary malicious agents.
+
+## The Uncheatable Boss
+
+A playable boss encounter demonstrates the compiler and verification system
+working together.
+
+Its gameplay logic is written in Black and compiled into a native library.
+A C host provides rendering, input, replay, and controlled runtime
+replacement.
+
+An AI agent can propose changes to selected attack functions, but the
+resulting program must satisfy protected contracts and a finite survivability
+requirement across nine attack configurations and 576 admissible starting
+states per configuration.
+
+In a recorded session, an agent repaired a deliberately seeded invalid
+attack, evaluated the difficulty of its changes, and produced an authorized
+replacement. The host installed the new native generation while the game
+continued running, preserving its authoritative state.
+
+The resulting session was reproduced through deterministic replay.
 
 ## Status and limitations
 
-Black is in active development, and much of its specification is not yet
-implemented:
+Black remains an early-stage implementation.
 
-- There is no recursion, partial application, user-defined polymorphism or
-  type classes yet, and arbitrary-precision integer types are rejected.
-- Effects and handlers, and ownership and borrowing, are reserved in the
-  syntax but **not implemented**. Black makes no resource-safety claims
-  today.
-- The contract grammar is provisional.
-- White targets x86-64 Linux only.
-
-An interactive playground is planned for this page, and is not available.
+- The release-line compiler supports fixed-width integers, nominal types,
+  records, variants, exhaustive matching, modules, and limited contracts.
+- General polymorphism, higher-order functions, recursion, type classes,
+  and many common data types are not yet implemented.
+- Experimental native effect handlers exist on a separate development
+  branch. Ownership and borrowing have preliminary static checks but are
+  not supported by native compilation.
+- White's verification uses restricted analyses, not a general SMT solver
+  or proof kernel.
+- Semantic tooling and stored-evidence revalidation have known defects and
+  coverage limitations under investigation.
+- Native hot replacement is enforced by a restricted host and ABI, not by
+  language-level ownership guarantees.
+- An interactive browser playground is planned but not yet available.
 
 ## Resources
 
-- The source repository for Black and White is private.
-- [black-vim](https://github.com/AugmenTab/black-vim): syntax highlighting
-  and filetype support for Black in Vim and Neovim.
-- Both programs above are verbatim from White’s conformance suite at
-  commit `c1a45af`.
+- The Black and White source repository is currently private.
+- [black-vim](https://github.com/AugmenTab/black-vim) provides Vim and Neovim
+  syntax support.
+- The code examples are drawn from White's conformance suite.

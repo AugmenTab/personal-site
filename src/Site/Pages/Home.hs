@@ -54,7 +54,7 @@ import Site.Assets qualified as Asset
 import Site.Components (HeadingLevel (..), decorativeImage, projectCard, sectionHeading)
 import Site.Content.Types
 import Site.Page (Layout (..), Page (..), SiteConfig (..))
-import Site.Routes (Route (Home, WorkDetail, WorkIndex, WritingArticle, WritingIndex), Slug, contactId, elementId, mkSlug, routeUrl)
+import Site.Routes (Route (About, Home, WorkDetail, WorkIndex, WritingArticle, WritingIndex), Slug, contactId, elementId, mkSlug, routeUrl)
 import Site.Settings (Settings (..), contactDisplay, contactHref, contactKind, contactLabel, contacts, ownerSettings)
 
 --------------------------------------------------------------------------------
@@ -103,7 +103,7 @@ page config home =
   Page
     { pageRoute = Home
     , pageTitle = "Tyler Baum — Software Engineer"
-    , pageDescription = "Tyler Baum builds precise systems: programming languages, libraries, and tools."
+    , pageDescription = "Software engineer building programming languages, AI-assisted development tools, type-safe libraries, and deterministic simulations."
     , pageLayout = Stage
     , pageMain =
         [ stage hasSelectedWork (homeBlack home) ]
@@ -134,7 +134,7 @@ data Introduction =
 introduction :: Introduction
 introduction =
   Introduction
-    { introStatus = DraftCopy
+    { introStatus = FinalCopy
     , introRole = "Software Engineer"
     , introGivenName = "Tyler"
     , introFamilyName = "Baum"
@@ -187,19 +187,17 @@ hero hasSelectedWork =
         , E.p [ A.class_ "hero__thesis" ] [ E.text (introThesis introduction) ]
         , E.ul [ A.class_ "hero__disciplines", A.aria_label "Areas of work" ]
             (map (\d -> E.li [] [ E.text d ]) (introDisciplines introduction))
-        , -- Both targets exist: Selected Work on this page, or the Work index
-          -- when there is no Selected Work; Contact is always on this page.
-          -- (The secondary label is part of the frozen hero, so it is kept;
-          -- since Phase 05 it leads to the Contact section. Relabelling it
-          -- is left to the owner.)
+        , -- The primary action leads to Selected Work (or the Work index
+          -- when there are no featured cards). The secondary action introduces
+          -- the author on the dedicated About page.
           E.div [ A.class_ "hero__actions" ]
             [ E.a
                 [ A.class_ "button button--primary"
                 , if hasSelectedWork then A.href selectedWorkId else A.href (routeUrl WorkIndex)
                 ]
                 [ E.span [ A.class_ "button__label" ] [ E.text "Explore selected work" ] ]
-            , E.a [ A.class_ "button button--secondary", A.href contactId ]
-                [ E.span [ A.class_ "button__label" ] [ E.text "About & contact" ] ]
+            , E.a [ A.class_ "button button--secondary", A.href (routeUrl About) ]
+                [ E.span [ A.class_ "button__label" ] [ E.text "About me" ] ]
             ]
         ]
     ]
@@ -245,8 +243,8 @@ blackFeature black =
         Just p -> developmentLabel (projectDevelopment p) <> " · Playground planned"
         Nothing -> "Project page in preparation"
 
--- | The teaser's own copy. Each point is an implemented capability of the
--- compiler, verified against its repository (README "Homepage copy").
+-- | The owner-approved teaser: project philosophy plus current, audited
+-- compiler and toolchain capabilities (README "Homepage copy").
 data Teaser =
   Teaser
     { teaserStatus :: CopyStatus
@@ -257,12 +255,12 @@ data Teaser =
 blackTeaser :: Teaser
 blackTeaser =
   Teaser
-    { teaserStatus = DraftCopy
-    , teaserSummary = "A correctness-focused programming language, compiled to native code by its Haskell compiler, White."
+    { teaserStatus = FinalCopy
+    , teaserSummary = "An AI-first programming language that remains a pleasure to write by hand, with native compilation and tools for understanding and verifying what agents change."
     , teaserPoints =
-        [ "Closed types and exhaustive matching"
-        , "Integer arithmetic proved to fit its types"
-        , "Compile-time contracts, for a first fragment"
+        [ "Native compilation with checked arithmetic and limited contracts"
+        , "Semantic snapshots and structured change analysis for agents"
+        , "A prototype change gate that rejects weakened requirements"
         ]
     }
 
@@ -399,21 +397,23 @@ data Philosophy =
     , philosophyPrinciples :: [Principle]
     }
 
--- | DRAFT: proposed editorial copy, for owner review before launch.
+-- | Owner-approved editorial copy.
 philosophy :: Philosophy
 philosophy =
   Philosophy
-    { philosophyStatus = DraftCopy
+    { philosophyStatus = FinalCopy
     , philosophyLabel = "Engineering philosophy"
-    , philosophyHeading = "Correctness enables creativity."
-    , philosophyLede = "The more a tool can check for me, the further I can afford to reach. Rigour is not the opposite of ambition; it is what makes ambition affordable."
+    , philosophyHeading = "Confidence isn't evidence."
+    , philosophyLede = "A program can compile, an AI agent can sound certain, and a task can be marked complete while the important thing is still wrong. I want tools that make it easier to establish what actually happened than to take anyone's word for it."
     , philosophyPrinciples =
-        [ Principle "Make correctness practical"
-            "Guarantees only help if people keep them switched on. I want checks that run on every build, explain themselves plainly, and cost less than the bugs they prevent."
-        , Principle "Say where the guarantees end"
-            "A system should be honest about its limits. Black’s compiler rejects a conversion it cannot prove, and its documentation lists what it does not yet claim."
-        , Principle "Keep judgement human"
-            "I use AI to explore and write code. What ships is still decided by people, and confirmed by tests, types and proofs that give the same answer every time."
+        [ Principle "Put the checks in the system."
+            "If a type checker, contract, or automated test can enforce a rule, it shouldn't depend on someone remembering it during review. The more routine failures the machinery can catch, the more attention is left for the difficult parts."
+        , Principle "Define what finished means."
+            "There isn't one universal completion gate. A compiler might need a proof, an engine might need a reproducible replay, and a product might need someone to actually use it. Decide what evidence counts for the work at hand, and make that evidence inspectable."
+        , Principle "Give agents responsibility with boundaries."
+            "I want AI agents to take on substantial engineering work, not just suggest the next few lines. That means giving them room to act, reliable ways to check their results, and constraints they cannot quietly redefine."
+        , Principle "Choose tools on merit, not familiarity."
+            "A language doesn't need to be popular to be the right choice. Sometimes the best tool for a problem is Haskell, Mercury, or something most engineers have never heard of. I'm happy to take the time to learn an unfamiliar tool if it offers a real advantage. Being unusual isn't a virtue on its own, but neither is being conventional."
         ]
     }
 
@@ -468,7 +468,7 @@ writingPreview articles =
         ]
 
 --------------------------------------------------------------------------------
--- Contact (target of the navigation's Contact link and the secondary CTA)
+-- Contact (target of the navigation's Contact link)
 
 -- | The Contact section's own copy.
 data ContactCopy =
@@ -477,11 +477,11 @@ data ContactCopy =
     , contactInvitation :: T.Text
     }
 
--- | DRAFT: a short invitation, for the owner's content pass.
+-- | Owner-approved contact invitation.
 contactCopy :: ContactCopy
 contactCopy =
   ContactCopy
-    { contactStatus = DraftCopy
+    { contactStatus = FinalCopy
     , contactInvitation = "Questions about a project, or an idea worth building? I’d be glad to hear from you."
     }
 

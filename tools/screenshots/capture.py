@@ -36,7 +36,7 @@ PAGES = {
     "work": "/work/",
     "project-black": "/work/black/",
     "project-brigid": "/work/brigid/",
-    "project-lockdown": "/work/lockdown/",
+    "project-paranoia-engine": "/work/paranoia-engine/",
     "about": "/about/",
     "404": "/404.html",
     "404-deep": "/no/such/page/",
@@ -168,7 +168,10 @@ def crawl(browser, failures):
             if kind == "a":
                 if fragment:
                     fragments.append((url, target, fragment))
-                queue.append(target)
+                # A PDF (the résumé) downloads rather than rendering, so
+                # navigating to it aborts; its status is checked above.
+                if not urlparse(target).path.endswith(".pdf"):
+                    queue.append(target)
     for source, target, fragment in fragments:
         if fragment not in ids.get(target, set()):
             problems.append(f"{source}: #{fragment} not found on {target}")
@@ -199,7 +202,7 @@ def no_js_walk(browser, failures):
         ("About: get in touch", ".about__onward a", "/#contact"),
         ("monogram", ".site-nav__mark", "/"),
         ("hero CTA", ".hero__actions .button--primary", "/#selected-work"),
-        ("hero secondary CTA", ".hero__actions .button--secondary", "/#contact"),
+        ("hero secondary CTA", ".hero__actions .button--secondary", "/about/"),
         ("nav Contact", ".site-nav >> text=Contact", "/#contact"),
         ("footer Work", ".site-footer__nav >> text=Work", "/work/"),
         ("footer About", ".site-footer__nav >> text=About", "/about/"),

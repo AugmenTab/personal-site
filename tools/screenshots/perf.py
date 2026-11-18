@@ -48,7 +48,7 @@ PAGES = {
     "work": "/work/",
     "black": "/work/black/",
     "brigid": "/work/brigid/",
-    "lockdown": "/work/lockdown/",
+    "paranoia-engine": "/work/paranoia-engine/",
     "about": "/about/",
     "404": "/404.html",
 }

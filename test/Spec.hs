@@ -70,7 +70,7 @@ brigidRoute :: Route
 brigidRoute = WorkDetail (slug "brigid")
 
 allRoutes :: [Route]
-allRoutes = [Home, WorkIndex, WorkDetail (slug "black"), brigidRoute, WorkDetail (slug "lockdown"), WritingIndex, About, NotFound]
+allRoutes = [Home, WorkIndex, WorkDetail (slug "black"), brigidRoute, WorkDetail (slug "paranoia-engine"), WritingIndex, About, NotFound]
 
 pageFor :: Route -> Page
 pageFor route =
@@ -109,9 +109,9 @@ routeTests :: TestTree
 routeTests =
   testGroup "routes"
     [ testCase "route URLs and output files" $ do
-        map routePath allRoutes @?= ["/", "/work/", "/work/black/", "/work/brigid/", "/work/lockdown/", "/writing/", "/about/", "/404.html"]
+        map routePath allRoutes @?= ["/", "/work/", "/work/black/", "/work/brigid/", "/work/paranoia-engine/", "/writing/", "/about/", "/404.html"]
         map outputOf allRoutes
-          @?= ["index.html", "work/index.html", "work/black/index.html", "work/brigid/index.html", "work/lockdown/index.html", "writing/index.html", "about/index.html", "404.html"]
+          @?= ["index.html", "work/index.html", "work/black/index.html", "work/brigid/index.html", "work/paranoia-engine/index.html", "writing/index.html", "about/index.html", "404.html"]
     , testCase "the site defines exactly the required routes" $
         sort (map pageRoute (sitePages theSite)) @?= sort allRoutes
     , testCase "valid slugs are accepted unchanged" $
@@ -157,7 +157,7 @@ manifestTests =
             -- Card art and artifacts; hero art is checked by DossierTests
             -- (it arrives per project as the owner approves it).
             filter (not . T.isInfixOf "/hero.") (map (T.pack . outputText) [ p | (_, p) <- manifestMedia m ])
-              @?= ["media/projects/black/card.svg", "media/projects/black/pipeline.svg", "media/projects/brigid/card.svg", "media/projects/lockdown/card.svg", "resume.pdf"]
+              @?= ["media/projects/black/card.svg", "media/projects/black/pipeline.svg", "media/projects/brigid/card.svg", "media/projects/paranoia-engine/card.svg", "resume.pdf"]
     , testCase "two pages with the same route are rejected" $
         assertCollision (mkManifest [Home, About, Home] [] [])
     , testCase "two project pages with the same slug are rejected" $
@@ -241,13 +241,13 @@ renderTests =
           count "aria-current=\"page\"" header @?= length current
           forM_ current $ \label ->
             assertBool (show r <> " current " <> T.unpack label) (("aria-current=\"page\">" <> label <> "</a>") `T.isInfixOf` header)
-    , testCase "the homepage keeps its approved major sections and same-page CTAs" $ do
+    , testCase "the homepage keeps its approved major sections and hero CTAs" $ do
         let html = htmlOf Home
         forM_ [ "class=\"stage\"", "class=\"stage__art\"", "hero-plate-centre.webp", "hero-plate-left.webp", "hero-plate-right.webp"
               , "class=\"hero__divider\"", "id=\"top\"", "id=\"black\"", "class=\"feature__code\"", "id=\"selected-work\""
               , "class=\"project-card\"", "id=\"philosophy\"", "id=\"contact\"" ] $ \frag ->
           assertBool (T.unpack frag) (frag `T.isInfixOf` html)
-        forM_ ["href=\"#selected-work\"", "class=\"button button--secondary\" href=\"#contact\""] $ \frag ->
+        forM_ ["href=\"#selected-work\"", "class=\"button button--secondary\" href=\"/about/\""] $ \frag ->
           assertBool (T.unpack frag) (frag `T.isInfixOf` html)
         -- About is its own page now (Phase 05): no About section here
         assertBool "no #about" (not ("id=\"about\"" `T.isInfixOf` html))

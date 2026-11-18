@@ -175,7 +175,7 @@ def work_index_checks(browser, base, ready, failures):
             failures.append(f"work search {label}: empty message shown={state['empty']}, expected {empty}")
         return state
 
-    expect("initial", ["Black", "Brigid", "Lockdown"], "3 projects")
+    expect("initial", ["Black", "Brigid", "Paranoia Engine"], "3 projects")
     page.fill("#work-search", "haskell")
     expect("technology 'haskell'", ["Black", "Brigid"], "2 of 3 projects")
     page.locator("#work-search").scroll_into_view_if_needed()
@@ -183,13 +183,13 @@ def work_index_checks(browser, base, ready, failures):
     shot(page, "work/work-search-haskell.png", full_page=False)
     page.fill("#work-search", "  TYPE   systems  ")
     expect("topic with case and whitespace", ["Black", "Brigid"], "2 of 3 projects")
-    page.fill("#work-search", "replayable")
-    expect("description word", ["Lockdown"], "1 of 3 projects")
+    page.fill("#work-search", "reproducible")
+    expect("description word", ["Paranoia Engine"], "1 of 3 projects")
     page.fill("#work-search", "brigid")
     expect("name", ["Brigid"], "1 of 3 projects")
     page.fill("#work-search", "")
     page.click(".work-filter__chip[data-category='simulation-games']")
-    state = expect("category chip", ["Lockdown"], "1 of 3 projects")
+    state = expect("category chip", ["Paranoia Engine"], "1 of 3 projects")
     if state["pressed"] != ["Simulation & Games"]:
         failures.append(f"work: pressed chips {state['pressed']}")
     shot(page, "work/work-filter-category.png", full_page=False)
@@ -200,12 +200,12 @@ def work_index_checks(browser, base, ready, failures):
     expect("no results", [], "0 of 3 projects", empty=True)
     shot(page, "work/work-no-results.png", full_page=False)
     page.click(".work-filter__reset")
-    state = expect("reset", ["Black", "Brigid", "Lockdown"], "3 projects")
+    state = expect("reset", ["Black", "Brigid", "Paranoia Engine"], "3 projects")
     if state["pressed"] != ["All"] or state["active"] != "work-search" or page.input_value("#work-search") != "":
         failures.append(f"work reset: {state}")
     page.click(".work-filter__chip[data-category='programming-languages']")
     page.click(".work-filter__chip[data-category='']")
-    expect("back to All", ["Black", "Brigid", "Lockdown"], "3 projects")
+    expect("back to All", ["Black", "Brigid", "Paranoia Engine"], "3 projects")
 
     # Keyboard: Tab from the search field to the chips; Space selects.
     page.focus("#work-search")
@@ -220,10 +220,10 @@ def work_index_checks(browser, base, ready, failures):
     steps["keyboardFocus"] = ring
     page.keyboard.press("Shift+Tab")
     page.keyboard.press("Enter")   # All
-    expect("keyboard All", ["Black", "Brigid", "Lockdown"], "3 projects")
+    expect("keyboard All", ["Black", "Brigid", "Paranoia Engine"], "3 projects")
 
     # Focus guard: a focused card that the filter hides hands focus back.
-    page.focus(".project-card__link[href='/work/lockdown/']")
+    page.focus(".project-card__link[href='/work/paranoia-engine/']")
     page.evaluate("() => { const i = document.getElementById('work-search'); i.value = 'brigid'; i.dispatchEvent(new Event('input')); }")
     state = expect("focus guard", ["Brigid"], "1 of 3 projects")
     if state["active"] != "work-search":
@@ -262,7 +262,7 @@ def work_index_checks(browser, base, ready, failures):
 
 def project_nav_checks(browser, base, failures):
     report = {}
-    for slug in ("black", "brigid", "lockdown"):
+    for slug in ("black", "brigid", "paranoia-engine"):
         path = f"/work/{slug}/"
         for vp_name in ("desktop", "tablet", "mobile", "narrow"):
             viewport = VIEWPORTS[vp_name]
@@ -308,7 +308,7 @@ def project_nav_checks(browser, base, failures):
             else:
                 if info["details"] or not info["sections"] or not info["tab"] or info["position"] != "sticky":
                     failures.append(f"{label}: desktop sidebar expected {info}")
-                if slug in ("black", "brigid", "lockdown"):
+                if slug in ("black", "brigid", "paranoia-engine"):
                     shot(page, f"project/{slug}-desktop-first-view.png", full_page=False)
             if info["overflow"]:
                 failures.append(f"{label}: horizontal overflow")
@@ -321,7 +321,7 @@ def contact_checks(browser, base, failures):
     report = {}
     # From a project page: the global Contact link lands on the homepage section.
     page = browser.new_page(viewport=VIEWPORTS["desktop"], device_scale_factor=1)
-    page.goto(urljoin(base, "/work/lockdown/"), wait_until="networkidle")
+    page.goto(urljoin(base, "/work/paranoia-engine/"), wait_until="networkidle")
     page.click(".site-nav a[href='/#contact']")
     page.wait_for_load_state("networkidle")
     stable.scroll_settled(page)   # smooth scrolling settles (was a 900 ms sleep)
@@ -349,7 +349,7 @@ def contact_checks(browser, base, failures):
         page.evaluate(INSTANT)
         controls = page.evaluate("() => [...document.querySelectorAll('#contact a')].map(a => a.getAttribute('href'))")
         report[f"controls/{vp_name}"] = controls
-        if controls != ["https://github.com/AugmenTab"]:
+        if controls != ["https://github.com/AugmenTab", "https://www.linkedin.com/in/thebaum/", "mailto:tyler.baum@protonmail.com"]:
             failures.append(f"contact/{vp_name}: controls {controls}")
         # Update 1: icon and label side by side; no visible URL.
         cards = page.evaluate("""() => [...document.querySelectorAll('#contact .contact__link')].map(a => {
@@ -362,7 +362,7 @@ def contact_checks(browser, base, failures):
                      inside: i.left >= box.left && l.right <= box.right, width: Math.round(box.width), height: Math.round(box.height) }; })""")
         report[f"cards/{vp_name}"] = cards
         for card in cards:
-            if "github.com" in card["label"] or not (card["iconVisible"] and card["iconBeforeLabel"] and card["centred"] and card["inside"]):
+            if any(host in card["label"] for host in ("github.com", "linkedin.com", "@")) or not (card["iconVisible"] and card["iconBeforeLabel"] and card["centred"] and card["inside"]):
                 failures.append(f"contact/{vp_name}: card layout {card}")
         page.locator("#contact").scroll_into_view_if_needed()
         element_shot(page, "#contact", f"contact/home-contact-{vp_name}.png")

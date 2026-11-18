@@ -131,7 +131,7 @@ taxonomyTests =
         [ (slugText (projectSlug p), projectCategory p, projectTopics p, projectTechnologies p) | p <- publishedProjects content ]
           @?= [ ("black", ProgrammingLanguages, [TypeSystems, CompilerEngineering, FormalVerification], ["Haskell", "LLVM IR"])
               , ("brigid", LibrariesTooling, [TypeSystems, WebDevelopment], ["Haskell", "HTML"])
-              , ("lockdown", SimulationGames, [DeterministicSimulation, GameEngines], ["Rust", "Bevy"])
+              , ("paranoia-engine", SimulationGames, [AIAgents, DeterministicSimulation, GameEngines], ["Rust", "Bevy"])
               ]
     , testCase "ids and labels are unique, and ids round-trip" $ do
         let unique xs = length xs == length (sort xs) && and (zipWith (/=) (sort xs) (drop 1 (sort xs)))
@@ -190,9 +190,13 @@ workIndexTests =
         let html = render s WorkIndex
             list = between "<ul class=\"work__list work__list--index\" id=\"work-list\">" "</ul></section>" html
         attributeValues "data-category" list @?= ["programming-languages", "libraries-tooling", "simulation-games"]
-        [ T.takeWhile (/= ' ') t | t <- attributeValues "data-search" list ] @?= ["black", "brigid", "lockdown"]
+        -- each item's search text starts with its lowercased title
+        let titles = ["black", "brigid", "paranoia engine"]
+        length (attributeValues "data-search" list) @?= length titles
+        forM_ (zip titles (attributeValues "data-search" list)) $ \(title, t) ->
+          assertBool (T.unpack t) ((title <> " ") `T.isPrefixOf` t)
         let brigid = attributeValues "data-search" list !! 1
-        forM_ ["brigid", "spec-compliant html", "libraries &#38; tooling", "haskell", "type systems", "web development"] $ \needle ->
+        forM_ ["brigid", "type-safe html", "libraries &#38; tooling", "haskell", "type systems", "web development"] $ \needle ->
           assertBool (T.unpack needle) (needle `T.isInfixOf` brigid)
         assertBool "lowercase" (T.toLower brigid == brigid)
         assertBool "single spaces" (not ("  " `T.isInfixOf` brigid))
@@ -290,11 +294,10 @@ navigationTests =
         assertBool "no github in the profile" (not ("github.com" `T.isInfixOf` main))
         attributeValues "href" main @?= ["/#contact"]
         assertBool "emblem" ("about-tree.webp" `T.isInfixOf` main)
-        About.profileStatus About.profile @?= Home.DraftCopy
-        forM_ (About.profileSections About.profile) $ \sec ->
-          assertBool (T.unpack (About.profileSectionHeading sec)) (("id=\"" <> About.profileSectionId sec <> "\"") `T.isInfixOf` main)
-        -- the areas of focus are the homepage's disciplines
-        forM_ (Home.introDisciplines Home.introduction) $ \d -> assertBool (T.unpack d) (("<li>" <> d <> "</li>") `T.isInfixOf` main)
+        About.profileStatus About.profile @?= Home.FinalCopy
+        assertBool "approved personal lede" ("I've never had much success keeping my interests in separate boxes." `T.isInfixOf` main)
+        assertBool "three prose paragraphs" (count "class=\"about__bio\"" main == 3)
+        assertBool "no old portfolio-in-progress note" (not ("This site is a portfolio in progress." `T.isInfixOf` main))
     ]
 
 --------------------------------------------------------------------------------
@@ -395,7 +398,7 @@ projectNavTests =
           assertBool "All projects" ("class=\"project-nav__back\" href=\"/work/\"" `T.isInfixOf` html)
     , testCase "hero-less dossiers open with the header and go straight to the content" $ do
         s <- realSite
-        forM_ ["black", "brigid", "lockdown"] $ \slug -> do
+        forM_ ["black", "brigid", "paranoia-engine"] $ \slug -> do
           let html = render s (WorkDetail (slugOf (T.pack slug)))
           assertBool slug ("</nav><div class=\"project__body\"><" `T.isInfixOf` html)
           assertBool (slug <> ": no showcase figure") (not ("project__showcase" `T.isInfixOf` html))
@@ -431,7 +434,7 @@ footerTests =
           let footer = footerOf (render s r)
           if r == Home
             then assertBool "home: no contact column" (not ("site-footer__contact" `T.isInfixOf` footer))
-            else attributeValues "href" (between "site-footer__contact" "</ul>" footer) @?= ["https://github.com/AugmenTab"]
+            else attributeValues "href" (between "site-footer__contact" "</ul>" footer) @?= ["https://github.com/AugmenTab", "https://www.linkedin.com/in/thebaum/", "mailto:tyler.baum@protonmail.com"]
         -- each destination is one control within the homepage's Contact section
         count "https://github.com/AugmenTab" (render s Home) @?= 1
     , testCase "optional destinations appear only when configured" $
@@ -446,10 +449,10 @@ footerTests =
 settingsTests :: TestTree
 settingsTests =
   testGroup "settings"
-    [ testCase "the real settings are valid: production origin, GitHub only" $ do
+    [ testCase "the real settings are valid: production origin and verified contacts" $ do
         settingsProblems ownerSettings @?= []
         settingsOrigin ownerSettings @?= "https://tylerbaum.dev"
-        settingsContacts ownerSettings @?= [GitHub "AugmenTab"]
+        settingsContacts ownerSettings @?= [GitHub "AugmenTab", LinkedIn "thebaum", Email "tyler.baum@protonmail.com"]
     , testCase "malformed origins, years and contacts are reported" $ do
         let with f = settingsProblems (f ownerSettings)
             bad label problems = assertBool (label <> ": " <> show problems) (not (null problems))
@@ -487,12 +490,12 @@ settingsTests =
     , testCase "contact cards show an icon and the label, never the URL (Phase 05 update 1)" $ do
         s <- realSite
         let section = between "id=\"contact\"" "</section>" (render s Home)
-            visible = T.concat [ fst (T.breakOn "<" t) | t <- drop 1 (T.splitOn ">" (T.replace "<span class=\"visually-hidden\">: github.com/AugmenTab</span>" "" section)) ]
+            visible = T.concat [ fst (T.breakOn "<" t) | t <- drop 1 (T.splitOn ">" (foldr (\(from, to) acc -> T.replace from to acc) section [ ("<span class=\"visually-hidden\">: github.com/AugmenTab</span>", ""), ("<span class=\"visually-hidden\">: linkedin.com/in/thebaum</span>", ""), ("<span class=\"visually-hidden\">: tyler.baum@protonmail.com</span>", "") ])) ]
         assertBool "card" ("<a class=\"contact__link\" href=\"https://github.com/AugmenTab\"><span class=\"contact__icon contact__icon--github\" aria-hidden=\"true\"></span><span class=\"contact__label\">GitHub</span><span class=\"visually-hidden\">: github.com/AugmenTab</span></a>" `T.isInfixOf` section)
-        assertBool ("no visible URL in: " <> T.unpack visible) (not ("github.com" `T.isInfixOf` visible))
+        assertBool ("no visible URL in: " <> T.unpack visible) (not (any (`T.isInfixOf` visible) ["github.com", "linkedin.com", "protonmail.com"]))
         assertBool "no display span" (not ("contact__display" `T.isInfixOf` section))
         -- the icon is decorative and the card is the only control
-        count "<a " section @?= 1
+        count "<a " section @?= 3
         count "<img" section @?= 0
     , testCase "every contact icon is a listed asset referenced by the stylesheet" $ do
         css <- TE.decodeUtf8 <$> BS.readFile "assets/styles/site.css"
@@ -553,7 +556,7 @@ discoveryTests =
     [ testCase "the real sitemap lists every page but the 404, sorted by path" $ do
         s <- realSite
         let sitemap = contentsOf s "sitemap.xml"
-        urls sitemap @?= map ("https://tylerbaum.dev" <>) ["/", "/about/", "/work/", "/work/black/", "/work/brigid/", "/work/lockdown/", "/writing/"]
+        urls sitemap @?= map ("https://tylerbaum.dev" <>) ["/", "/about/", "/work/", "/work/black/", "/work/brigid/", "/work/paranoia-engine/", "/writing/"]
         assertBool "xml declaration" ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" `T.isPrefixOf` sitemap)
         assertBool "namespace" ("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">" `T.isInfixOf` sitemap)
         assertBool "no 404" (not ("404" `T.isInfixOf` sitemap))

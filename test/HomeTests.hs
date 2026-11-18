@@ -145,26 +145,32 @@ realSiteTests =
         content <- loadFixture "."
         let home = homeContent content
         fmap (slugText . projectSlug) (homeBlack home) @?= Just "black"
-        map (slugText . projectSlug) (homeSelected home) @?= ["brigid", "lockdown"]
-        map (slugText . projectSlug) (featuredProjects content) @?= ["black", "brigid", "lockdown"]
+        map (slugText . projectSlug) (homeSelected home) @?= ["brigid", "paranoia-engine"]
+        map (slugText . projectSlug) (featuredProjects content) @?= ["black", "brigid", "paranoia-engine"]
     , testCase "the homepage renders the cards in featured order, linking to generated pages" $ do
         s <- realSite
         let html = render s Home
             routes = map pageRoute (sitePages s)
-        cardHrefs html @?= ["/work/brigid/", "/work/lockdown/"]
+        cardHrefs html @?= ["/work/brigid/", "/work/paranoia-engine/"]
         forM_ (cardHrefs html) $ \href ->
           assertBool (T.unpack href) (href `elem` map routePath routes)
+    , testCase "the secondary hero CTA introduces the author" $ do
+        s <- realSite
+        let hero = sectionOf "top" (render s Home)
+        assertBool "About destination" ("class=\"button button--secondary\" href=\"/about/\"" `T.isInfixOf` hero)
+        assertBool "About label" ("About me" `T.isInfixOf` textOf hero)
+        assertBool "no obsolete About and Contact label" (not ("About & contact" `T.isInfixOf` textOf hero))
     , testCase "the Black teaser links to the published Black page" $ do
         s <- realSite
         let teaser = sectionOf "black" (render s Home)
         attributeValues "href" teaser @?= ["/work/black/"]
         assertBool "status from the record" ("In development · Playground planned" `T.isInfixOf` teaser)
     , testCase "contact links are the verified destinations only, each one control" $ do
-        map contactHref (contacts ownerSettings) @?= ["https://github.com/AugmenTab"]
+        map contactHref (contacts ownerSettings) @?= ["https://github.com/AugmenTab", "https://www.linkedin.com/in/thebaum/", "mailto:tyler.baum@protonmail.com"]
         s <- realSite
         let contact = sectionOf "contact" (render s Home)
-        attributeValues "href" contact @?= ["https://github.com/AugmenTab"]
-        forM_ ["mailto:", "linkedin", "résumé", "resume", ".pdf", "/about/"] $ \frag ->
+        attributeValues "href" contact @?= ["https://github.com/AugmenTab", "https://www.linkedin.com/in/thebaum/", "mailto:tyler.baum@protonmail.com"]
+        forM_ ["résumé", "resume", ".pdf", "/about/"] $ \frag ->
           assertBool (T.unpack frag) (not (frag `T.isInfixOf` T.toLower contact))
     , testCase "the real site has no Writing preview (the nav still links to Writing)" $ do
         s <- realSite
@@ -318,11 +324,15 @@ structureTests =
         count "class=\"philosophy__principle\"" section @?= length (philosophyPrinciples philosophy)
         assertBool "three to five principles" (length (philosophyPrinciples philosophy) `elem` [3 .. 5])
         assertBool "no imagery" (not ("<img" `T.isInfixOf` section))
-    , testCase "draft copy is marked for owner review" $ do
-        philosophyStatus philosophy @?= DraftCopy
-        teaserStatus blackTeaser @?= DraftCopy
-        introStatus introduction @?= DraftCopy
-        contactStatus contactCopy @?= DraftCopy
+    , testCase "approved and draft copy statuses are tracked" $ do
+        s <- realSite
+        let section = sectionOf "philosophy" (render s Home)
+        philosophyStatus philosophy @?= FinalCopy
+        length (philosophyPrinciples philosophy) @?= 4
+        assertBool "approved philosophy heading" ("Confidence isn't evidence." `T.isInfixOf` section)
+        teaserStatus blackTeaser @?= FinalCopy
+        introStatus introduction @?= FinalCopy
+        contactStatus contactCopy @?= FinalCopy
     , testCase "the homepage has a Contact section, not an About section, and no tree emblem" $ do
         s <- realSite
         let html = render s Home

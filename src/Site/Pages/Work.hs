@@ -59,13 +59,13 @@ indexPage config projects =
   Page
     { pageRoute = WorkIndex
     , pageTitle = sectionTitle config "Work"
-    , pageDescription = "Libraries, languages and tools by Tyler Baum."
+    , pageDescription = "Programming languages, developer tools, libraries, and simulation projects by Tyler Baum."
     , pageLayout = Interior
     , pageMain =
         [ E.section [ A.class_ "work work--index", A.aria_labelledby (NEL.singleton titleId) ]
             ( [ pageHeading [] titleId "Work"
               , E.p [ A.class_ "page-lede" ]
-                  [ E.text "Libraries, languages and tools I have built or am building." ]
+                  [ E.text "Programming languages, developer tools, simulations, and other things I've been building." ]
               ]
                 <> ( if null projects
                        then []

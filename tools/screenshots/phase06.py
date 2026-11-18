@@ -36,7 +36,7 @@ PAGES = {
     "work": "/work/",
     "black": "/work/black/",
     "brigid": "/work/brigid/",
-    "lockdown": "/work/lockdown/",
+    "paranoia-engine": "/work/paranoia-engine/",
     "about": "/about/",
     "404": "/404.html",
 }
@@ -601,7 +601,7 @@ STABLE_SHOTS = [
     ("black", "/work/black/", "desktop", None),
     ("black", "/work/black/", "mobile", None),
     ("brigid", "/work/brigid/", "desktop", None),
-    ("lockdown", "/work/lockdown/", "desktop", None),
+    ("paranoia-engine", "/work/paranoia-engine/", "desktop", None),
     ("about", "/about/", "desktop", ".about__body"),
     ("about", "/about/", "mobile", ".about__body"),
     ("contact", "/", "desktop", "#contact"),
