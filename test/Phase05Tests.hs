@@ -290,11 +290,10 @@ navigationTests =
         assertBool "no github in the profile" (not ("github.com" `T.isInfixOf` main))
         attributeValues "href" main @?= ["/#contact"]
         assertBool "emblem" ("about-tree.webp" `T.isInfixOf` main)
-        About.profileStatus About.profile @?= Home.DraftCopy
-        forM_ (About.profileSections About.profile) $ \sec ->
-          assertBool (T.unpack (About.profileSectionHeading sec)) (("id=\"" <> About.profileSectionId sec <> "\"") `T.isInfixOf` main)
-        -- the areas of focus are the homepage's disciplines
-        forM_ (Home.introDisciplines Home.introduction) $ \d -> assertBool (T.unpack d) (("<li>" <> d <> "</li>") `T.isInfixOf` main)
+        About.profileStatus About.profile @?= Home.FinalCopy
+        assertBool "approved personal lede" ("I've never had much success keeping my interests in separate boxes." `T.isInfixOf` main)
+        assertBool "three prose paragraphs" (count "class=\"about__bio\"" main == 3)
+        assertBool "no old portfolio-in-progress note" (not ("This site is a portfolio in progress." `T.isInfixOf` main))
     ]
 
 --------------------------------------------------------------------------------
