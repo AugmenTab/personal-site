@@ -67,6 +67,8 @@ ownerSettings =
     , settingsCopyrightYears = "2026"
     , settingsContacts =
         [ GitHub "AugmenTab"
+        , LinkedIn "thebaum"
+        , Email "tyler.baum@protonmail.com"
         ]
     }
 
