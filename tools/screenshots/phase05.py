@@ -329,7 +329,11 @@ def contact_checks(browser, base, failures):
         page.click(".site-nav a[href='#contact']")
         stable.scroll_settled(page)   # smooth scrolling settles (was a 900 ms sleep)
         state = page.evaluate("""() => { const r = document.getElementById('contact').getBoundingClientRect();
-            const fixed = [...document.querySelectorAll('body *')].filter(e => ['fixed', 'sticky'].includes(getComputedStyle(e).position) && e.getBoundingClientRect().height > 0)
+            // fixed or sticky UI that actually covers the section (a project
+            // page's sticky sidebar sits beside the footer, not over it)
+            const fixed = [...document.querySelectorAll('body *')].filter(e => ['fixed', 'sticky'].includes(getComputedStyle(e).position))
+              .filter(e => { const b = e.getBoundingClientRect();
+                return b.height > 0 && b.left < r.right && r.left < b.right && b.top < Math.min(r.bottom, innerHeight) && r.top < b.bottom; })
               .map(e => e.className);
             return { kept: window.__phase05 === 'kept', path: location.pathname, hash: location.hash, top: Math.round(r.top),
                      inView: r.top >= 0 && r.top < innerHeight, inFooter: !!document.getElementById('contact').closest('footer'),
