@@ -70,7 +70,7 @@ brigidRoute :: Route
 brigidRoute = WorkDetail (slug "brigid")
 
 allRoutes :: [Route]
-allRoutes = [Home, WorkIndex, WorkDetail (slug "black"), brigidRoute, WorkDetail (slug "lockdown"), WritingIndex, About, NotFound]
+allRoutes = [Home, WorkIndex, WorkDetail (slug "black"), brigidRoute, WorkDetail (slug "paranoia-engine"), WritingIndex, About, NotFound]
 
 pageFor :: Route -> Page
 pageFor route =
@@ -109,7 +109,7 @@ routeTests :: TestTree
 routeTests =
   testGroup "routes"
     [ testCase "route URLs and output files" $ do
-        map routePath allRoutes @?= ["/", "/work/", "/work/black/", "/work/brigid/", "/work/lockdown/", "/writing/", "/about/", "/404.html"]
+        map routePath allRoutes @?= ["/", "/work/", "/work/black/", "/work/brigid/", "/work/paranoia-engine/", "/writing/", "/about/", "/404.html"]
         map outputOf allRoutes
           @?= ["index.html", "work/index.html", "work/black/index.html", "work/brigid/index.html", "work/lockdown/index.html", "writing/index.html", "about/index.html", "404.html"]
     , testCase "the site defines exactly the required routes" $
@@ -157,7 +157,7 @@ manifestTests =
             -- Card art and artifacts; hero art is checked by DossierTests
             -- (it arrives per project as the owner approves it).
             filter (not . T.isInfixOf "/hero.") (map (T.pack . outputText) [ p | (_, p) <- manifestMedia m ])
-              @?= ["media/projects/black/card.svg", "media/projects/black/pipeline.svg", "media/projects/brigid/card.svg", "media/projects/lockdown/card.svg", "resume.pdf"]
+              @?= ["media/projects/black/card.svg", "media/projects/black/pipeline.svg", "media/projects/brigid/card.svg", "media/projects/paranoia-engine/card.svg", "resume.pdf"]
     , testCase "two pages with the same route are rejected" $
         assertCollision (mkManifest [Home, About, Home] [] [])
     , testCase "two project pages with the same slug are rejected" $
