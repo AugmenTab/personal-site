@@ -1,7 +1,7 @@
 {
   "slug": "black",
   "title": "Black",
-  "summary": "A correctness-focused programming language whose compiler proves, before a program runs, that its integer arithmetic and conversions fit their types.",
+  "summary": "Black is an AI-first programming language designed to be equally approachable to human programmers and autonomous coding agents.",
   "category": "programming-languages",
   "topics": ["type-systems", "compiler-engineering", "formal-verification"],
   "development_status": "in_development",
@@ -43,6 +43,9 @@
       "artifact_side": "start",
       "artifact": { "kind": "code", "src": "examples/CastUnresolved.blk", "label": "CastUnresolved.blk", "language": "black" }
     },
+    "semantic-tooling-for-agents": { "layout": "overview" },
+    "the-protected-change-gate": { "layout": "overview" },
+    "the-uncheatable-boss": { "layout": "overview" },
     "status-and-limitations": { "layout": "resources" },
     "resources": { "layout": "resources" }
   }
