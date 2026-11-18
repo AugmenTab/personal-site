@@ -72,7 +72,7 @@
   <g font-family="'EB Garamond', Garamond, Georgia, 'Times New Roman', serif" font-size="19" fill="#E7E2D2">
     <g>
       <text x="58" y="210">Parse</text>
-      <text x="58" y="246">Canonical format</text>
+      <text x="58" y="246">Resolve imports</text>
       <text x="58" y="282">Resolve names</text>
       <text x="58" y="318">Unused bindings</text>
       <text x="58" y="354">Types and</text>
