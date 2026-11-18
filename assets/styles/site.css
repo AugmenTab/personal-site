@@ -1114,51 +1114,6 @@ ul {
   line-height: 1.45;
 }
 
-.about__note {
-  margin-top: var(--space-2);
-  color: var(--text-faint);
-  font-style: italic;
-}
-
-.about__subhead {
-  margin-top: var(--space-4);
-  font-family: var(--font-display);
-  font-size: var(--step--1);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-  color: var(--text-gold);
-  scroll-margin-top: 1rem;
-}
-
-/* The profile's short lists (areas of focus): small capitals between
-   diamonds, wrapping as a row */
-.about__list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem 1.5rem;
-  margin-top: var(--space-2);
-  font-family: var(--font-display);
-  font-size: var(--step--2);
-  letter-spacing: var(--tracking-caps);
-  text-transform: uppercase;
-  color: var(--text-gold);
-}
-
-.about__list li {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.about__list li::before {
-  content: "";
-  flex: none;
-  width: 5px;
-  height: 5px;
-  border: 1px solid var(--gold);
-  transform: rotate(45deg);
-}
-
 .about__onward {
   margin-top: var(--space-3);
 }
@@ -1388,10 +1343,6 @@ ul {
   .about__text {
     padding-left: 0;
     border-left: 0;
-  }
-
-  .about__list {
-    justify-content: center;
   }
 
   /* Four disciplines in a balanced 2x2 grid instead of a ragged wrap */
@@ -1869,6 +1820,10 @@ ul {
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
   color: var(--text-gold);
+  /* A single tracked capital word ("COUNTERFACTUALS") can be wider than a
+     320px column once the rule beside it takes its share; break such a word
+     rather than overflow the page. Words that fit are never broken. */
+  overflow-wrap: anywhere;
 }
 
 .project__section-title::after {

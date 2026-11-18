@@ -241,13 +241,13 @@ renderTests =
           count "aria-current=\"page\"" header @?= length current
           forM_ current $ \label ->
             assertBool (show r <> " current " <> T.unpack label) (("aria-current=\"page\">" <> label <> "</a>") `T.isInfixOf` header)
-    , testCase "the homepage keeps its approved major sections and same-page CTAs" $ do
+    , testCase "the homepage keeps its approved major sections and hero CTAs" $ do
         let html = htmlOf Home
         forM_ [ "class=\"stage\"", "class=\"stage__art\"", "hero-plate-centre.webp", "hero-plate-left.webp", "hero-plate-right.webp"
               , "class=\"hero__divider\"", "id=\"top\"", "id=\"black\"", "class=\"feature__code\"", "id=\"selected-work\""
               , "class=\"project-card\"", "id=\"philosophy\"", "id=\"contact\"" ] $ \frag ->
           assertBool (T.unpack frag) (frag `T.isInfixOf` html)
-        forM_ ["href=\"#selected-work\"", "class=\"button button--secondary\" href=\"#contact\""] $ \frag ->
+        forM_ ["href=\"#selected-work\"", "class=\"button button--secondary\" href=\"/about/\""] $ \frag ->
           assertBool (T.unpack frag) (frag `T.isInfixOf` html)
         -- About is its own page now (Phase 05): no About section here
         assertBool "no #about" (not ("id=\"about\"" `T.isInfixOf` html))

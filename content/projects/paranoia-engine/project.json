@@ -20,5 +20,10 @@
     "kind": "image",
     "src": "card.svg",
     "alt": "Gold line drawing of a stepped facility in isometric projection, crossed by a ruled timeline of tick marks with a branching path"
+  },
+  "sections": {
+    "technical-approach": { "layout": "grid" },
+    "status-and-limitations": { "layout": "resources" },
+    "resources": { "layout": "resources" }
   }
 }

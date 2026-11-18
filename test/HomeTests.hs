@@ -145,13 +145,13 @@ realSiteTests =
         content <- loadFixture "."
         let home = homeContent content
         fmap (slugText . projectSlug) (homeBlack home) @?= Just "black"
-        map (slugText . projectSlug) (homeSelected home) @?= ["brigid", "lockdown"]
-        map (slugText . projectSlug) (featuredProjects content) @?= ["black", "brigid", "lockdown"]
+        map (slugText . projectSlug) (homeSelected home) @?= ["brigid", "paranoia-engine"]
+        map (slugText . projectSlug) (featuredProjects content) @?= ["black", "brigid", "paranoia-engine"]
     , testCase "the homepage renders the cards in featured order, linking to generated pages" $ do
         s <- realSite
         let html = render s Home
             routes = map pageRoute (sitePages s)
-        cardHrefs html @?= ["/work/brigid/", "/work/lockdown/"]
+        cardHrefs html @?= ["/work/brigid/", "/work/paranoia-engine/"]
         forM_ (cardHrefs html) $ \href ->
           assertBool (T.unpack href) (href `elem` map routePath routes)
     , testCase "the secondary hero CTA introduces the author" $ do

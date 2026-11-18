@@ -38,7 +38,7 @@ def write(case, rel, data):
 CASES = {
     "legacy-category": lambda c: edit_project(c, "brigid", lambda m: m.update(category="Haskell library")),
     "unknown-topic": lambda c: edit_project(c, "black", lambda m: m.update(topics=["type-systems", "type-sytems"])),
-    "duplicate-topic": lambda c: edit_project(c, "lockdown", lambda m: m.update(topics=["game-engines", "game-engines"])),
+    "duplicate-topic": lambda c: edit_project(c, "paranoia-engine", lambda m: m.update(topics=["game-engines", "game-engines"])),
     "misfiled-technology": lambda c: edit_project(c, "black", lambda m: m.update(technologies=["Haskell", "Type systems"])),
     "duplicate-technology": lambda c: edit_project(c, "brigid", lambda m: m.update(technologies=["Haskell", "haskell"])),
     "resume-not-pdf": lambda c: write(c, "content/resume.pdf", b"<html>this is not a PDF</html>\n"),

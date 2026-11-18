@@ -190,7 +190,11 @@ workIndexTests =
         let html = render s WorkIndex
             list = between "<ul class=\"work__list work__list--index\" id=\"work-list\">" "</ul></section>" html
         attributeValues "data-category" list @?= ["programming-languages", "libraries-tooling", "simulation-games"]
-        [ T.takeWhile (/= ' ') t | t <- attributeValues "data-search" list ] @?= ["black", "brigid", "paranoia-engine"]
+        -- each item's search text starts with its lowercased title
+        let titles = ["black", "brigid", "paranoia engine"]
+        length (attributeValues "data-search" list) @?= length titles
+        forM_ (zip titles (attributeValues "data-search" list)) $ \(title, t) ->
+          assertBool (T.unpack t) ((title <> " ") `T.isPrefixOf` t)
         let brigid = attributeValues "data-search" list !! 1
         forM_ ["brigid", "type-safe html", "libraries &#38; tooling", "haskell", "type systems", "web development"] $ \needle ->
           assertBool (T.unpack needle) (needle `T.isInfixOf` brigid)

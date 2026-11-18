@@ -921,7 +921,7 @@ URLs and output files are both derived from one function,
 | `Home` | `/` | `dist/index.html` |
 | `WorkIndex` | `/work/` | `dist/work/index.html` |
 | `WorkDetail slug` | `/work/{slug}/` | `dist/work/{slug}/index.html` (one per published project; today `black`, `brigid`, `paranoia-engine`) |
-| `WritingIndex` | `/writing/` | `dist/writing/index.html` (only if published writing exists) |
+| `WritingIndex` | `/writing/` | `dist/writing/index.html` (always; "Coming soon." until an article is published) |
 | `WritingArticle slug` | `/writing/{slug}/` | `dist/writing/{slug}/index.html` (one per published article) |
 | `About` | `/about/` | `dist/about/index.html` |
 | `NotFound` | `/404.html` | `dist/404.html` |
