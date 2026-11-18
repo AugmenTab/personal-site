@@ -134,7 +134,7 @@ data Introduction =
 introduction :: Introduction
 introduction =
   Introduction
-    { introStatus = DraftCopy
+    { introStatus = FinalCopy
     , introRole = "Software Engineer"
     , introGivenName = "Tyler"
     , introFamilyName = "Baum"
@@ -397,7 +397,7 @@ data Philosophy =
     , philosophyPrinciples :: [Principle]
     }
 
--- | DRAFT: proposed editorial copy, for owner review before launch.
+-- | Owner-approved editorial copy.
 philosophy :: Philosophy
 philosophy =
   Philosophy
