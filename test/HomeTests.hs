@@ -319,7 +319,9 @@ structureTests =
         assertBool "three to five principles" (length (philosophyPrinciples philosophy) `elem` [3 .. 5])
         assertBool "no imagery" (not ("<img" `T.isInfixOf` section))
     , testCase "draft copy is marked for owner review" $ do
-        philosophyStatus philosophy @?= DraftCopy
+        philosophyStatus philosophy @?= FinalCopy
+        length (philosophyPrinciples philosophy) @?= 4
+        assertBool "approved philosophy heading" ("Confidence isn't evidence." `T.isInfixOf` section)
         teaserStatus blackTeaser @?= DraftCopy
         introStatus introduction @?= DraftCopy
         contactStatus contactCopy @?= DraftCopy
