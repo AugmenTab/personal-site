@@ -71,8 +71,11 @@ that the library models every requirement of the HTML specification.
 ## What the types buy
 
 - **Checked content models.** Element constructors enforce parent-child
-  relationships using type-level HTML content categories, including limited
-  grandparent context for transparent content.
+  relationships using type-level HTML content categories. Forbidden
+  combinations become compilation errors.
+- **Context-sensitive nesting.** By tracking both parent and grandparent
+  types, Brigid can enforce context-dependent rules for transparent elements
+  such as anchors, within the ancestry depth it currently supports.
 - **Readable diagnostics.** Custom GHC errors identify invalid elements and
   attributes by name instead of presenting an opaque type mismatch.
 - **Typed attributes.** URLs, language tags, colors, HTTP methods,
