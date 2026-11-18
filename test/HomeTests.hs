@@ -324,12 +324,14 @@ structureTests =
         count "class=\"philosophy__principle\"" section @?= length (philosophyPrinciples philosophy)
         assertBool "three to five principles" (length (philosophyPrinciples philosophy) `elem` [3 .. 5])
         assertBool "no imagery" (not ("<img" `T.isInfixOf` section))
-    , testCase "draft copy is marked for owner review" $ do
+    , testCase "approved and draft copy statuses are tracked" $ do
+        s <- realSite
+        let section = sectionOf "philosophy" (render s Home)
         philosophyStatus philosophy @?= FinalCopy
         length (philosophyPrinciples philosophy) @?= 4
         assertBool "approved philosophy heading" ("Confidence isn't evidence." `T.isInfixOf` section)
         teaserStatus blackTeaser @?= DraftCopy
-        introStatus introduction @?= DraftCopy
+        introStatus introduction @?= FinalCopy
         contactStatus contactCopy @?= DraftCopy
     , testCase "the homepage has a Contact section, not an About section, and no tree emblem" $ do
         s <- realSite
