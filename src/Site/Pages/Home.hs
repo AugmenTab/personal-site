@@ -103,7 +103,7 @@ page config home =
   Page
     { pageRoute = Home
     , pageTitle = "Tyler Baum — Software Engineer"
-    , pageDescription = "Tyler Baum builds precise systems: programming languages, libraries, and tools."
+    , pageDescription = "Software engineer building programming languages, AI-assisted development tools, type-safe libraries, and deterministic simulations."
     , pageLayout = Stage
     , pageMain =
         [ stage hasSelectedWork (homeBlack home) ]
@@ -243,8 +243,8 @@ blackFeature black =
         Just p -> developmentLabel (projectDevelopment p) <> " · Playground planned"
         Nothing -> "Project page in preparation"
 
--- | The teaser's own copy. Each point is an implemented capability of the
--- compiler, verified against its repository (README "Homepage copy").
+-- | The owner-approved teaser: project philosophy plus current, audited
+-- compiler and toolchain capabilities (README "Homepage copy").
 data Teaser =
   Teaser
     { teaserStatus :: CopyStatus
@@ -255,12 +255,12 @@ data Teaser =
 blackTeaser :: Teaser
 blackTeaser =
   Teaser
-    { teaserStatus = DraftCopy
-    , teaserSummary = "A correctness-focused programming language, compiled to native code by its Haskell compiler, White."
+    { teaserStatus = FinalCopy
+    , teaserSummary = "An AI-first programming language that remains a pleasure to write by hand, with native compilation and tools for understanding and verifying what agents change."
     , teaserPoints =
-        [ "Closed types and exhaustive matching"
-        , "Integer arithmetic proved to fit its types"
-        , "Compile-time contracts, for a first fragment"
+        [ "Native compilation with checked arithmetic and limited contracts"
+        , "Semantic snapshots and structured change analysis for agents"
+        , "A prototype change gate that rejects weakened requirements"
         ]
     }
 
@@ -477,11 +477,11 @@ data ContactCopy =
     , contactInvitation :: T.Text
     }
 
--- | DRAFT: a short invitation, for the owner's content pass.
+-- | Owner-approved contact invitation.
 contactCopy :: ContactCopy
 contactCopy =
   ContactCopy
-    { contactStatus = DraftCopy
+    { contactStatus = FinalCopy
     , contactInvitation = "Questions about a project, or an idea worth building? I’d be glad to hear from you."
     }
 
