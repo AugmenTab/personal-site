@@ -111,7 +111,7 @@ routeTests =
     [ testCase "route URLs and output files" $ do
         map routePath allRoutes @?= ["/", "/work/", "/work/black/", "/work/brigid/", "/work/paranoia-engine/", "/writing/", "/about/", "/404.html"]
         map outputOf allRoutes
-          @?= ["index.html", "work/index.html", "work/black/index.html", "work/brigid/index.html", "work/lockdown/index.html", "writing/index.html", "about/index.html", "404.html"]
+          @?= ["index.html", "work/index.html", "work/black/index.html", "work/brigid/index.html", "work/paranoia-engine/index.html", "writing/index.html", "about/index.html", "404.html"]
     , testCase "the site defines exactly the required routes" $
         sort (map pageRoute (sitePages theSite)) @?= sort allRoutes
     , testCase "valid slugs are accepted unchanged" $
