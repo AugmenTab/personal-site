@@ -1,0 +1,24 @@
+{
+  "slug": "paranoia-engine",
+  "title": "Paranoia Engine",
+  "summary": "A deterministic Rust game engine with agent-authored mechanics, locally modeled NPC decisions, and reproducible simulations.",
+  "category": "simulation-games",
+  "topics": [
+    "ai-agents",
+    "deterministic-simulation",
+    "game-engines"
+  ],
+  "development_status": "in_development",
+  "publication_status": "published",
+  "technologies": [
+    "Rust",
+    "Bevy"
+  ],
+  "featured_order": 3,
+  "body": "body.md",
+  "showcase": {
+    "kind": "image",
+    "src": "card.svg",
+    "alt": "Gold line drawing of a stepped facility in isometric projection, crossed by a ruled timeline of tick marks with a branching path"
+  }
+}
