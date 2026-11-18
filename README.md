@@ -713,7 +713,7 @@ and needs owner review before public launch:**
 | Engineering Philosophy | `Home.philosophy` | **Placeholder** (owner, 2026-11-15): directional copy only. The section's place on the page and its lack of a link from the navigation are also open, for the owner's content pass |
 | About profile (lede, "Work and interests", note) | `About.profile` | Draft: the verified Phase 03 biography, arranged in sections. Background and motivations are left for the owner to supply |
 | Contact invitation | `Home.contactCopy` | Draft |
-| Black and Paranoia Engine project pages | `content/projects/{black,paranoia-engine}/body.md` | Draft: factual, from each project's repository and README |
+| Black and Paranoia Engine project pages | `content/projects/{black,paranoia-engine}/body.md` | Owner-approved dossier copy, grounded in repository evidence audits; engineering exhibits remain to be refined |
 
 ## Site configuration
 
