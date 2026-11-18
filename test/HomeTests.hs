@@ -101,6 +101,11 @@ render s route =
 
 -- | The markup of one homepage section, from its opening tag to the next
 -- top-level section of the page.
+-- | The page's own content: everything inside @<main>@, without the shared
+-- navigation and footer (which always link to /writing/).
+mainOf :: T.Text -> T.Text
+mainOf html = fst (T.breakOn "</main>" (snd (T.breakOn "<main" html)))
+
 sectionOf :: T.Text -> T.Text -> T.Text
 sectionOf sid html =
   let rest = snd (T.breakOn ("id=\"" <> sid <> "\"") html)
@@ -161,11 +166,11 @@ realSiteTests =
         attributeValues "href" contact @?= ["https://github.com/AugmenTab"]
         forM_ ["mailto:", "linkedin", "résumé", "resume", ".pdf", "/about/"] $ \frag ->
           assertBool (T.unpack frag) (not (frag `T.isInfixOf` T.toLower contact))
-    , testCase "the real site has no Writing preview" $ do
+    , testCase "the real site has no Writing preview (the nav still links to Writing)" $ do
         s <- realSite
         let html = render s Home
         assertBool "no #writing" (not ("id=\"writing\"" `T.isInfixOf` html))
-        assertBool "no /writing/ link" (not ("/writing/" `T.isInfixOf` html))
+        assertBool "no /writing/ link in the page body" (not ("/writing/" `T.isInfixOf` mainOf html))
     ]
 
 --------------------------------------------------------------------------------
@@ -249,10 +254,10 @@ blackTeaserTests =
 writingPreviewTests :: TestTree
 writingPreviewTests =
   testGroup "Writing preview"
-    [ testCase "no published articles: no section, heading or link" $ do
+    [ testCase "no published articles: no section, heading or link (outside the nav)" $ do
         (_, html) <- homeOf (article "draft-only" "draft" (Just "2026-10-01"))
         forM_ ["id=\"writing\"", "writing-preview", ">Writing<", "/writing/"] $ \frag ->
-          assertBool (T.unpack frag) (not (frag `T.isInfixOf` html))
+          assertBool (T.unpack frag) (not (frag `T.isInfixOf` mainOf html))
     , testCase "one published article: one entry, linked, with its date" $ do
         (_, html) <- homeOf (article "first" "published" (Just "2026-10-01"))
         let preview = sectionOf "writing" html

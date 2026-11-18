@@ -1,0 +1,198 @@
+{
+  "url": "http://wrangler-dev:8787/",
+  "origin": "https://tylerbaum.dev",
+  "sitemapPages": [
+    "/",
+    "/about/",
+    "/work/",
+    "/work/black/",
+    "/work/brigid/",
+    "/work/lockdown/"
+  ],
+  "filesChecked": 32,
+  "notFound": 404,
+  "redirects": {
+    "/work": {
+      "hops": [
+        [
+          307,
+          "/work/"
+        ]
+      ],
+      "final": 200
+    },
+    "/about": {
+      "hops": [
+        [
+          307,
+          "/about/"
+        ]
+      ],
+      "final": 200
+    },
+    "/work/black": {
+      "hops": [
+        [
+          307,
+          "/work/black/"
+        ]
+      ],
+      "final": 200
+    },
+    "/index.html": {
+      "hops": [
+        [
+          307,
+          "/"
+        ]
+      ],
+      "final": 200
+    },
+    "/work/index.html": {
+      "hops": [
+        [
+          307,
+          "/work/"
+        ]
+      ],
+      "final": 200
+    }
+  },
+  "leakProbes": {
+    "/.personal-site-output": 404,
+    "/_headers": 404,
+    "/_redirects": 404,
+    "/.git/HEAD": 404,
+    "/.env": 404,
+    "/README.md": 404,
+    "/wrangler.toml": 404,
+    "/package.json": 404,
+    "/release/_headers": 404,
+    "/content/projects/black/project.json": 404,
+    "/content/projects/black/body.md": 404,
+    "/content/settings.json": 404,
+    "/src/Site/Build.hs": 404,
+    "/dist/index.html": 404,
+    "/.release/evidence/release.json": 404,
+    "/SHA256SUMS": 404,
+    "/release.json": 404,
+    "/design/visual-direction.md": 404,
+    "/.local/": 404,
+    "/stack.yaml": 404
+  },
+  "cacheControl": {
+    "/": "public, max-age=0, must-revalidate",
+    "/assets/styles/site.css": "public, max-age=0, must-revalidate"
+  },
+  "headersOnHome": {
+    "content-security-policy": "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'",
+    "x-content-type-options": "nosniff",
+    "referrer-policy": "strict-origin-when-cross-origin",
+    "x-frame-options": "DENY",
+    "permissions-policy": "accelerometer=(), browsing-topics=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()",
+    "cross-origin-opener-policy": "same-origin",
+    "cache-control": "public, max-age=0, must-revalidate",
+    "etag": "\"e71edde0ebb219767042dbadbc647715\""
+  },
+  "projectPages": [
+    "/work/black/",
+    "/work/brigid/",
+    "/work/lockdown/"
+  ],
+  "titles": {
+    "/": "Tyler Baum \u2014 Software Engineer",
+    "/about/": "About \u2014 Tyler Baum",
+    "/work/": "Work \u2014 Tyler Baum",
+    "/work/black/": "Black \u2014 Tyler Baum",
+    "/work/brigid/": "Brigid \u2014 Tyler Baum",
+    "/work/lockdown/": "Lockdown \u2014 Tyler Baum"
+  },
+  "browser": {
+    "/ desktop": {
+      "consoleErrors": [],
+      "csp": [],
+      "overflow": false
+    },
+    "/about/ desktop": {
+      "consoleErrors": [],
+      "csp": [],
+      "overflow": false
+    },
+    "/work/ desktop": {
+      "consoleErrors": [],
+      "csp": [],
+      "overflow": false
+    },
+    "/work/black/ desktop": {
+      "consoleErrors": [],
+      "csp": [],
+      "overflow": false
+    },
+    "/work/brigid/ desktop": {
+      "consoleErrors": [],
+      "csp": [],
+      "overflow": false
+    },
+    "/work/lockdown/ desktop": {
+      "consoleErrors": [],
+      "csp": [],
+      "overflow": false
+    },
+    "workFilter": {
+      "all": 3,
+      "search haskell": 2,
+      "chips": [
+        1,
+        1,
+        1
+      ]
+    },
+    "/ mobile": {
+      "consoleErrors": [],
+      "csp": [],
+      "overflow": false
+    },
+    "/about/ mobile": {
+      "consoleErrors": [],
+      "csp": [],
+      "overflow": false
+    },
+    "/work/ mobile": {
+      "consoleErrors": [],
+      "csp": [],
+      "overflow": false
+    },
+    "/work/black/ mobile": {
+      "consoleErrors": [],
+      "csp": [],
+      "overflow": false
+    },
+    "/work/brigid/ mobile": {
+      "consoleErrors": [],
+      "csp": [],
+      "overflow": false
+    },
+    "/work/lockdown/ mobile": {
+      "consoleErrors": [],
+      "csp": [],
+      "overflow": false
+    },
+    "compactIndex": {
+      "page": "/work/black/",
+      "opened": true,
+      "links": 8
+    },
+    "noJavaScript": {
+      "workCards": 3,
+      "visibleControls": 0,
+      "homeSections": [
+        "top",
+        "black",
+        "selected-work",
+        "philosophy",
+        "contact"
+      ]
+    }
+  },
+  "failures": []
+}

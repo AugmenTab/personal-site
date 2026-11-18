@@ -1,0 +1,31 @@
+$ scripts/release.sh help
+usage: scripts/release.sh COMMAND [ARGS]
+
+Non-publishing commands
+  check                 tools, Git state, Haskell tests, site check, a fresh
+                        build, and the dist/ inventory against the generator's
+                        manifest (prohibited files, marker, leaks)
+  package               check, then stage exactly the manifest's files plus
+                        release/_headers into .release/public, with
+                        SHA256SUMS and release.json in .release/evidence
+  verify                re-hash .release/public against the packaged SHA256SUMS
+  dry-run               package, `wrangler deploy --dry-run` (no credentials),
+                        then serve the package with local Cloudflare emulation
+                        (wrangler dev) and run the smoke tests against it
+  smoke --url URL       HTTP, HTML and browser smoke tests against any URL
+        [--no-browser]
+  versions              list the Worker's recent deployments (needs credentials;
+                        read-only)
+
+Publishing commands (need CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID)
+  deploy --confirm SHA  revalidate, repackage and publish commit SHA (the full
+                        40-character HEAD of a clean main checkout), record the
+                        Cloudflare version, then smoke-test production
+  rollback VERSION_ID --confirm
+                        make an earlier Worker version live again, then smoke-test
+
+Both publishing commands then ask the operator to type a phrase naming the
+Worker and the commit or version (for example deploy-tylerbaum-0123456789ab).
+With no terminal, set RELEASE_NONINTERACTIVE_CONFIRM to that exact phrase.
+
+  help                  this text

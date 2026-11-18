@@ -1,0 +1,28 @@
+#!/bin/sh
+# Fake Git for the release guardrail tests: answers only the queries
+# scripts/release.sh makes, from FAKE_* variables.
+set -eu
+printf 'git %s\n' "$*" >>"$FAKE_LOG"
+case "$*" in
+  "rev-parse --verify HEAD") echo "$FAKE_HEAD" ;;
+  "status --porcelain --untracked-files=no") [ -z "${FAKE_DIRTY:-}" ] || printf '%s\n' "$FAKE_DIRTY" ;;
+  "status --porcelain")
+    [ -z "${FAKE_DIRTY:-}" ] || printf '%s\n' "$FAKE_DIRTY"
+    [ -z "${FAKE_UNTRACKED:-}" ] || printf '%s\n' "$FAKE_UNTRACKED"
+    ;;
+  "status --short") [ -z "${FAKE_DIRTY:-}${FAKE_UNTRACKED:-}" ] || printf '%s\n%s\n' "${FAKE_DIRTY:-}" "${FAKE_UNTRACKED:-}" ;;
+  cat-file\ -e\ *)
+    want=${3%^\{commit\}}
+    case " ${FAKE_KNOWN:-} " in *" $want "*) exit 0 ;; *) exit 1 ;; esac
+    ;;
+  "symbolic-ref --quiet --short HEAD")
+    # Empty FAKE_BRANCH means a detached HEAD.
+    [ -n "${FAKE_BRANCH:-}" ] || exit 1
+    echo "$FAKE_BRANCH"
+    ;;
+  "rev-parse --verify --quiet refs/remotes/origin/main")
+    [ -n "${FAKE_ORIGIN_MAIN:-}" ] || exit 1
+    echo "$FAKE_ORIGIN_MAIN"
+    ;;
+  *) echo "fake git: unexpected $*" >&2; exit 1 ;;
+esac

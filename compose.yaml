@@ -126,6 +126,69 @@ services:
         target: /work
     command: ["python3", "tools/art/compare.py"]
 
+  # ---- Release tooling (Phase 07). Driven by scripts/release.sh; see
+  # docs/operations/deployment.md. None of these run in a normal build.
+
+  # Packaging and smoke tests (Python, stdlib + Playwright from the tools image).
+  release:
+    profiles: ["release"]
+    build:
+      context: ./tools
+    image: personal-site-tools:local
+    working_dir: /work
+    environment:
+      PYTHONDONTWRITEBYTECODE: "1"
+    volumes:
+      - type: bind
+        source: .
+        target: /work
+
+  # Pinned Wrangler WITHOUT credentials: configuration checks and
+  # `wrangler deploy --dry-run` only. It sees only the configuration and the
+  # packaged files (never the repository, so never a stray .env), and no
+  # Cloudflare token is passed in, so it cannot publish anything.
+  wrangler:
+    profiles: ["release"]
+    build:
+      context: ./release
+    image: personal-site-wrangler:local
+    working_dir: /work
+    volumes: &wrangler-mounts
+      - type: bind
+        source: ./wrangler.toml
+        target: /work/wrangler.toml
+        read_only: true
+      - type: bind
+        source: ./.release/public
+        target: /work/.release/public
+        read_only: true
+        bind:
+          create_host_path: false
+
+  # Local Cloudflare emulation (workerd via `wrangler dev`) of the packaged
+  # release at http://localhost:8787/, for routing, 404 and header checks.
+  # No credentials; nothing leaves the machine.
+  wrangler-dev:
+    profiles: ["release"]
+    image: personal-site-wrangler:local
+    working_dir: /work
+    ports:
+      - "127.0.0.1:8787:8787"
+    volumes: *wrangler-mounts
+    command: ["wrangler", "dev", "--local", "--ip", "0.0.0.0", "--port", "8787", "--show-interactive-dev-session=false"]
+
+  # The ONLY service that receives Cloudflare credentials, by name from the
+  # operator's environment (never stored here). Used by `release.sh deploy
+  # --confirm`, `versions` and `rollback` only.
+  wrangler-deploy:
+    profiles: ["release"]
+    image: personal-site-wrangler:local
+    working_dir: /work
+    environment:
+      - CLOUDFLARE_API_TOKEN
+      - CLOUDFLARE_ACCOUNT_ID
+    volumes: *wrangler-mounts
+
 volumes:
   # Persistent Stack root (GHC package DBs, snapshot and Brigid builds).
   # Created automatically by Compose; remove with `docker compose down -v`.

@@ -1,0 +1,24 @@
+# Response headers for every path (Cloudflare Workers Static Assets).
+# Copied into .release/public/_headers by scripts/release.sh package; the
+# platform reads it and does not serve it. Rationale and verification:
+# docs/operations/deployment.md, "Security headers" and "Caching".
+#
+# CSP: the site loads only same-origin CSS, fonts, images and one module
+# script (the Work filter); no inline script or style, no forms, no fetches,
+# no frames. Everything else is denied. No unsafe-inline or unsafe-eval.
+# img-src also allows data: because the stylesheet's --diamond ornament is
+# an inline SVG data URI (found by the release smoke test's CSP listener).
+# Images cannot run script, so this widens nothing that executes.
+# upgrade-insecure-requests is deliberately absent: every URL is relative
+# and the site is HTTPS-only, so it would change nothing in production, while
+# it breaks the plain-HTTP local emulation the release smoke tests use.
+# Cache-Control is deliberately not set: the platform default (ETag with
+# revalidation) is the v1 policy, since asset file names are not versioned.
+# HSTS is deliberately not set yet (see the guide, "HTTPS and HSTS").
+/*
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Permissions-Policy: accelerometer=(), browsing-topics=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+  Cross-Origin-Opener-Policy: same-origin

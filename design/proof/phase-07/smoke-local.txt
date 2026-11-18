@@ -1,0 +1,8 @@
+Smoke test of http://wrangler-dev:8787/ (canonical origin https://tylerbaum.dev)
+  sitemap pages: 6, other files: 32
+  404 status: 404
+  redirects: {"/work": {"hops": [[307, "/work/"]], "final": 200}, "/about": {"hops": [[307, "/about/"]], "final": 200}, "/work/black": {"hops": [[307, "/work/black/"]], "final": 200}, "/index.html": {"hops": [[307, "/"]], "final": 200}, "/work/index.html": {"hops": [[307, "/work/"]], "final": 200}}
+  leak probes: 20/20 answered 404
+  headers on /: {"content-security-policy": "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'", "x-content-type-options": "nosniff", "referrer-policy": "strict-origin-when-cross-origin", "x-frame-options": "DENY", "permissions-policy": "accelerometer=(), browsing-topics=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()", "cross-origin-opener-policy": "same-origin", "cache-control": "public, max-age=0, must-revalidate", "etag": "\"e71edde0ebb219767042dbadbc647715\""}
+  browser: {"workFilter": {"all": 3, "search haskell": 2, "chips": [1, 1, 1]}, "compactIndex": {"page": "/work/black/", "opened": true, "links": 8}, "noJavaScript": {"workCards": 3, "visibleControls": 0, "homeSections": ["top", "black", "selected-work", "philosophy", "contact"]}}
+PASS: every smoke check passed

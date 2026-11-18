@@ -3,7 +3,7 @@
 module Main (main) where
 
 import Control.Exception (throwIO, try)
-import Control.Monad (forM, forM_)
+import Control.Monad (forM, forM_, when)
 import Data.ByteString qualified as BS
 import Data.ByteString.Lazy qualified as LBS
 import Data.Either (isLeft)
@@ -70,7 +70,7 @@ brigidRoute :: Route
 brigidRoute = WorkDetail (slug "brigid")
 
 allRoutes :: [Route]
-allRoutes = [Home, WorkIndex, WorkDetail (slug "black"), brigidRoute, WorkDetail (slug "lockdown"), About, NotFound]
+allRoutes = [Home, WorkIndex, WorkDetail (slug "black"), brigidRoute, WorkDetail (slug "lockdown"), WritingIndex, About, NotFound]
 
 pageFor :: Route -> Page
 pageFor route =
@@ -109,9 +109,9 @@ routeTests :: TestTree
 routeTests =
   testGroup "routes"
     [ testCase "route URLs and output files" $ do
-        map routePath allRoutes @?= ["/", "/work/", "/work/black/", "/work/brigid/", "/work/lockdown/", "/about/", "/404.html"]
+        map routePath allRoutes @?= ["/", "/work/", "/work/black/", "/work/brigid/", "/work/lockdown/", "/writing/", "/about/", "/404.html"]
         map outputOf allRoutes
-          @?= ["index.html", "work/index.html", "work/black/index.html", "work/brigid/index.html", "work/lockdown/index.html", "about/index.html", "404.html"]
+          @?= ["index.html", "work/index.html", "work/black/index.html", "work/brigid/index.html", "work/lockdown/index.html", "writing/index.html", "about/index.html", "404.html"]
     , testCase "the site defines exactly the required routes" $
         sort (map pageRoute (sitePages theSite)) @?= sort allRoutes
     , testCase "valid slugs are accepted unchanged" $
@@ -157,7 +157,7 @@ manifestTests =
             -- Card art and artifacts; hero art is checked by DossierTests
             -- (it arrives per project as the owner approves it).
             filter (not . T.isInfixOf "/hero.") (map (T.pack . outputText) [ p | (_, p) <- manifestMedia m ])
-              @?= ["media/projects/black/card.svg", "media/projects/black/pipeline.svg", "media/projects/brigid/card.svg", "media/projects/lockdown/card.svg"]
+              @?= ["media/projects/black/card.svg", "media/projects/black/pipeline.svg", "media/projects/brigid/card.svg", "media/projects/lockdown/card.svg", "resume.pdf"]
     , testCase "two pages with the same route are rejected" $
         assertCollision (mkManifest [Home, About, Home] [] [])
     , testCase "two project pages with the same slug are rejected" $
@@ -234,10 +234,10 @@ renderTests =
     , testCase "shared navigation links to routes, marking only the current page" $
         forM_ allRoutes $ \r -> do
           let html = htmlOf r
-          forM_ ["/\"", "/work/\"", "/about/\"", "/#contact\""] $ \href ->
+          forM_ ["/\"", "/work/\"", "/writing/\"", "/about/\"", "/#contact\""] $ \href ->
             assertBool (show r <> " nav " <> T.unpack href) (("class=\"site-nav__link\" href=\"" <> href) `T.isInfixOf` html)
           let header = fst (T.breakOn "</header>" html)
-              current = [ label | (label, route) <- [("Home", Home), ("Work", WorkIndex), ("About", About)], route == r ]
+              current = [ label | (label, route) <- [("Home", Home), ("Work", WorkIndex), ("Writing", WritingIndex), ("About", About)], route == r ]
           count "aria-current=\"page\"" header @?= length current
           forM_ current $ \label ->
             assertBool (show r <> " current " <> T.unpack label) (("aria-current=\"page\">" <> label <> "</a>") `T.isInfixOf` header)
@@ -333,8 +333,10 @@ validationTests =
                     , E.a [ A.href (B.mkRawURL "https://example.com/") ] [ E.text "external" ]
                     ]
                 ]
-            pages = [stubPage Home [], stubPage WorkIndex [], bad]
-        m <- either (assertFailure . show) pure (mkManifest (map pageRoute pages) allAssets [])
+            -- Every page's navigation links to /writing/ (it always exists)
+            -- and to the real site's résumé, so its media is in the manifest.
+            pages = [stubPage Home [], stubPage WorkIndex [], stubPage WritingIndex [], bad]
+        m <- either (assertFailure . show) pure (mkManifest (map pageRoute pages) allAssets (siteMedia theSite))
         let problems = validatePages m [ (route, TE.decodeUtf8 (LBS.toStrict html)) | (route, _, html) <- renderSite (withPages pages) m ]
         sort [ url | BrokenLink _ url _ <- problems ] @?= sort ["/nowhere/", "/about/#missing", "work/", "/assets/missing.png", "#nope"]
     , testCase "an attribute value cannot break out of its quotes (Brigid escapes; the validator still checks)" $ do
@@ -343,7 +345,7 @@ validationTests =
         -- conservative active-content scan stays as defence in depth and
         -- still refuses the page.
         let injected = stubPage About [ E.p [ A.title "x\" onmouseover=\"alert(1) & more" ] [ E.text "x" ] ]
-            pages = [stubPage Home [], stubPage WorkIndex [], injected]
+            pages = [stubPage Home [], stubPage WorkIndex [], stubPage WritingIndex [], injected]
         m <- either (assertFailure . show) pure (mkManifest (map pageRoute pages) allAssets [])
         let rendered = [ (route, TE.decodeUtf8 (LBS.toStrict html)) | (route, _, html) <- renderSite (withPages pages) m ]
             aboutHtml = maybe "" id (lookup About rendered)
@@ -358,7 +360,7 @@ validationTests =
     , testCase "a page without exactly one h1 is caught" $ do
         let noH1 = (stubPage About []) { pageMain = [] }
             twoH1 = stubPage WorkIndex [ E.h1 [] [ E.text "again" ] ]
-            pages = [stubPage Home [], noH1, twoH1]
+            pages = [stubPage Home [], stubPage WritingIndex [], noH1, twoH1]
         m <- either (assertFailure . show) pure (mkManifest (map pageRoute pages) allAssets [])
         let problems = validatePages m [ (route, TE.decodeUtf8 (LBS.toStrict html)) | (route, _, html) <- renderSite (withPages pages) m ]
         sort [ (r, n) | HeadingCount r n <- problems ] @?= [(WorkIndex, 2), (About, 0)]
@@ -640,3 +642,7 @@ copyAssets from to = do
   forM_ [ "content/projects" </> f | f <- projectFiles, takeFileName f /= ".DS_Store" ] $ \file -> do
     Dir.createDirectoryIfMissing True (takeDirectory (to </> file))
     Dir.copyFile (from </> file) (to </> file)
+  hasResume <- Dir.doesFileExist (from </> "content/resume.pdf")
+  when hasResume $ do
+    Dir.createDirectoryIfMissing True (to </> "content")
+    Dir.copyFile (from </> "content/resume.pdf") (to </> "content/resume.pdf")

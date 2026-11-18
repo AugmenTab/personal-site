@@ -27,6 +27,8 @@ one capture of each layout kind per viewport.
 import os
 from urllib.parse import urljoin
 
+import stable
+
 PHASE04_OUT = "design/proof/latest/phase-04"
 
 STRUCTURE_JS = """
@@ -205,7 +207,7 @@ def phase04_captures(browser, base, pages, viewports, ready, failures, out=PHASE
                         break
                 info["bodyFocusStops"] = [s["href"] for s in stops]
                 if stops:
-                    page.wait_for_timeout(300)
+                    stable.settle(page)   # Phase 06: was a 300 ms sleep
                     page.screenshot(path=f"{out}/{name}-desktop-focus.png", full_page=False)
             report[name][vp_name] = info
             page.close()

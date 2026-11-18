@@ -87,6 +87,9 @@
   --text: var(--bone);
   --text-muted: #BBB4A2;
   --text-faint: #8F8878;
+  /* Phase 06: small labels on raised panels (--surface-2 and its gradients)
+     measured 4.3:1 in --text-faint; this keeps the same hue at >= 4.8:1. */
+  --text-faint-raised: #989181;
   --text-gold: #D2B77E;          /* 9.8:1 */
 
   /* Accents */
@@ -1452,12 +1455,15 @@ ul {
     height: auto;
   }
 
-  /* Five or six links (Writing or Résumé published): each side gets its
-     own centred row under the monogram, and the header grows to fit. The
-     standard four-link header above is unchanged. */
+  /* Five or six links (Writing is always present; Resume when a PDF is
+     published): each side gets its own centred row under the monogram,
+     and the header grows to fit. */
   .page--nav-extended {
     --header-h: 9.75rem;
-    --plate-top: 5.5rem;
+    /* Phase 06: 5.5rem put the third row of links on the corona's
+       brightest rays (Résumé measured 2.8:1). 7rem gives the last row the
+       same clearance above the art as the standard four-link header. */
+    --plate-top: 7rem;
   }
 
   .page--nav-extended .site-nav {
@@ -1473,6 +1479,9 @@ ul {
 
   .page--nav-extended .site-nav__link {
     padding-block: 0.45rem;
+    /* Phase 06: the third row sits over the eclipse's rays on the
+       homepage; the hero text's own dark halo keeps it legible. */
+    text-shadow: 0 1px 2px #000, 0 0 6px #000, 0 0 14px rgb(11 11 13 / 0.95);
   }
 
   /* Footer: one centred column */
@@ -1497,6 +1506,16 @@ ul {
   .site-nav__link {
     font-size: 0.72rem;
     letter-spacing: 0.18em;
+  }
+
+  /* Phase 06: a comfortable ~48px touch target for the phone header's
+     single row of links, without moving anything (an invisible extension
+     of the hit area into the gaps around it). The extended header's rows
+     are too close together for this; its links stay at >= 32px. */
+  .page:not(.page--nav-extended) .site-nav__link::before {
+    content: "";
+    position: absolute;
+    inset: -0.35rem -0.4rem;
   }
 
   .site-header::before,
@@ -1939,7 +1958,7 @@ ul {
   .project-nav__summary-count {
     margin-left: auto;
     font-size: var(--step--2);
-    color: var(--text-faint);
+    color: var(--text-faint-raised);
   }
 
   /* a gold chevron that turns when the index is open */
@@ -2398,6 +2417,7 @@ ul {
 }
 
 .work__more a {
+  position: relative;
   display: inline-block;
   padding: 0.5rem 0.25rem;
   font-family: var(--font-display);
@@ -2407,15 +2427,26 @@ ul {
   text-decoration: none;
 }
 
+/* Phase 06: an invisible extension of the hit area (~48px tall). */
+.work__more a::before {
+  content: "";
+  position: absolute;
+  inset: -0.3rem -0.5rem;
+}
+
+/* Phase 06: the arrow moves by transform (no layout work), as the card
+   arrows do; same 0.2em end position as before. */
 .work__more a:hover .work__more-arrow,
 .work__more a:focus-visible .work__more-arrow {
-  margin-left: 0.2em;
+  transform: translateX(0.2em);
 }
 
 .work__more-arrow {
+  display: inline-block;
+  white-space: pre;     /* keep the leading space of " →" inside the inline-block */
   font-family: var(--font-body);
   letter-spacing: 0;
-  transition: margin-left 200ms ease;
+  transition: transform 200ms ease;
 }
 
 /* Engineering Philosophy: the quietest framed moment. No frame, no art;
@@ -2698,7 +2729,7 @@ ul {
 @media (prefers-reduced-motion: reduce) {
   .work__more a:hover .work__more-arrow,
   .work__more a:focus-visible .work__more-arrow {
-    margin-left: 0;
+    transform: none;
   }
 }
 
@@ -3192,7 +3223,7 @@ code {
   font-size: 0.62rem;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
-  color: var(--text-faint);
+  color: var(--text-faint-raised);
 }
 
 .artifact__code {

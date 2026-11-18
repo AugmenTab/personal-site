@@ -45,9 +45,10 @@ pageDocument config page =
         ]
     ]
   where
-    -- More than the four standard links (Writing or Résumé published):
-    -- phones then stack each side's links on its own row (CSS), leaving
-    -- the approved four-link header untouched.
+    -- More than four links (since post-Phase 07 update 1 Writing is always
+    -- present, so every page has five, or six with a Resume): phones then
+    -- stack each side's links on its own row (CSS), because five do not
+    -- fit one row at 390px.
     extended = let (start, end) = navItems config in length start + length end > 4
 
 layoutAttributes :: Layout -> [A.Attribute E.Main]
@@ -99,6 +100,11 @@ headContent config page =
            ]
        ]
   where
+    -- No font preloads (measured in Phase 06): preloading the two shared
+    -- faces cut the font-swap layout shift slightly (CLS 0.031 -> 0.022 on
+    -- the desktop homepage, already far under 0.1) but delayed first paint
+    -- and LCP on a throttled phone by ~150-200 ms, because the preloads
+    -- compete with the render-blocking stylesheet.
     route = pageRoute page
     indexable = route /= NotFound
     url = canonicalUrl (siteSettings config) route
@@ -136,19 +142,21 @@ data NavItem =
 
 -- | The two link groups either side of the monogram medallion:
 --
--- > Home  Work  [Writing]   (monogram)   About  [Résumé]  Contact
+-- > Home  Work  Writing   (monogram)   About  [Resume]  Contact
 --
--- Writing appears only when published writing exists, and Résumé only
--- when a résumé PDF is published, so the navigation never links to an
--- empty section or a missing file.
+-- Writing is always present: its index exists even before any article is
+-- published (a "Coming soon." page). Resume appears only when a résumé PDF
+-- is published, so the navigation never links to a missing file; its
+-- visible label is "Resume" (no accent), with "(PDF)" for assistive
+-- technology.
 navItems :: SiteConfig -> ([NavItem], [NavItem])
 navItems config =
   ( [ NavItem "Home" (ToRoute Home) Nothing
     , NavItem "Work" (ToRoute WorkIndex) Nothing
+    , NavItem "Writing" (ToRoute WritingIndex) Nothing
     ]
-      <> [ NavItem "Writing" (ToRoute WritingIndex) Nothing | siteHasWriting config ]
   , [ NavItem "About" (ToRoute About) Nothing ]
-      <> [ NavItem "Résumé" (ToDocument url) (Just "(PDF)") | Just url <- [siteResumeUrl config] ]
+      <> [ NavItem "Resume" (ToDocument url) (Just "(PDF)") | Just url <- [siteResumeUrl config] ]
       <> [ NavItem "Contact" (ToSection Home contactId) Nothing ]
   )
 
@@ -193,10 +201,11 @@ navLink itemClass linkClass current item =
 -- destinations themselves).
 footerLinks :: SiteConfig -> [NavItem]
 footerLinks config =
-  [ NavItem "Work" (ToRoute WorkIndex) Nothing ]
-    <> [ NavItem "Writing" (ToRoute WritingIndex) Nothing | siteHasWriting config ]
-    <> [ NavItem "About" (ToRoute About) Nothing ]
-    <> [ NavItem "Résumé" (ToDocument url) (Just "(PDF)") | Just url <- [siteResumeUrl config] ]
+  [ NavItem "Work" (ToRoute WorkIndex) Nothing
+  , NavItem "Writing" (ToRoute WritingIndex) Nothing
+  , NavItem "About" (ToRoute About) Nothing
+  ]
+    <> [ NavItem "Resume" (ToDocument url) (Just "(PDF)") | Just url <- [siteResumeUrl config] ]
 
 -- | The site footer: identity, site links, contact destinations, and the
 -- copyright and colophon line. One ornament (a ruled diamond); no

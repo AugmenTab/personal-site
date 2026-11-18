@@ -14,3 +14,8 @@ RUN pip install --no-cache-dir --break-system-packages \
       scipy==1.14.1 \
       pillow==11.0.0 \
       opencv-python-headless==4.10.0.84
+
+# Phase 06: axe-core, the accessibility rules engine, injected into pages by
+# tools/screenshots/phase06.py (never served by the site). Pinned version.
+ADD https://unpkg.com/axe-core@4.10.2/axe.min.js /opt/axe/axe.min.js
+RUN chmod 0644 /opt/axe/axe.min.js

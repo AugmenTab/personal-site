@@ -15,6 +15,8 @@ usage =
   unlines
     [ "usage: site build [--root SRC] [--out DIR]   validate content, render and publish the site into DIR (default: dist)"
     , "       site check [--root SRC]              validate content, routes, assets and rendered pages; write nothing"
+    , "       site manifest [--root SRC]           validate like check, then print only the output file paths, one per line"
+    , "                                            (the release allowlist; see docs/operations/deployment.md)"
     , ""
     , "SRC is the source tree holding content/ and assets/ (default: the current directory)."
     , "Use another root only for development previews (README \"Previewing a hero\")."
@@ -29,6 +31,8 @@ main = do
     ["build", "--root", root, "--out", dir] -> build root dir
     ["check"] -> check "."
     ["check", "--root", root] -> check root
+    ["manifest"] -> manifest "."
+    ["manifest", "--root", root] -> manifest root
     _ -> do
       hPutStrLn stderr usage
       exitFailure
@@ -55,6 +59,20 @@ check root = do
         "OK: " <> show (length (checkPages report)) <> " pages and "
           <> show (length entries - length (checkPages report))
           <> " files validated; nothing written."
+
+-- | The exact set of files a build publishes (pages, assets, media and
+-- generated files such as sitemap.xml), as paths relative to the output
+-- directory. The ownership marker is never listed: it is not part of the
+-- site. Release packaging copies exactly these files and nothing else.
+manifest :: FilePath -> IO ()
+manifest root = do
+  result <- try $ do
+    s <- loadAndWarn root
+    checkSite BuildConfig { sourceRoot = root, outputDir = "dist" } s
+  case result of
+    Left err -> failWith err
+    Right report ->
+      mapM_ (putStrLn . outputText . entryOutput) (manifestEntries (checkManifest report))
 
 build :: FilePath -> FilePath -> IO ()
 build root dir = do

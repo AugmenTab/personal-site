@@ -2,10 +2,10 @@
 --
 -- Publication filtering happens here and only here. Draft projects and
 -- articles produce no route, card, navigation entry, sitemap entry or
--- media file. The writing section exists only when at least one article is
--- published; the résumé link only when @content/resume.pdf@ exists. Fixed
--- pages (home, about, 404), the asset list and the discovery files
--- (sitemap, robots.txt) are explicit.
+-- media file. The Writing index always exists (an empty state until an
+-- article is published); the Resume link only when @content/resume.pdf@
+-- exists. Fixed pages (home, writing, about, 404), the asset list and the
+-- discovery files (sitemap, robots.txt) are explicit.
 module Site.Definition
   ( siteFrom
   , siteConfiguration
@@ -30,7 +30,6 @@ siteConfiguration content =
     { siteSettings = ownerSettings
     , siteName = settingsName ownerSettings
     , siteLanguage = Ogma.simpleBCP_47 Ogma.English
-    , siteHasWriting = not (null (publishedArticles content))
     , siteResumeUrl = fmap (\m -> mediaUrl (mediaOwner m) (mediaPath m)) (contentResume content)
     }
 
@@ -59,6 +58,6 @@ siteFrom content =
         <> [ About.page config
            , NotFound.page config
            ]
-    writingPages
-      | null articles = []
-      | otherwise = Writing.indexPage config articles : map (Writing.articlePage config) articles
+    -- The Writing index always exists (post-Phase 07 update 1): with no
+    -- published articles it is a "Coming soon." page, never fake entries.
+    writingPages = Writing.indexPage config articles : map (Writing.articlePage config) articles

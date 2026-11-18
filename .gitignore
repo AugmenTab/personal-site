@@ -16,5 +16,15 @@ dist.old/
 design/proof/latest/
 *.scratch.png
 
+# Release staging and evidence (scripts/release.sh). Never committed.
+.release/
+# Wrangler's local state and deployment tooling installs
+.wrangler/
+release/node_modules/
+# Credentials: never committed (docs/operations/deployment.md)
+.env
+.env.*
+.dev.vars
+
 .DS_Store
 __pycache__/

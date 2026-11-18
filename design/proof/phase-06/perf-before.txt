@@ -1,0 +1,33 @@
+Performance (before): Chromium 131.0.6778.33 (Playwright 1.49.1, headless), 5 cold + 5 warm runs per page/profile, medians [min-max]
+
+page/profile         cache           FCP ms             LCP ms            CLS       TBT ms  req     KiB  LCP element
+home/mobile          cold  1582 [1501-1686]   1582 [1501-1686] 0.005 [0.005-0.005]    21 [0-48]   18   283.3  img.stage__plate
+home/mobile          warm     259 [232-289]      259 [232-289] 0.000 [0.000-0.000]      0 [0-0]   18   283.3  img.stage__plate
+home/desktop         cold     403 [389-410]      403 [389-410] 0.042 [0.042-0.053]      0 [0-0]   17   282.4  img.stage__plate
+home/desktop         warm     104 [101-111]      104 [101-111] 0.000 [0.000-0.000]      0 [0-0]   17   282.4  img.stage__plate
+work/mobile          cold     936 [920-968]      936 [920-968] 0.001 [0.001-0.001]      0 [0-7]   13   155.5  img.project-card__art
+work/mobile          warm     214 [208-221]      214 [208-221] 0.000 [0.000-0.000]      0 [0-0]   13   155.5  img.project-card__art
+work/desktop         cold     253 [236-293]      253 [236-293] 0.000 [0.000-0.000]      0 [0-0]   13   155.5  img.project-card__art
+work/desktop         warm        85 [84-94]         85 [84-94] 0.000 [0.000-0.000]      0 [0-0]   13   155.5  img.project-card__art
+black/mobile         cold     941 [898-962]      941 [898-962] 0.022 [0.022-0.022]   27 [14-36]   10   187.7  p.project__summary
+black/mobile         warm     227 [211-255]      227 [211-255] 0.000 [0.000-0.000]      0 [0-0]   10   187.7  p.project__summary
+black/desktop        cold     234 [219-241]      234 [219-241] 0.002 [0.001-0.002]     0 [0-33]   11   193.3  p
+black/desktop        warm       96 [80-102]        96 [80-102] 0.000 [0.000-0.000]      0 [0-0]   11   193.3  p
+brigid/mobile        cold     842 [841-910]      842 [841-910] 0.022 [0.022-0.023]      0 [0-0]    9   165.2  p.project__summary
+brigid/mobile        warm     212 [203-238]      212 [203-238] 0.000 [0.000-0.000]      0 [0-0]    9   165.2  p
+brigid/desktop       cold     217 [212-490]      217 [212-490] 0.000 [0.000-0.000]    0 [0-125]    9   165.2  p
+brigid/desktop       warm       90 [83-108]        90 [83-108] 0.000 [0.000-0.000]      0 [0-0]    9   165.2  p
+lockdown/mobile      cold     818 [806-935]      818 [806-935] 0.001 [0.001-0.001]      0 [0-0]    8   165.8  p.project__summary
+lockdown/mobile      warm     197 [192-203]      197 [192-203] 0.000 [0.000-0.000]      0 [0-0]    8   165.8  p.project__summary
+lockdown/desktop     cold     214 [202-246]      214 [202-246] 0.030 [0.014-0.030]      0 [0-0]    8   165.8  p
+lockdown/desktop     warm        87 [73-96]         87 [73-96] 0.000 [0.000-0.000]      0 [0-0]    8   165.8  p
+about/mobile         cold  1238 [1194-1408]   2089 [2074-2108] 0.003 [0.003-0.003]      0 [0-7]    9   349.0  img.about__tree
+about/mobile         warm     212 [196-260]      212 [196-260] 0.000 [0.000-0.000]      0 [0-0]    9   349.0  img.about__tree
+about/desktop        cold     267 [260-268]      401 [399-414] 0.000 [0.000-0.000]      0 [0-0]    9   349.0  img.about__tree
+about/desktop        warm        73 [68-79]         73 [68-79] 0.000 [0.000-0.000]      0 [0-0]    9   349.0  img.about__tree
+404/mobile           cold     800 [792-813]      800 [792-813] 0.004 [0.004-0.004]      0 [0-0]    8   143.8  p.page-lede
+404/mobile           warm     195 [186-231]      195 [186-231] 0.000 [0.000-0.000]      0 [0-0]    8   143.8  p.page-lede
+404/desktop          cold     208 [196-232]      208 [196-232] 0.001 [0.001-0.001]     0 [0-20]    8   143.8  p.page-lede
+404/desktop          warm        77 [72-84]         77 [72-84] 0.000 [0.000-0.000]      0 [0-0]    8   143.8  p.page-lede
+
+gzip reference sizes: {'/': {'bytes': 11464, 'gzip9': 3225}, '/work/': {'bytes': 8297, 'gzip9': 2126}, '/work/black/': {'bytes': 15426, 'gzip9': 4500}, '/assets/styles/site.css': {'bytes': 86486, 'gzip9': 18732}, '/assets/scripts/work-filter.js': {'bytes': 3110, 'gzip9': 1329}}
