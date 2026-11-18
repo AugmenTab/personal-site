@@ -166,11 +166,11 @@ realSiteTests =
         attributeValues "href" teaser @?= ["/work/black/"]
         assertBool "status from the record" ("In development · Playground planned" `T.isInfixOf` teaser)
     , testCase "contact links are the verified destinations only, each one control" $ do
-        map contactHref (contacts ownerSettings) @?= ["https://github.com/AugmenTab"]
+        map contactHref (contacts ownerSettings) @?= ["https://github.com/AugmenTab", "https://www.linkedin.com/in/thebaum/", "mailto:tyler.baum@protonmail.com"]
         s <- realSite
         let contact = sectionOf "contact" (render s Home)
-        attributeValues "href" contact @?= ["https://github.com/AugmenTab"]
-        forM_ ["mailto:", "linkedin", "résumé", "resume", ".pdf", "/about/"] $ \frag ->
+        attributeValues "href" contact @?= ["https://github.com/AugmenTab", "https://www.linkedin.com/in/thebaum/", "mailto:tyler.baum@protonmail.com"]
+        forM_ ["résumé", "resume", ".pdf", "/about/"] $ \frag ->
           assertBool (T.unpack frag) (not (frag `T.isInfixOf` T.toLower contact))
     , testCase "the real site has no Writing preview (the nav still links to Writing)" $ do
         s <- realSite
@@ -330,9 +330,9 @@ structureTests =
         philosophyStatus philosophy @?= FinalCopy
         length (philosophyPrinciples philosophy) @?= 4
         assertBool "approved philosophy heading" ("Confidence isn't evidence." `T.isInfixOf` section)
-        teaserStatus blackTeaser @?= DraftCopy
+        teaserStatus blackTeaser @?= FinalCopy
         introStatus introduction @?= FinalCopy
-        contactStatus contactCopy @?= DraftCopy
+        contactStatus contactCopy @?= FinalCopy
     , testCase "the homepage has a Contact section, not an About section, and no tree emblem" $ do
         s <- realSite
         let html = render s Home
