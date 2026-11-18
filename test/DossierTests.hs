@@ -183,7 +183,7 @@ position html needle = T.length (fst (T.breakOn needle html))
 realContentTests :: TestTree
 realContentTests =
   testGroup "real content"
-    [ testCase "Black and Brigid are dossiers with varied layouts; Lockdown keeps the default" $ do
+    [ testCase "project dossiers use their declared layouts" $ do
         content <- realProjects
         let kinds slug = [ (dossierId d, layoutKind (dossierBody d)) | p <- content, projectSlug p == slugOf slug, d <- projectSections p ]
         kinds "black"
@@ -196,8 +196,14 @@ realContentTests =
           @?= [ ("overview", OverviewKind), ("motivation", OverviewKind), ("how-the-types-work", SplitKind)
               , ("caught-at-compile-time", SplitKind), ("what-the-types-buy", GridKind)
               , ("status-and-limitations", ResourcesKind), ("resources", ResourcesKind) ]
-        assertBool "lockdown: every section is an overview" $
-          all ((== OverviewKind) . snd) (kinds "lockdown") && not (null (kinds "lockdown"))
+        kinds "paranoia-engine"
+          @?= [ ("overview", OverviewKind), ("technical-approach", GridKind)
+              , ("autonomous-gameplay-authoring", OverviewKind)
+              , ("local-ai-for-autonomous-characters", OverviewKind)
+              , ("reproducible-worlds-and-counterfactuals", OverviewKind)
+              , ("lockdown-the-playable-demonstration", OverviewKind)
+              , ("material-reality-experimental-research", OverviewKind)
+              , ("status-and-limitations", ResourcesKind), ("resources", ResourcesKind) ]
     , testCase "every real hero declared is a published, sized image (Crest is not published)" $ do
         content <- realProjects
         forM_ content $ \p ->
@@ -206,7 +212,7 @@ realContentTests =
         assertBool "crest withheld" (slugOf "crest" `notElem` map projectSlug content)
     , testCase "nothing new is published: the same three projects, no stand-in art, no warnings" $ do
         content <- realProjects
-        sort (map (slugText . projectSlug) content) @?= ["black", "brigid", "lockdown"]
+        sort (map (slugText . projectSlug) content) @?= ["black", "brigid", "paranoia-engine"]
         files <- listFiles "content"
         assertBool (show files) (not (any (\f -> any (`isInfixOf` f) ["stand-in", "standin", "stand_in"]) files))
         result <- loadContent "."
