@@ -24,7 +24,7 @@ canonical and social metadata):
   [Search and filtering](#search-and-filtering));
 - one dossier per published project, loaded from `content/projects/` (JSON
   metadata and a Markdown body, presented in five typed section layouts;
-  see [Project dossiers](#project-dossiers)): Black, Brigid and Lockdown;
+  see [Project dossiers](#project-dossiers)): Black, Brigid and Paranoia Engine;
 - an About page: the personal profile, with the tree-and-eclipse emblem;
 - a 404 document;
 - a Writing index at `/writing/`, always published. Until an article is
@@ -243,7 +243,7 @@ hierarchies or synonyms.
 
 The real projects: Black is Programming Languages (Type Systems, Compiler
 Engineering, Formal Verification); Brigid is Libraries & Tooling (Type
-Systems, Web Development); Lockdown is Simulation & Games (Deterministic
+Systems, Web Development); Paranoia Engine is Simulation & Games (Deterministic
 Simulation, Game Engines). "Type systems", "Verification", "Type safety"
 and "Deterministic simulation" moved out of `technologies` into topics.
 
@@ -486,7 +486,7 @@ A separate mobile image is not supported yet. The model leaves room for it:
 focus point.
 
 **Status:** no hero artwork has been delivered yet, so Black, Brigid and
-Lockdown currently use the plain header. The layout was verified with a
+Paranoia Engine currently use the plain header. The layout was verified with a
 development stand-in test card (see `design/proof/phase-04-remediation/`).
 
 ### Previewing a hero
@@ -713,7 +713,7 @@ and needs owner review before public launch:**
 | Engineering Philosophy | `Home.philosophy` | **Placeholder** (owner, 2026-11-15): directional copy only. The section's place on the page and its lack of a link from the navigation are also open, for the owner's content pass |
 | About profile (lede, "Work and interests", note) | `About.profile` | Draft: the verified Phase 03 biography, arranged in sections. Background and motivations are left for the owner to supply |
 | Contact invitation | `Home.contactCopy` | Draft |
-| Black and Lockdown project pages | `content/projects/{black,lockdown}/body.md` | Draft: factual, from each project's repository and README |
+| Black and Paranoia Engine project pages | `content/projects/{black,paranoia-engine}/body.md` | Draft: factual, from each project's repository and README |
 
 ## Site configuration
 
@@ -921,7 +921,7 @@ URLs and output files are both derived from one function,
 | --- | --- | --- |
 | `Home` | `/` | `dist/index.html` |
 | `WorkIndex` | `/work/` | `dist/work/index.html` |
-| `WorkDetail slug` | `/work/{slug}/` | `dist/work/{slug}/index.html` (one per published project; today `black`, `brigid`, `lockdown`) |
+| `WorkDetail slug` | `/work/{slug}/` | `dist/work/{slug}/index.html` (one per published project; today `black`, `brigid`, `paranoia-engine`) |
 | `WritingIndex` | `/writing/` | `dist/writing/index.html` (only if published writing exists) |
 | `WritingArticle slug` | `/writing/{slug}/` | `dist/writing/{slug}/index.html` (one per published article) |
 | `About` | `/about/` | `dist/about/index.html` |
