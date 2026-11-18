@@ -30,7 +30,7 @@
       "artifact": {
         "kind": "diagram",
         "src": "pipeline.svg",
-        "alt": "White’s pipeline in four stages. Front end: parse, canonical format, resolve names, unused bindings, types and exhaustiveness. Proof of fit: interval reasoning, every integer result fits its type, every divisor nonzero, each cast proved, contract obligations. Core: elaborate into Core, validate Core by re-deriving the evidence, bind entry points or a native boundary. Back end: emit textual LLVM IR, compile with clang-19, producing an executable or a shared library that a C host loads."
+        "alt": "White’s pipeline in four stages. Front end: parse, resolve imports and names, check unused bindings, types and exhaustiveness. Proof of fit: interval reasoning, every integer result fits its type, every divisor nonzero, each cast proved, contract obligations. Core: elaborate into Core, validate Core by re-deriving the evidence, bind entry points or a native boundary. Back end: emit textual LLVM IR, compile with clang-19, producing an executable or a shared library that a C host loads."
       }
     },
     "a-program-white-accepts": {
