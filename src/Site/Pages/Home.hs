@@ -54,7 +54,7 @@ import Site.Assets qualified as Asset
 import Site.Components (HeadingLevel (..), decorativeImage, projectCard, sectionHeading)
 import Site.Content.Types
 import Site.Page (Layout (..), Page (..), SiteConfig (..))
-import Site.Routes (Route (Home, WorkDetail, WorkIndex, WritingArticle, WritingIndex), Slug, contactId, elementId, mkSlug, routeUrl)
+import Site.Routes (Route (About, Home, WorkDetail, WorkIndex, WritingArticle, WritingIndex), Slug, contactId, elementId, mkSlug, routeUrl)
 import Site.Settings (Settings (..), contactDisplay, contactHref, contactKind, contactLabel, contacts, ownerSettings)
 
 --------------------------------------------------------------------------------
@@ -187,19 +187,17 @@ hero hasSelectedWork =
         , E.p [ A.class_ "hero__thesis" ] [ E.text (introThesis introduction) ]
         , E.ul [ A.class_ "hero__disciplines", A.aria_label "Areas of work" ]
             (map (\d -> E.li [] [ E.text d ]) (introDisciplines introduction))
-        , -- Both targets exist: Selected Work on this page, or the Work index
-          -- when there is no Selected Work; Contact is always on this page.
-          -- (The secondary label is part of the frozen hero, so it is kept;
-          -- since Phase 05 it leads to the Contact section. Relabelling it
-          -- is left to the owner.)
+        , -- The primary action leads to Selected Work (or the Work index
+          -- when there are no featured cards). The secondary action introduces
+          -- the author on the dedicated About page.
           E.div [ A.class_ "hero__actions" ]
             [ E.a
                 [ A.class_ "button button--primary"
                 , if hasSelectedWork then A.href selectedWorkId else A.href (routeUrl WorkIndex)
                 ]
                 [ E.span [ A.class_ "button__label" ] [ E.text "Explore selected work" ] ]
-            , E.a [ A.class_ "button button--secondary", A.href contactId ]
-                [ E.span [ A.class_ "button__label" ] [ E.text "About & contact" ] ]
+            , E.a [ A.class_ "button button--secondary", A.href (routeUrl About) ]
+                [ E.span [ A.class_ "button__label" ] [ E.text "About me" ] ]
             ]
         ]
     ]
@@ -470,7 +468,7 @@ writingPreview articles =
         ]
 
 --------------------------------------------------------------------------------
--- Contact (target of the navigation's Contact link and the secondary CTA)
+-- Contact (target of the navigation's Contact link)
 
 -- | The Contact section's own copy.
 data ContactCopy =
