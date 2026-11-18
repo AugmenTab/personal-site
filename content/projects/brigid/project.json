@@ -1,7 +1,7 @@
 {
   "slug": "brigid",
   "title": "Brigid",
-  "summary": "Type-safe, (mostly) spec-compliant HTML for Haskell. This page is rendered with it.",
+  "summary": "Type-safe HTML for Haskell, with compile-time nesting checks, typed attributes, and readable compiler errors. This site is built with it.",
   "category": "libraries-tooling",
   "topics": ["type-systems", "web-development"],
   "development_status": "in_development",
@@ -35,7 +35,7 @@
     "caught-at-compile-time": {
       "layout": "split",
       "artifact_side": "start",
-      "artifact": { "kind": "code", "src": "examples/ghc-error.txt", "label": "GHC output", "language": "text" }
+      "artifact": { "kind": "code", "src": "examples/ghc-error.txt", "label": "Valid and rejected nesting (GHC excerpt)", "language": "text" }
     },
     "what-the-types-buy": { "layout": "grid" },
     "status-and-limitations": { "layout": "resources" },
