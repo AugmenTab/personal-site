@@ -31,8 +31,8 @@ canonical and social metadata):
   published (none is yet) it says "Coming soon." and lists nothing. Each
   published article gets its own page, and the homepage Writing preview
   appears only once one exists;
-- a résumé PDF at `/resume.pdf`, published only when `content/resume.pdf`
-  exists (none does yet);
+- a résumé PDF at `/resume.pdf`, published when `content/resume.pdf`
+  exists (the current source tree includes it);
 - `/sitemap.xml` and `/robots.txt`, generated from the published routes
   (see [Metadata and discovery](#metadata-and-discovery)).
 
