@@ -22,6 +22,10 @@ system and language design remains under construction.
 - **Human and agent authorship.** Black favors readable, declarative programs
   and Haskell-inspired syntax. Human programmers aren't an afterthought, even
   when an agent writes the implementation.
+- **Human auditability.** An agent may write the code, but the people
+  deploying it remain responsible. Black keeps its source readable and its
+  compiler evidence inspectable, rather than asking humans to trust that
+  every important requirement was anticipated in advance.
 - **Canonical source.** White provides a formatter that establishes one
   accepted style. Automatic formatting as part of the complete build workflow
   is planned.
