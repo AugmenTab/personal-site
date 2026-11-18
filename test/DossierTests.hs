@@ -189,7 +189,9 @@ realContentTests =
         kinds "black"
           @?= [ ("overview", OverviewKind), ("design-principles", GridKind), ("the-compiler-pipeline", WideExhibitKind)
               , ("a-program-white-accepts", SplitKind), ("a-program-white-rejects", SplitKind)
-              , ("language-today", OverviewKind), ("status-and-limitations", ResourcesKind), ("resources", ResourcesKind) ]
+              , ("semantic-tooling-for-agents", OverviewKind), ("the-protected-change-gate", OverviewKind)
+              , ("the-uncheatable-boss", OverviewKind), ("status-and-limitations", ResourcesKind)
+              , ("resources", ResourcesKind) ]
         kinds "brigid"
           @?= [ ("overview", OverviewKind), ("motivation", OverviewKind), ("how-the-types-work", SplitKind)
               , ("caught-at-compile-time", SplitKind), ("what-the-types-buy", GridKind)
