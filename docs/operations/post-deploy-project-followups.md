@@ -6,9 +6,9 @@ and the corresponding audits before distributing implementation handoffs.
 
 ## Black / White
 
-- [ ] Correct the compiler-pipeline illustration: formatting is not automatically
-  part of the compile pipeline today. Reconcile all stage labels with the audited
-  compiler and add a semantic-tooling / protected-gate exhibit.
+- [ ] Expand the now-corrected compiler-pipeline illustration with an audited
+  semantic-tooling / protected-gate exhibit. The compile path does not
+  automatically run canonical formatting today.
 - [ ] Develop or capture a genuine exhibit for the byte-identical binary whose
   weakened contract is refused by the Protected Change Gate.
 - [ ] Prepare a safely publishable Uncheatable Boss demonstration with provenance,
