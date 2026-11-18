@@ -1,80 +1,134 @@
 ## Overview
 
-Brigid is a Haskell library for constructing and rendering HTML, and HXML,
-with the structure of the document checked by the type system. Its own
-description is “type-safe and (mostly) spec-compliant HTML”.
+Brigid is a Haskell library for constructing HTML as typed values, with the
+compiler checking where elements and attributes are permitted. Rather than
+allowing arbitrary markup and leaving the browser to repair mistakes, Brigid
+encodes much of HTML's content model into Haskell's type system.
 
-This site is its first portfolio-scale user: every page here is generated
-by a small Haskell program that builds its markup with Brigid, including
-this page, whose text is written in Markdown and converted into Brigid
-elements.
+Its rules account for both parent and grandparent elements, allowing
+context-sensitive behavior such as transparent content. Attribute values can
+also be strongly typed, including URLs, language tags, integrity hashes, and
+HTMX interactions.
+
+Brigid is used to generate this website. Every page, including this one, is
+assembled as typed Haskell markup and rendered to HTML.
+
+The library is in active development, with separate packages for document
+construction and property-based generation.
 
 ## Motivation
 
-HTML is forgiving. A browser repairs a misplaced element instead of
-reporting it, so markup assembled from strings, or from combinators that do
-not track which element may contain which, can be wrong without anything
-failing.
+HTML is remarkably forgiving. Browsers routinely repair invalid nesting, and
+most HTML construction libraries allow developers to assemble structures that
+the specification doesn't permit.
 
-Brigid moves those mistakes to the compiler. A document that places an
-element where the library’s rules do not allow it is not a document that
-renders badly; it is a program that does not compile.
+That flexibility is convenient, but it means structural mistakes may go
+unnoticed until the browser interprets the resulting document.
+
+Brigid takes a different approach: encode the document's structural rules
+into the types of its constructors, so invalid combinations can be rejected
+during compilation.
+
+The goal isn't merely to produce HTML from Haskell. It's to make the compiler
+understand enough about HTML to catch mistakes before they reach the browser.
 
 ## How the types work
 
-Each element states which children it may contain, through a constraint
-on its parent. A function that builds part of a page says where that part
-may go, and the compiler checks every place it is used.
+Brigid represents HTML elements using a GADT indexed by their parent and
+grandparent types. A type family determines which elements may appear in each
+context, using type-level representations of HTML content categories.
 
-The excerpt is verbatim from this site’s source: it renders the small
-cluster of facts in this page’s overview. Its type says it produces a child
-of any element that accepts a description list. Attributes are typed the
-same way, so `A.class_` takes a class and an attribute is accepted only on
-the elements it applies to.
+This allows rules such as excluding nested forms, restricting interactive
+content inside buttons, and accounting for transparent elements like anchors.
+
+Attributes are similarly indexed by the elements on which they are permitted.
+Many values have dedicated types rather than being arbitrary strings.
+
+For example, Brigid can distinguish between HTTP methods at the type level.
+When constructing an HTMX request, the URL's method determines whether the
+resulting attribute is `hx-get`, `hx-post`, or another supported operation.
+
+The accompanying code excerpt is taken directly from this website. It renders
+the facts in this project's overview, using a function whose type constrains
+where the resulting description list may appear.
 
 ## Caught at compile time
 
-While this page’s fact cluster was being written, the first version
-grouped each label and value in a `<div>`. GHC refused to compile it; its
-output, verbatim, is shown here.
+When Brigid encounters a forbidden element or attribute combination, GHC
+reports a custom error identifying the invalid relationship.
 
-This is also the “(mostly)” in the description. HTML allows that grouping
-inside a description list, but Brigid’s rules are stricter here than the
-specification, so the site was changed to fit them. The comment in the
-excerpt above records why.
+For example, a division element cannot be placed directly inside an
+unordered list: that list requires list items. The exhibit contrasts a valid
+list item with the rejected division, followed by the GHC diagnostic
+reproduced during the November 2026 project audit.
+
+The same mechanism rejects nested anchors and element-specific attributes
+applied to the wrong elements.
+
+This is compile-time checking of Brigid's encoded content rules, not a claim
+that the library models every requirement of the HTML specification.
 
 ## What the types buy
 
-- **Valid nesting.** Each element accepts only the children its rules
-  allow; anything else is a type error, reported with both element names.
-- **Valid attributes.** An attribute is accepted only on elements it
-  applies to, with a typed value, such as `A.loading HTML.Lazy` rather
-  than a string.
-- **Escaping at the boundary.** Text and attribute values are escaped when
-  the document is rendered, so content cannot become markup.
-- **Documents as values.** A page is an ordinary Haskell value, assembled
-  from functions and checked as a whole.
-- **Several outputs.** The same document renders to `ByteString`, `Text`
-  or `String`.
-- **htmx and HXML.** Typed attributes for htmx, and HXML documents
-  alongside HTML.
+- **Checked content models.** Element constructors enforce parent-child
+  relationships using type-level HTML content categories, including limited
+  grandparent context for transparent content.
+- **Readable diagnostics.** Custom GHC errors identify invalid elements and
+  attributes by name instead of presenting an opaque type mismatch.
+- **Typed attributes.** URLs, language tags, colors, HTTP methods,
+  autocomplete tokens, and integrity hashes can be represented by
+  domain-specific types.
+- **HTMX integration.** Typed routing and structured triggers, targets, and
+  swaps provide a Haskell interface to HTMX's browser interactions.
+- **Escaping at the rendering boundary.** Normal HTML text and quoted
+  attribute values are escaped during serialization, with regression tests
+  for injection payloads and Unicode handling. Raw-content and custom-element
+  paths have separate limitations.
+- **Documents as Haskell values.** Pages can be composed, transformed, and
+  reused through ordinary Haskell functions, then rendered to `ByteString`,
+  `Text`, or `String`.
+- **Generated test documents.** A companion package uses Hedgehog to
+  construct randomized documents and check their conversion against Brigid's
+  typed content model.
+- **Hyperview XML.** Brigid also contains a partial HXML implementation for
+  server-driven mobile interfaces, using a related approach to typed elements
+  and attributes.
 
 ## Status and limitations
 
-Brigid is in active development, and its API is not yet stable.
+Brigid is a public, BSD-3-Clause-licensed project in active development.
+Its API is not yet stable.
 
-- The types capture many of the HTML specification’s content rules, not
-  yet all of them.
-- Some rules are stricter than the specification, as above. A link inside
-  emphasis or inside a level-three heading is another example: valid HTML,
-  but rejected, so this site’s Markdown rejects those combinations too.
-- SVG support is partial (the `svg`, `g` and `path` elements so far), and
-  MathML and further “safe” element builders are listed in the project’s
-  plans rather than finished.
+At the audited revision, the GHC 9.10 test run passed 735 core tests and 266
+generator tests. Representative invalid nesting and attribute combinations
+were also independently reproduced as compile-time failures.
+
+The implementation has several important limitations:
+
+- Content-model checks do not enforce every HTML rule, including required
+  attributes, child ordering, cardinality, and context beyond the supported
+  ancestor depth.
+- Some encoded rules reject otherwise valid HTML, and explicit escape hatches
+  can bypass structural checks.
+- SVG support is limited to a small set of elements; MathML and general XML
+  support remain planned.
+- HXML rendering is incomplete and has known escaping and serialization
+  defects.
+- HTML comments, custom element names, and raw script/style content also
+  require additional safety work.
+- Historical benchmarks indicate rendering is slower than blaze-html and
+  lucid, but the existing measurements have methodology and reproducibility
+  limitations. No reliable current performance comparison is established.
+- There is no published Hackage release or CI pipeline yet.
+
+Brigid currently prioritizes expressive typed construction and
+specification-aware correctness. Broader coverage, rendering safety, API
+stabilization, and performance remain active development areas.
 
 ## Resources
 
-- [Source code and README on GitHub](https://github.com/AugmenTab/brigid)
-- The library is released under the BSD-3-Clause licence.
-- This site pins Brigid at commit `e0f4d45` and builds only its core
-  `brigid` package.
+- [Source code on GitHub](https://github.com/AugmenTab/brigid)
+- Licensed under BSD-3-Clause.
+- This site uses Brigid's core library, pinned at commit `e0f4d45`.
+- The repository includes the `brigid-generation` companion package,
+  conformance-oriented tests, and rendering benchmarks.
