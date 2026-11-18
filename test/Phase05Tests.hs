@@ -131,7 +131,7 @@ taxonomyTests =
         [ (slugText (projectSlug p), projectCategory p, projectTopics p, projectTechnologies p) | p <- publishedProjects content ]
           @?= [ ("black", ProgrammingLanguages, [TypeSystems, CompilerEngineering, FormalVerification], ["Haskell", "LLVM IR"])
               , ("brigid", LibrariesTooling, [TypeSystems, WebDevelopment], ["Haskell", "HTML"])
-              , ("lockdown", SimulationGames, [DeterministicSimulation, GameEngines], ["Rust", "Bevy"])
+              , ("paranoia-engine", SimulationGames, [AIAgents, DeterministicSimulation, GameEngines], ["Rust", "Bevy"])
               ]
     , testCase "ids and labels are unique, and ids round-trip" $ do
         let unique xs = length xs == length (sort xs) && and (zipWith (/=) (sort xs) (drop 1 (sort xs)))
@@ -190,9 +190,9 @@ workIndexTests =
         let html = render s WorkIndex
             list = between "<ul class=\"work__list work__list--index\" id=\"work-list\">" "</ul></section>" html
         attributeValues "data-category" list @?= ["programming-languages", "libraries-tooling", "simulation-games"]
-        [ T.takeWhile (/= ' ') t | t <- attributeValues "data-search" list ] @?= ["black", "brigid", "lockdown"]
+        [ T.takeWhile (/= ' ') t | t <- attributeValues "data-search" list ] @?= ["black", "brigid", "paranoia-engine"]
         let brigid = attributeValues "data-search" list !! 1
-        forM_ ["brigid", "spec-compliant html", "libraries &#38; tooling", "haskell", "type systems", "web development"] $ \needle ->
+        forM_ ["brigid", "type-safe html", "libraries &#38; tooling", "haskell", "type systems", "web development"] $ \needle ->
           assertBool (T.unpack needle) (needle `T.isInfixOf` brigid)
         assertBool "lowercase" (T.toLower brigid == brigid)
         assertBool "single spaces" (not ("  " `T.isInfixOf` brigid))
@@ -394,7 +394,7 @@ projectNavTests =
           assertBool "All projects" ("class=\"project-nav__back\" href=\"/work/\"" `T.isInfixOf` html)
     , testCase "hero-less dossiers open with the header and go straight to the content" $ do
         s <- realSite
-        forM_ ["black", "brigid", "lockdown"] $ \slug -> do
+        forM_ ["black", "brigid", "paranoia-engine"] $ \slug -> do
           let html = render s (WorkDetail (slugOf (T.pack slug)))
           assertBool slug ("</nav><div class=\"project__body\"><" `T.isInfixOf` html)
           assertBool (slug <> ": no showcase figure") (not ("project__showcase" `T.isInfixOf` html))
@@ -552,7 +552,7 @@ discoveryTests =
     [ testCase "the real sitemap lists every page but the 404, sorted by path" $ do
         s <- realSite
         let sitemap = contentsOf s "sitemap.xml"
-        urls sitemap @?= map ("https://tylerbaum.dev" <>) ["/", "/about/", "/work/", "/work/black/", "/work/brigid/", "/work/lockdown/", "/writing/"]
+        urls sitemap @?= map ("https://tylerbaum.dev" <>) ["/", "/about/", "/work/", "/work/black/", "/work/brigid/", "/work/paranoia-engine/", "/writing/"]
         assertBool "xml declaration" ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" `T.isPrefixOf` sitemap)
         assertBool "namespace" ("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">" `T.isInfixOf` sitemap)
         assertBool "no 404" (not ("404" `T.isInfixOf` sitemap))
