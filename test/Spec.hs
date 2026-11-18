@@ -3,7 +3,7 @@
 module Main (main) where
 
 import Control.Exception (throwIO, try)
-import Control.Monad (forM, forM_)
+import Control.Monad (forM, forM_, when)
 import Data.ByteString qualified as BS
 import Data.ByteString.Lazy qualified as LBS
 import Data.Either (isLeft)
@@ -157,7 +157,7 @@ manifestTests =
             -- Card art and artifacts; hero art is checked by DossierTests
             -- (it arrives per project as the owner approves it).
             filter (not . T.isInfixOf "/hero.") (map (T.pack . outputText) [ p | (_, p) <- manifestMedia m ])
-              @?= ["media/projects/black/card.svg", "media/projects/black/pipeline.svg", "media/projects/brigid/card.svg", "media/projects/lockdown/card.svg"]
+              @?= ["media/projects/black/card.svg", "media/projects/black/pipeline.svg", "media/projects/brigid/card.svg", "media/projects/lockdown/card.svg", "resume.pdf"]
     , testCase "two pages with the same route are rejected" $
         assertCollision (mkManifest [Home, About, Home] [] [])
     , testCase "two project pages with the same slug are rejected" $
@@ -333,9 +333,10 @@ validationTests =
                     , E.a [ A.href (B.mkRawURL "https://example.com/") ] [ E.text "external" ]
                     ]
                 ]
-            -- Every page's navigation links to /writing/ (it always exists).
+            -- Every page's navigation links to /writing/ (it always exists)
+            -- and to the real site's résumé, so its media is in the manifest.
             pages = [stubPage Home [], stubPage WorkIndex [], stubPage WritingIndex [], bad]
-        m <- either (assertFailure . show) pure (mkManifest (map pageRoute pages) allAssets [])
+        m <- either (assertFailure . show) pure (mkManifest (map pageRoute pages) allAssets (siteMedia theSite))
         let problems = validatePages m [ (route, TE.decodeUtf8 (LBS.toStrict html)) | (route, _, html) <- renderSite (withPages pages) m ]
         sort [ url | BrokenLink _ url _ <- problems ] @?= sort ["/nowhere/", "/about/#missing", "work/", "/assets/missing.png", "#nope"]
     , testCase "an attribute value cannot break out of its quotes (Brigid escapes; the validator still checks)" $ do
@@ -641,3 +642,7 @@ copyAssets from to = do
   forM_ [ "content/projects" </> f | f <- projectFiles, takeFileName f /= ".DS_Store" ] $ \file -> do
     Dir.createDirectoryIfMissing True (takeDirectory (to </> file))
     Dir.copyFile (from </> file) (to </> file)
+  hasResume <- Dir.doesFileExist (from </> "content/resume.pdf")
+  when hasResume $ do
+    Dir.createDirectoryIfMissing True (to </> "content")
+    Dir.copyFile (from </> "content/resume.pdf") (to </> "content/resume.pdf")

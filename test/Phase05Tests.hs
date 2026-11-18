@@ -245,11 +245,11 @@ workIndexTests =
 navigationTests :: TestTree
 navigationTests =
   testGroup "navigation"
-    [ testCase "every page: Home, Work, Writing | monogram | About, Contact (/#contact); the target exists on the homepage" $ do
+    [ testCase "every page: Home, Work, Writing | monogram | About, Resume, Contact (/#contact); the target exists on the homepage" $ do
         s <- realSite
         forM_ (realRoutes s) $ \r -> do
           let header = headerOf (render s r)
-          attributeValues "href" header @?= ["/", "/work/", "/writing/", "/", "/about/", "/#contact"]
+          attributeValues "href" header @?= ["/", "/work/", "/writing/", "/", "/about/", "/resume.pdf", "/#contact"]
         count "id=\"contact\"" (render s Home) @?= 1
     , testCase "on the homepage only Home is current, never Contact" $ do
         s <- realSite
@@ -303,12 +303,15 @@ navigationTests =
 resumeTests :: TestTree
 resumeTests =
   testGroup "résumé"
-    [ testCase "the real site has no résumé, so no résumé link anywhere" $ do
+    [ testCase "the real site publishes content/resume.pdf and links it from every nav and footer" $ do
         s <- realSite
-        siteResumeUrl (siteConfig s) @?= Nothing
-        forM_ (realRoutes s) $ \r ->
-          forM_ ["resume", "Resume", "Résumé", ".pdf"] $ \needle ->
-            assertBool (show r <> " " <> T.unpack needle) (not (needle `T.isInfixOf` render s r))
+        assertBool "a résumé URL" (siteResumeUrl (siteConfig s) /= Nothing)
+        forM_ (realRoutes s) $ \r -> do
+          let html = render s r
+              link = "href=\"/resume.pdf\">Resume<span class=\"visually-hidden\"> (PDF)</span></a>"
+          assertBool (show r <> " nav") (link `T.isInfixOf` headerOf html)
+          assertBool (show r <> " footer") (link `T.isInfixOf` footerOf html)
+          assertBool (show r <> " no accent") (not ("Résumé" `T.isInfixOf` html))
     , testCase "a valid content/resume.pdf is published at /resume.pdf and linked from the nav and footer" $
         withSite (("content/resume.pdf", pdf) : project "demo" []) $ \root s -> do
           forM_ (realRoutes s) $ \r -> do
@@ -419,7 +422,7 @@ footerTests =
                 , "<p class=\"site-footer__copyright\">© 2026 Tyler Baum</p>"
                 , "<p class=\"site-footer__colophon\">Built with Haskell &#38; Brigid.</p>" ] $ \needle ->
             assertBool (show r <> ": " <> T.unpack needle) (needle `T.isInfixOf` footer)
-          attributeValues "href" (between "site-footer__nav" "</nav>" footer) @?= ["/work/", "/writing/", "/about/"]
+          attributeValues "href" (between "site-footer__nav" "</nav>" footer) @?= ["/work/", "/writing/", "/about/", "/resume.pdf"]
           forM_ ["monogram", "about-tree", "<img"] $ \needle ->
             assertBool (show r <> ": footer has " <> T.unpack needle) (not (needle `T.isInfixOf` footer))
     , testCase "contact destinations: in the footer everywhere except the homepage, where Contact sits directly above" $ do

@@ -2,8 +2,9 @@
 
 Checks two states, each at desktop, laptop, tablet, phone and narrow phone:
 
-  real     (dist/ on :8080)         no articles, no résumé: Writing leads to the
-                                    "Coming soon." page; Resume is omitted
+  real     (dist/ on :8080)         no articles, the owner's résumé: Writing
+                                    leads to the "Coming soon." page; Resume
+                                    opens content/resume.pdf
   fixture  (.local/fixture-site on :8082)  a published fixture article and a
                                     fixture PDF: Writing lists the article;
                                     Resume sits between About and Contact and
@@ -29,7 +30,7 @@ SITES = {
     "fixture": os.environ.get("FIXTURE_URL", "http://fixture-preview/"),
 }
 EXPECTED = {
-    "real": ["Home", "Work", "Writing", "About", "Contact"],
+    "real": ["Home", "Work", "Writing", "About", "Resume", "Contact"],
     "fixture": ["Home", "Work", "Writing", "About", "Resume", "Contact"],
 }
 VIEWPORTS = {
@@ -155,21 +156,19 @@ def main() -> int:
               .filter(a => a.getAttribute('href') === '/resume.pdf')
               .map(a => ({ text: a.textContent.trim(), region: a.closest('footer') ? 'footer' : 'nav' }))""")
             report[site]["resumeLinks"] = resume
-            if site == "real":
-                if resume or page.request.get(urljoin(base, "/resume.pdf")).status != 404:
-                    failures.append(f"real: a Resume link or file exists {resume}")
-            else:
-                if sorted(r["region"] for r in resume) != ["footer", "nav"] or any(r["text"] != "Resume (PDF)" for r in resume):
-                    failures.append(f"fixture: Resume links {resume}")
-                r = page.request.get(urljoin(base, "/resume.pdf"))
-                body = r.body()
-                pdf = {"status": r.status, "type": r.headers.get("content-type"), "magic": body[:5].decode("latin-1"), "bytes": len(body)}
-                with page.expect_download() as dl:
-                    page.evaluate("() => { const a = document.createElement('a'); a.href = '/resume.pdf'; a.download = ''; document.body.appendChild(a); a.click(); }")
-                pdf["downloaded"] = os.path.getsize(dl.value.path())
-                report[site]["resumePdf"] = pdf
-                if pdf["status"] != 200 or pdf["type"] != "application/pdf" or pdf["magic"] != "%PDF-" or pdf["downloaded"] != pdf["bytes"]:
-                    failures.append(f"fixture: resume.pdf {pdf}")
+            if sorted(r["region"] for r in resume) != ["footer", "nav"] or any(r["text"] != "Resume (PDF)" for r in resume):
+                failures.append(f"{site}: Resume links {resume}")
+            r = page.request.get(urljoin(base, "/resume.pdf"))
+            body = r.body()
+            pdf = {"status": r.status, "type": r.headers.get("content-type"), "magic": body[:5].decode("latin-1"), "bytes": len(body)}
+            with page.expect_download() as dl:
+                page.evaluate("() => { const a = document.createElement('a'); a.href = '/resume.pdf'; a.download = ''; document.body.appendChild(a); a.click(); }")
+            pdf["downloaded"] = os.path.getsize(dl.value.path())
+            report[site]["resumePdf"] = pdf
+            if pdf["status"] != 200 or pdf["type"] != "application/pdf" or pdf["magic"] != "%PDF-" or pdf["downloaded"] != pdf["bytes"]:
+                failures.append(f"{site}: resume.pdf {pdf}")
+            if site == "real" and os.path.isfile("content/resume.pdf") and pdf["bytes"] != os.path.getsize("content/resume.pdf"):
+                failures.append(f"real: served resume.pdf differs from content/resume.pdf {pdf}")
             report[site]["links"] = crawl(page, base, failures, site)
             sitemap = page.request.get(urljoin(base, "/sitemap.xml")).text()
             report[site]["sitemapHasWriting"] = "https://tylerbaum.dev/writing/</loc>" in sitemap

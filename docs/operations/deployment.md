@@ -236,8 +236,9 @@ completed `dist/` after a successful build.
 
 ### What gets published
 
-There are 41 files: the generator's 40 plus `_headers`. Since post-Phase 07
-update 1, `writing/` is always published; it was 40 before.
+There are 42 files: the generator's 41 plus `_headers`. Since post-Phase 07
+update 1, `writing/` is always published, and the owner's résumé is
+published at `/resume.pdf`.
 
 | Group | Files |
 | --- | --- |
@@ -245,6 +246,7 @@ update 1, `writing/` is always published; it was 40 before.
 | Generated | `sitemap.xml`, `robots.txt` |
 | Assets | 26 files under `assets/`: brand, fonts and their OFL licences, images, `styles/site.css`, `scripts/work-filter.js` |
 | Media | 4 project SVGs under `media/` |
+| Résumé | `resume.pdf`, copied from `content/resume.pdf`; linked from the nav and footer, not listed in the sitemap |
 | Provider | `_headers`, read by Cloudflare and not served |
 
 These are never published:
@@ -558,8 +560,8 @@ response, with browsers revalidating, observed locally as
   year, so **there is deliberately no immutable or long-lived caching on
   `/assets/*`**. The smoke test fails if `immutable` ever appears.
 - **Cost:** one conditional request per asset per page view, answered by
-  304 with no body. That is acceptable at this site's size: 41 files,
-  about 625 KiB.
+  304 with no body. That is acceptable at this site's size: 42 files,
+  about 672 KiB.
 - **Later:** fingerprinted asset names (a content hash in the file name,
   with the generator rewriting references and the manifest and tests
   updated together) would make long immutable caching safe. That is a
