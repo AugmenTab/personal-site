@@ -403,17 +403,19 @@ data Philosophy =
 philosophy :: Philosophy
 philosophy =
   Philosophy
-    { philosophyStatus = DraftCopy
+    { philosophyStatus = FinalCopy
     , philosophyLabel = "Engineering philosophy"
-    , philosophyHeading = "Correctness enables creativity."
-    , philosophyLede = "The more a tool can check for me, the further I can afford to reach. Rigour is not the opposite of ambition; it is what makes ambition affordable."
+    , philosophyHeading = "Confidence isn't evidence."
+    , philosophyLede = "A program can compile, an AI agent can sound certain, and a task can be marked complete while the important thing is still wrong. I want tools that make it easier to establish what actually happened than to take anyone's word for it."
     , philosophyPrinciples =
-        [ Principle "Make correctness practical"
-            "Guarantees only help if people keep them switched on. I want checks that run on every build, explain themselves plainly, and cost less than the bugs they prevent."
-        , Principle "Say where the guarantees end"
-            "A system should be honest about its limits. Black’s compiler rejects a conversion it cannot prove, and its documentation lists what it does not yet claim."
-        , Principle "Keep judgement human"
-            "I use AI to explore and write code. What ships is still decided by people, and confirmed by tests, types and proofs that give the same answer every time."
+        [ Principle "Put the checks in the system."
+            "If a type checker, contract, or automated test can enforce a rule, it shouldn't depend on someone remembering it during review. The more routine failures the machinery can catch, the more attention is left for the difficult parts."
+        , Principle "Define what finished means."
+            "There isn't one universal completion gate. A compiler might need a proof, an engine might need a reproducible replay, and a product might need someone to actually use it. Decide what evidence counts for the work at hand, and make that evidence inspectable."
+        , Principle "Give agents responsibility with boundaries."
+            "I want AI agents to take on substantial engineering work, not just suggest the next few lines. That means giving them room to act, reliable ways to check their results, and constraints they cannot quietly redefine."
+        , Principle "Choose tools on merit, not familiarity."
+            "A language doesn't need to be popular to be the right choice. Sometimes the best tool for a problem is Haskell, Mercury, or something most engineers have never heard of. I'm happy to take the time to learn an unfamiliar tool if it offers a real advantage. Being unusual isn't a virtue on its own, but neither is being conventional."
         ]
     }
 
