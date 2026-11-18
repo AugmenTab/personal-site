@@ -702,18 +702,19 @@ complete list.
 
 ### Homepage copy: final versus draft
 
-Every editorial record carries a `CopyStatus`. **All of it is `DraftCopy`
-and needs owner review before public launch:**
+Every editorial record carries a `CopyStatus`. All homepage editorial copy
+has now been approved by the owner; the project dossier prose is likewise
+approved, with later technical exhibits and improvements tracked separately.
 
 | Copy | Where | Status |
 | --- | --- | --- |
-| Role, name, thesis, disciplines | `Home.introduction` | Draft (working copy from the approved render; layout frozen) |
-| Black summary and three points | `Home.blackTeaser` | Draft. Each point is an implemented compiler capability, checked against the Black repository |
-| Black excerpt | `Home.blackExample` | **Verified, not draft**: `white/test/conformance/NominalRecord.blk` from Black at `c1a45af`, an `accept` case in the compiler's conformance suite, shown verbatim (a test checks the rendering is lossless) |
-| Engineering Philosophy | `Home.philosophy` | **Placeholder** (owner, 2026-11-15): directional copy only. The section's place on the page and its lack of a link from the navigation are also open, for the owner's content pass |
-| About profile (lede, "Work and interests", note) | `About.profile` | Draft: the verified Phase 03 biography, arranged in sections. Background and motivations are left for the owner to supply |
-| Contact invitation | `Home.contactCopy` | Draft |
-| Black and Paranoia Engine project pages | `content/projects/{black,paranoia-engine}/body.md` | Owner-approved dossier copy, grounded in repository evidence audits; engineering exhibits remain to be refined |
+| Role, name, thesis, disciplines | `Home.introduction` | Approved; the hero layout remains frozen |
+| Black summary and three points | `Home.blackTeaser` | Approved, with capabilities grounded in the Black audit |
+| Black excerpt | `Home.blackExample` | **Verified, not illustrative**: `white/test/conformance/NominalRecord.blk` from Black at `c1a45af`, an accepted conformance case |
+| Engineering Philosophy | `Home.philosophy` | Approved; “Confidence isn't evidence.” |
+| About profile | `About.profile` | Approved |
+| Contact invitation | `Home.contactCopy` | Approved |
+| Black, Brigid and Paranoia Engine dossiers | `content/projects/` | Approved; future engineering fixes and exhibits tracked in `docs/operations/post-deploy-project-followups.md` |
 
 ## Site configuration
 
@@ -731,15 +732,14 @@ every check and build (a bad value fails with `invalid site settings`):
 
 ### Contact destinations
 
-Only verified destinations are listed: **GitHub**
-(`https://github.com/AugmenTab`). LinkedIn and email are omitted until the
-owner supplies them. To add one, append it to `settingsContacts`:
+Verified destinations are **GitHub**, **LinkedIn**, and **email**.
+They are configured once in `settingsContacts`:
 
 ```haskell
 settingsContacts =
   [ GitHub "AugmenTab"
-  , LinkedIn "your-public-profile-id"     -- https://www.linkedin.com/in/{id}/
-  , Email "name@example.com"              -- only once mail to it is delivered
+  , LinkedIn "thebaum"
+  , Email "tyler.baum@protonmail.com"
   ]
 ```
 
@@ -749,9 +749,8 @@ link: a small icon beside the label ("GitHub"). The URL or address is not
 shown, but it stays in the link as visually hidden text, so screen readers
 still announce the destination. The icons are `assets/images/icon-{github,linkedin,email}.svg`,
 used as CSS masks, so they take the text colour on hover and in forced
-colours. There is no copy-to-clipboard control; one for the email
-address, if added later, must be a separate button beside the card, never
-inside the link. The constructors fix the scheme and host, and validation
+colours. There is no copy-to-clipboard control; if added later, it must be a
+separate button beside the email card, never inside the link. The constructors fix the scheme and host, and validation
 rejects anything but a plain username, profile id or address (no display
 names, queries or uppercase domains), so a contact cannot point anywhere
 unexpected. The footer repeats the destinations on every page except the
