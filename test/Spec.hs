@@ -84,8 +84,8 @@ htmlOf = TE.decodeUtf8 . LBS.toStrict . renderPage (siteConfig theSite) . pageFo
 count :: T.Text -> T.Text -> Int
 count needle haystack = length (T.breakOnAll needle haystack)
 
--- | A minimal valid page for synthetic sites. It carries the @#contact@
--- id, which the shared navigation links to on the homepage.
+-- | A minimal valid page for synthetic sites. (The @#contact@ id the
+-- navigation links to is in the shared footer of every page.)
 stubPage :: Route -> [E.ChildHTML E.Main E.Body] -> Page
 stubPage route body =
   Page
@@ -93,7 +93,7 @@ stubPage route body =
     , pageTitle = "Stub"
     , pageDescription = "Stub page."
     , pageLayout = Interior
-    , pageMain = E.h1 [] [ E.text "Stub" ] : E.p [ A.id contactId ] [] : body
+    , pageMain = E.h1 [] [ E.text "Stub" ] : body
     }
 
 withPages :: [Page] -> Site
@@ -234,7 +234,7 @@ renderTests =
     , testCase "shared navigation links to routes, marking only the current page" $
         forM_ allRoutes $ \r -> do
           let html = htmlOf r
-          forM_ ["/\"", "/work/\"", "/writing/\"", "/about/\"", "/#contact\""] $ \href ->
+          forM_ ["/\"", "/work/\"", "/writing/\"", "/about/\"", "#contact\""] $ \href ->
             assertBool (show r <> " nav " <> T.unpack href) (("class=\"site-nav__link\" href=\"" <> href) `T.isInfixOf` html)
           let header = fst (T.breakOn "</header>" html)
               current = [ label | (label, route) <- [("Home", Home), ("Work", WorkIndex), ("Writing", WritingIndex), ("About", About)], route == r ]

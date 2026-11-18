@@ -13,8 +13,8 @@ report; every problem is appended to `failures`.
     without JavaScript every card shows and no control does;
   - project pages below 900px: the compact "On this page" index, collapsed
     and expanded, without JavaScript; desktop sidebar unchanged;
-  - Contact: /#contact from a project page and on the homepage (no reload),
-    in view and not under any fixed UI;
+  - Contact: #contact (the shared footer) from a project page, the homepage
+    and About, without leaving the page, in view and not under any fixed UI;
   - footer at every width; About; discovery files;
   - the fixture site (http://fixture-preview/, from tools/art/fixture_site.py)
     for Writing and the Résumé link, which the real site does not have yet.
@@ -319,29 +319,28 @@ def project_nav_checks(browser, base, failures):
 
 def contact_checks(browser, base, failures):
     report = {}
-    # From a project page: the global Contact link lands on the homepage section.
-    page = browser.new_page(viewport=VIEWPORTS["desktop"], device_scale_factor=1)
-    page.goto(urljoin(base, "/work/paranoia-engine/"), wait_until="networkidle")
-    page.click(".site-nav a[href='/#contact']")
-    page.wait_for_load_state("networkidle")
-    stable.scroll_settled(page)   # smooth scrolling settles (was a 900 ms sleep)
-    state = page.evaluate("""() => { const r = document.getElementById('contact').getBoundingClientRect();
-        const fixed = [...document.querySelectorAll('body *')].filter(e => ['fixed', 'sticky'].includes(getComputedStyle(e).position) && e.getBoundingClientRect().height > 0)
-          .map(e => e.className);
-        return { path: location.pathname, hash: location.hash, top: Math.round(r.top), inView: r.top >= 0 && r.top < innerHeight, fixedUi: fixed }; }""")
-    report["fromProject"] = state
-    if state["path"] != "/" or state["hash"] != "#contact" or not state["inView"] or state["fixedUi"]:
-        failures.append(f"contact from a project page: {state}")
-    shot(page, "contact/contact-from-project-desktop.png", full_page=False)
-    # On the homepage: the same link scrolls without a reload.
-    page.evaluate("() => { window.__phase05 = 'kept'; window.scrollTo(0, 0); }")
-    page.click(".site-nav a[href='/#contact']")
-    stable.scroll_settled(page)
-    same = page.evaluate("() => ({ kept: window.__phase05 === 'kept', hash: location.hash, inView: document.getElementById('contact').getBoundingClientRect().top < innerHeight })")
-    report["onHomepage"] = same
-    if not (same["kept"] and same["hash"] == "#contact" and same["inView"]):
-        failures.append(f"contact on the homepage reloaded or missed: {same}")
-    page.close()
+    # Prelaunch corrections: Contact is the shared footer's #contact section on
+    # every page, so the global Contact link jumps within the current page
+    # (no navigation, no reload) wherever it is followed.
+    for path, name in (("/work/paranoia-engine/", "project"), ("/", "home"), ("/about/", "about")):
+        page = browser.new_page(viewport=VIEWPORTS["desktop"], device_scale_factor=1)
+        page.goto(urljoin(base, path), wait_until="networkidle")
+        page.evaluate("() => { window.__phase05 = 'kept'; window.scrollTo(0, 0); }")
+        page.click(".site-nav a[href='#contact']")
+        stable.scroll_settled(page)   # smooth scrolling settles (was a 900 ms sleep)
+        state = page.evaluate("""() => { const r = document.getElementById('contact').getBoundingClientRect();
+            const fixed = [...document.querySelectorAll('body *')].filter(e => ['fixed', 'sticky'].includes(getComputedStyle(e).position) && e.getBoundingClientRect().height > 0)
+              .map(e => e.className);
+            return { kept: window.__phase05 === 'kept', path: location.pathname, hash: location.hash, top: Math.round(r.top),
+                     inView: r.top >= 0 && r.top < innerHeight, inFooter: !!document.getElementById('contact').closest('footer'),
+                     count: document.querySelectorAll('#contact').length, fixedUi: fixed }; }""")
+        report[f"from/{name}"] = state
+        if not (state["kept"] and state["path"] == path and state["hash"] == "#contact" and state["inView"]
+                and state["inFooter"] and state["count"] == 1) or state["fixedUi"]:
+            failures.append(f"contact from {path}: {state}")
+        if name == "project":
+            shot(page, "contact/contact-from-project-desktop.png", full_page=False)
+        page.close()
 
     for vp_name in ("desktop", "mobile", "narrow"):
         page = browser.new_page(viewport=VIEWPORTS[vp_name], device_scale_factor=1)
@@ -352,26 +351,26 @@ def contact_checks(browser, base, failures):
         if controls != ["https://github.com/AugmenTab", "https://www.linkedin.com/in/thebaum/", "mailto:tyler.baum@protonmail.com"]:
             failures.append(f"contact/{vp_name}: controls {controls}")
         # Update 1: icon and label side by side; no visible URL.
-        cards = page.evaluate("""() => [...document.querySelectorAll('#contact .contact__link')].map(a => {
+        links = page.evaluate("""() => [...document.querySelectorAll('#contact .site-footer__link--contact')].map(a => {
             const i = a.querySelector('.contact__icon').getBoundingClientRect();
-            const l = a.querySelector('.contact__label').getBoundingClientRect();
+            const l = a.querySelector('.site-footer__label').getBoundingClientRect();
             const box = a.getBoundingClientRect();
             const shown = [...a.querySelectorAll('span:not(.visually-hidden)')].map(s => s.textContent).join('');
             return { label: shown, iconVisible: i.width > 0 && i.height > 0,
                      iconBeforeLabel: i.right <= l.left, centred: Math.abs((i.top + i.bottom) / 2 - (l.top + l.bottom) / 2) <= 3,
                      inside: i.left >= box.left && l.right <= box.right, width: Math.round(box.width), height: Math.round(box.height) }; })""")
-        report[f"cards/{vp_name}"] = cards
-        for card in cards:
-            if any(host in card["label"] for host in ("github.com", "linkedin.com", "@")) or not (card["iconVisible"] and card["iconBeforeLabel"] and card["centred"] and card["inside"]):
-                failures.append(f"contact/{vp_name}: card layout {card}")
+        report[f"links/{vp_name}"] = links
+        for link in links:
+            if any(host in link["label"] for host in ("github.com", "linkedin.com", "@")) or not (link["iconVisible"] and link["iconBeforeLabel"] and link["centred"] and link["inside"]) or link["height"] < 24:
+                failures.append(f"contact/{vp_name}: link layout {link}")
         page.locator("#contact").scroll_into_view_if_needed()
         element_shot(page, "#contact", f"contact/home-contact-{vp_name}.png")
-        # Keyboard: the card takes a visible focus ring.
-        page.focus("#contact .contact__link")
+        # Keyboard: the link takes a visible focus ring.
+        page.focus("#contact .site-footer__link--contact")
         ring = page.evaluate(FOCUS_RING_JS)
         report[f"focus/{vp_name}"] = ring
         if not ring["ring"]:
-            failures.append(f"contact/{vp_name}: no visible focus ring on the card")
+            failures.append(f"contact/{vp_name}: no visible focus ring on the link")
         if vp_name in ("desktop", "mobile"):
             element_shot(page, "#contact", f"contact/home-contact-{vp_name}-focus.png")
         page.close()
@@ -480,7 +479,7 @@ def fixture_checks(browser, ready, watch, checks_js, failures):
             label = f"fixture/{name}/{vp_name}"
             if response.status != 200 or checks["horizontalOverflow"] or bad:
                 failures.append(f"{label}: status {response.status}, overflow {checks['horizontalOverflow']}, problems {bad}")
-            if nav["hrefs"] != ["/", "/work/", "/writing/", "/about/", "/resume.pdf", "/#contact"]:
+            if nav["hrefs"] != ["/", "/work/", "/writing/", "/about/", "/resume.pdf", "#contact"]:
                 failures.append(f"{label}: nav {nav['hrefs']}")
             if nav["overflowing"] or nav["overlaps"]:
                 failures.append(f"{label}: nav links overflow or overlap {nav}")

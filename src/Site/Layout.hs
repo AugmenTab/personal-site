@@ -11,6 +11,8 @@ module Site.Layout
   , NavTarget (..)
   , navItems
   , footerLinks
+  , ContactCopy (..)
+  , contactCopy
   ) where
 
 import Data.ByteString.Lazy qualified as LBS
@@ -26,9 +28,9 @@ import Brigid.Types qualified as B
 
 import Site.Assets qualified as Asset
 import Site.Components (decorativeImage)
-import Site.Page (Layout (..), Page (..), SiteConfig (..))
-import Site.Routes (Route (..), contactId, mainId, routeFragmentUrl, routeUrl)
-import Site.Settings (Settings (..), canonicalUrl, contactDisplay, contactHref, contactLabel, contacts)
+import Site.Page (CopyStatus (..), Layout (..), Page (..), SiteConfig (..))
+import Site.Routes (Route (..), contactId, elementId, mainId, routeUrl)
+import Site.Settings (Settings (..), canonicalUrl, contactDisplay, contactHref, contactKind, contactLabel, contacts)
 
 renderPage :: SiteConfig -> Page -> LBS.ByteString
 renderPage config = renderLazyHTML . pageDocument config
@@ -124,20 +126,23 @@ headContent config page =
 data NavTarget
   = ToRoute Route
     -- ^ A generated page.
-  | ToSection Route B.Id
-    -- ^ An element on a generated page (e.g. @/#contact@).
+  | ToFragment B.Id
+    -- ^ An element present on every page, linked as a same-page fragment
+    -- (@#contact@: the shared footer's Contact section).
   | ToDocument B.RawURL
-    -- ^ A published file that is not a page (the résumé PDF).
+    -- ^ A published file that is not a page (the résumé PDF). It opens in
+    -- a new tab, so the site stays where the reader left it.
 
 -- | One primary-navigation destination. Every one is a generated route, an
--- element on one, or a published file, so navigation never depends on the
--- current page.
+-- element on every page, or a published file, so navigation never leads
+-- to a missing target.
 data NavItem =
   NavItem
     { navLabel :: T.Text
     , navTarget :: NavTarget
     , navNote :: Maybe T.Text
-      -- ^ Extra words for assistive technology, e.g. @"(PDF)"@.
+      -- ^ Extra words for assistive technology, e.g. @"(PDF, opens in a
+      -- new tab)"@.
     }
 
 -- | The two link groups either side of the monogram medallion:
@@ -147,8 +152,8 @@ data NavItem =
 -- Writing is always present: its index exists even before any article is
 -- published (a "Coming soon." page). Resume appears only when a résumé PDF
 -- is published, so the navigation never links to a missing file; its
--- visible label is "Resume" (no accent), with "(PDF)" for assistive
--- technology.
+-- visible label is "Resume" (no accent). Contact jumps to the current
+-- page's footer.
 navItems :: SiteConfig -> ([NavItem], [NavItem])
 navItems config =
   ( [ NavItem "Home" (ToRoute Home) Nothing
@@ -156,9 +161,18 @@ navItems config =
     , NavItem "Writing" (ToRoute WritingIndex) Nothing
     ]
   , [ NavItem "About" (ToRoute About) Nothing ]
-      <> [ NavItem "Resume" (ToDocument url) (Just "(PDF)") | Just url <- [siteResumeUrl config] ]
-      <> [ NavItem "Contact" (ToSection Home contactId) Nothing ]
+      <> resumeItem config
+      <> [ NavItem "Contact" (ToFragment contactId) Nothing ]
   )
+
+-- | The résumé link, when a résumé PDF is published.
+resumeItem :: SiteConfig -> [NavItem]
+resumeItem config =
+  [ NavItem "Resume" (ToDocument url) (Just resumeNote) | Just url <- [siteResumeUrl config] ]
+
+-- | What assistive technology hears after "Resume".
+resumeNote :: T.Text
+resumeNote = "(PDF, opens in a new tab)"
 
 siteHeader :: SiteConfig -> Route -> E.ChildHTML E.Body grandparent
 siteHeader config current =
@@ -175,74 +189,104 @@ siteHeader config current =
     (start, end) = navItems config
 
 -- | A navigation link. Only a page link can be the current page: Contact
--- is a section of the homepage, so on the homepage Home alone is current.
+-- is a section of every page's footer, so it is never current.
+--
+-- A document link (the résumé) opens in a new tab: @target="_blank"@ with
+-- @rel="noopener noreferrer"@, so the new tab gets no handle on this one
+-- and no referrer. Page and fragment links keep the default behaviour.
+-- (Brigid's typed 'A.rel' takes one relationship and repeating it emits a
+-- second, ignored @rel@ attribute, so the two tokens are one attribute.)
 navLink :: HTML.Class -> HTML.Class -> Route -> NavItem -> E.ChildHTML E.UnorderedList grandparent
 navLink itemClass linkClass current item =
   E.li [ A.class_ itemClass ]
-    [ E.a ( [ A.class_ linkClass, A.href target ]
-            <> [ A.aria_current HTML.CurrentPage | isCurrent ]
+    [ E.a ( [ A.class_ linkClass ]
+            <> targetAttributes
           )
         ( E.text (navLabel item)
             : [ E.span [ A.class_ "visually-hidden" ] [ E.text (" " <> note) ] | Just note <- [navNote item] ]
         )
     ]
   where
-    (target, isCurrent) =
+    targetAttributes =
       case navTarget item of
-        ToRoute route -> (routeUrl route, route == current)
-        ToSection route fragment -> (routeFragmentUrl route fragment, False)
-        ToDocument url -> (url, False)
+        ToRoute route -> A.href (routeUrl route) : [ A.aria_current HTML.CurrentPage | route == current ]
+        ToFragment fragment -> [ A.href fragment ]
+        ToDocument url -> [ A.href url, A.target HTML.Blank, A.customAttribute "rel" "noopener noreferrer" ]
 
 --------------------------------------------------------------------------------
 -- Footer
 
 -- | The footer's site links: the content destinations, without Home (the
--- monogram and the name lead there) or Contact (the footer lists the
--- destinations themselves).
+-- monogram and the name lead there) or Contact (the footer's own Contact
+-- section follows them).
 footerLinks :: SiteConfig -> [NavItem]
 footerLinks config =
   [ NavItem "Work" (ToRoute WorkIndex) Nothing
   , NavItem "Writing" (ToRoute WritingIndex) Nothing
   , NavItem "About" (ToRoute About) Nothing
   ]
-    <> [ NavItem "Resume" (ToDocument url) (Just "(PDF)") | Just url <- [siteResumeUrl config] ]
+    <> resumeItem config
 
--- | The site footer: identity, site links, contact destinations, and the
--- copyright and colophon line. One ornament (a ruled diamond); no
--- monogram and no tree emblem.
+-- | The Contact section's own copy.
+data ContactCopy =
+  ContactCopy
+    { contactStatus :: CopyStatus
+    , contactInvitation :: T.Text
+    }
+
+-- | Owner-approved contact invitation.
+contactCopy :: ContactCopy
+contactCopy =
+  ContactCopy
+    { contactStatus = FinalCopy
+    , contactInvitation = "Questions about a project, or an idea worth building? I’d be glad to hear from you."
+    }
+
+-- | The site footer, identical in structure on every page (prelaunch
+-- correction; it used to drop its contact column on the homepage, which
+-- had a Contact section of its own):
 --
--- The contact column is left out on the homepage, whose Contact section
--- sits directly above the footer with the same destinations: the same
--- links twice in a row would be redundant.
+-- 1. identity: the name and the thesis;
+-- 2. Site: a heading and a row of site links;
+-- 3. Contact (@#contact@, the target of every Contact link): a heading,
+--    the invitation and a row of the verified destinations, each one link;
+-- 4. the copyright and colophon line.
+--
+-- Site and Contact stack beside the identity; their links run in rows.
+-- One ornament (a ruled diamond); no monogram and no tree emblem.
 siteFooter :: SiteConfig -> Route -> E.ChildHTML E.Body grandparent
 siteFooter config current =
   E.footer [ A.class_ "site-footer" ]
     [ E.div [ A.class_ "site-footer__ornament", A.aria_hidden True ] []
     , E.div [ A.class_ "site-footer__inner" ]
-        ( [ E.div [ A.class_ "site-footer__identity" ]
-              [ E.p [ A.class_ "site-footer__name" ] [ E.text (settingsName settings) ]
-              , E.p [ A.class_ "site-footer__thesis" ] [ E.text (settingsThesis settings) ]
-              ]
-          , E.nav [ A.class_ "site-footer__nav", A.aria_label "Footer" ]
-              [ E.p [ A.class_ "site-footer__heading" ] [ E.text "Site" ]
-              , E.ul [ A.class_ "site-footer__links" ] (map (navLink "site-footer__item" "site-footer__link" current) (footerLinks config))
-              ]
-          ]
-            <> [ E.div [ A.class_ "site-footer__contact" ]
-                   [ E.p [ A.class_ "site-footer__heading" ] [ E.text "Contact" ]
-                   , E.ul [ A.class_ "site-footer__links" ]
-                       [ E.li [ A.class_ "site-footer__item" ]
-                           [ E.a [ A.class_ "site-footer__link", A.href (B.mkRawURL (contactHref c)) ]
-                               [ E.text (contactLabel c)
-                               , E.span [ A.class_ "visually-hidden" ] [ E.text (": " <> contactDisplay c) ]
+        [ E.div [ A.class_ "site-footer__identity" ]
+            [ E.p [ A.class_ "site-footer__name" ] [ E.text (settingsName settings) ]
+            , E.p [ A.class_ "site-footer__thesis" ] [ E.text (settingsThesis settings) ]
+            ]
+        , E.div [ A.class_ "site-footer__sections" ]
+            [ E.nav [ A.class_ "site-footer__nav", A.aria_label "Footer" ]
+                [ E.h2 [ A.class_ "site-footer__heading" ] [ E.text "Site" ]
+                , E.ul [ A.class_ "site-footer__links" ] (map (navLink "site-footer__item" "site-footer__link" current) (footerLinks config))
+                ]
+            , E.section [ A.class_ "site-footer__contact", A.id contactId, A.aria_labelledby (NEL.singleton contactTitleId) ]
+                ( [ E.h2 [ A.class_ "site-footer__heading", A.id contactTitleId ] [ E.text "Contact" ]
+                  , E.p [ A.class_ "site-footer__invitation" ] [ E.text (contactInvitation contactCopy) ]
+                  ]
+                    <> [ E.ul [ A.class_ "site-footer__links site-footer__links--contact" ]
+                           [ E.li [ A.class_ "site-footer__item" ]
+                               [ E.a [ A.class_ "site-footer__link site-footer__link--contact", A.href (B.mkRawURL (contactHref c)) ]
+                                   [ E.span [ A.class_ (HTML.Class ("contact__icon contact__icon--" <> contactKind c)), A.aria_hidden True ] []
+                                   , E.span [ A.class_ "site-footer__label" ] [ E.text (contactLabel c) ]
+                                   , E.span [ A.class_ "visually-hidden" ] [ E.text (": " <> contactDisplay c) ]
+                                   ]
                                ]
+                           | c <- destinations
                            ]
-                       | c <- destinations
+                       | not (null destinations)
                        ]
-                   ]
-               | current /= Home, not (null destinations)
-               ]
-        )
+                )
+            ]
+        ]
     , E.div [ A.class_ "site-footer__base" ]
         [ E.p [ A.class_ "site-footer__copyright" ]
             [ E.text ("© " <> settingsCopyrightYears settings <> " " <> settingsName settings) ]
@@ -252,3 +296,6 @@ siteFooter config current =
   where
     settings = siteSettings config
     destinations = contacts settings
+
+contactTitleId :: B.Id
+contactTitleId = elementId "contact-title"
