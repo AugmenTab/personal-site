@@ -154,6 +154,12 @@ realSiteTests =
         cardHrefs html @?= ["/work/brigid/", "/work/lockdown/"]
         forM_ (cardHrefs html) $ \href ->
           assertBool (T.unpack href) (href `elem` map routePath routes)
+    , testCase "the secondary hero CTA introduces the author" $ do
+        s <- realSite
+        let hero = sectionOf "top" (render s Home)
+        assertBool "About destination" ("class=\"button button--secondary\" href=\"/about/\"" `T.isInfixOf` hero)
+        assertBool "About label" ("About me" `T.isInfixOf` textOf hero)
+        assertBool "no obsolete About and Contact label" (not ("About & contact" `T.isInfixOf` textOf hero))
     , testCase "the Black teaser links to the published Black page" $ do
         s <- realSite
         let teaser = sectionOf "black" (render s Home)
