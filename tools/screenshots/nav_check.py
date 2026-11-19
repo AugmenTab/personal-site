@@ -4,7 +4,7 @@ Checks two states, each at desktop, laptop, tablet, phone and narrow phone:
 
   real     (dist/ on :8080)         no articles, the owner's résumé: Writing
                                     leads to the "Coming soon." page; Resume
-                                    opens content/resume.pdf
+                                    opens content/resume.pdf in a new tab
   fixture  (.local/fixture-site on :8082)  a published fixture article and a
                                     fixture PDF: Writing lists the article;
                                     Resume sits between About and Contact and
@@ -154,9 +154,10 @@ def main() -> int:
 
             resume = page.evaluate("""() => [...document.querySelectorAll('.site-nav__link, .site-footer__link')]
               .filter(a => a.getAttribute('href') === '/resume.pdf')
-              .map(a => ({ text: a.textContent.trim(), region: a.closest('footer') ? 'footer' : 'nav' }))""")
+              .map(a => ({ text: a.textContent.trim(), region: a.closest('footer') ? 'footer' : 'nav',
+                             target: a.getAttribute('target'), rel: a.getAttribute('rel') }))""")
             report[site]["resumeLinks"] = resume
-            if sorted(r["region"] for r in resume) != ["footer", "nav"] or any(r["text"] != "Resume (PDF)" for r in resume):
+            if sorted(r["region"] for r in resume) != ["footer", "nav"] or any(r["text"] != "Resume (PDF, opens in a new tab)" or r["target"] != "_blank" or r["rel"] != "noopener noreferrer" for r in resume):
                 failures.append(f"{site}: Resume links {resume}")
             r = page.request.get(urljoin(base, "/resume.pdf"))
             body = r.body()

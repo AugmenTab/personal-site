@@ -7,13 +7,15 @@
 --    reconstructed artwork;
 -- 2. Selected Work: the remaining featured projects, from content;
 -- 3. Engineering Philosophy: a short typographic statement;
--- 4. Writing: recent published articles, only when there are any;
--- 5. Contact (Phase 05): a short invitation and the verified destinations.
---    The personal profile is the About page; the two are separate.
+-- 4. Writing: recent published articles, only when there are any.
+--
+-- Contact is not a section here: it is the shared footer of every page
+-- ("Site.Layout"), so the homepage ends with its last section and the footer.
+-- The personal profile is the About page.
 --
 -- Everything shown about a project comes from its published content record
 -- ("Site.Content.Types"); the only copy kept here is the introduction, the
--- Black teaser's differentiators, the philosophy and the contact invitation.
+-- Black teaser's differentiators, and the philosophy.
 -- Copy whose 'CopyStatus' is 'DraftCopy' awaits owner review (see README
 -- "Homepage copy").
 module Site.Pages.Home
@@ -35,8 +37,6 @@ module Site.Pages.Home
   , blackExample
   , BlackExample (..)
   , writingPreviewLimit
-  , ContactCopy (..)
-  , contactCopy
   ) where
 
 import Data.Char (isAlpha, isAlphaNum, isDigit, isUpper)
@@ -53,16 +53,12 @@ import Brigid.Types qualified as B
 import Site.Assets qualified as Asset
 import Site.Components (HeadingLevel (..), decorativeImage, projectCard, sectionHeading)
 import Site.Content.Types
-import Site.Page (Layout (..), Page (..), SiteConfig (..))
-import Site.Routes (Route (About, Home, WorkDetail, WorkIndex, WritingArticle, WritingIndex), Slug, contactId, elementId, mkSlug, routeUrl)
-import Site.Settings (Settings (..), contactDisplay, contactHref, contactKind, contactLabel, contacts, ownerSettings)
+import Site.Page (CopyStatus (..), Layout (..), Page (..), SiteConfig (..))
+import Site.Routes (Route (About, Home, WorkDetail, WorkIndex, WritingArticle, WritingIndex), Slug, elementId, mkSlug, routeUrl)
+import Site.Settings (Settings (..), ownerSettings)
 
 --------------------------------------------------------------------------------
 -- Content
-
--- | Whether a piece of homepage copy has been approved by the owner.
-data CopyStatus = DraftCopy | FinalCopy
-  deriving (Eq, Show)
 
 -- | What the homepage shows, derived from the loaded content.
 data HomeContent =
@@ -99,7 +95,7 @@ homeContent content =
 -- The page
 
 page :: SiteConfig -> HomeContent -> Page
-page config home =
+page _config home =
   Page
     { pageRoute = Home
     , pageTitle = "Tyler Baum — Software Engineer"
@@ -110,7 +106,6 @@ page config home =
           <> [ selectedWork (homeSelected home) | hasSelectedWork ]
           <> [ philosophySection ]
           <> [ writingPreview (homeArticles home) | not (null (homeArticles home)) ]
-          <> [ contactSection (siteSettings config) ]
     }
   where
     hasSelectedWork = not (null (homeSelected home))
@@ -468,51 +463,9 @@ writingPreview articles =
         ]
 
 --------------------------------------------------------------------------------
--- Contact (target of the navigation's Contact link)
-
--- | The Contact section's own copy.
-data ContactCopy =
-  ContactCopy
-    { contactStatus :: CopyStatus
-    , contactInvitation :: T.Text
-    }
-
--- | Owner-approved contact invitation.
-contactCopy :: ContactCopy
-contactCopy =
-  ContactCopy
-    { contactStatus = FinalCopy
-    , contactInvitation = "Questions about a project, or an idea worth building? I’d be glad to hear from you."
-    }
-
--- | A short invitation and the verified destinations ("Site.Settings"),
--- each exactly one link. No form and no backend.
---
--- Each card is the link itself: a small icon beside the destination's
--- label ("GitHub"). The full URL is not shown (Phase 05 update 1); it is
--- kept as visually hidden text so the link's accessible name still says
--- where it goes. The icon is a decorative CSS mask (see site.css).
-contactSection :: Settings -> E.ChildHTML E.Main grandparent
-contactSection settings =
-  E.section [ A.class_ "contact", A.id contactId, A.aria_labelledby (NEL.singleton contactTitleId) ]
-    [ sectionHeading ["section-title--quiet"] contactTitleId "Contact"
-    , E.p [ A.class_ "contact__invitation" ] [ E.text (contactInvitation contactCopy) ]
-    , E.ul [ A.class_ "contact__links" ]
-        [ E.li [ A.class_ "contact__item" ]
-            [ E.a [ A.class_ "contact__link", A.href (B.mkRawURL (contactHref c)) ]
-                [ E.span [ A.class_ (HTML.Class ("contact__icon contact__icon--" <> contactKind c)), A.aria_hidden True ] []
-                , E.span [ A.class_ "contact__label" ] [ E.text (contactLabel c) ]
-                , E.span [ A.class_ "visually-hidden" ] [ E.text (": " <> contactDisplay c) ]
-                ]
-            ]
-        | c <- contacts settings
-        ]
-    ]
-
---------------------------------------------------------------------------------
 -- Ids
 
-topId, heroTitleId, blackId, blackTitleId, selectedWorkId, workTitleId, philosophyId, philosophyTitleId, writingId, writingTitleId, contactTitleId :: B.Id
+topId, heroTitleId, blackId, blackTitleId, selectedWorkId, workTitleId, philosophyId, philosophyTitleId, writingId, writingTitleId :: B.Id
 topId = elementId "top"
 heroTitleId = elementId "hero-title"
 blackId = elementId "black"
@@ -523,4 +476,3 @@ philosophyId = elementId "philosophy"
 philosophyTitleId = elementId "philosophy-title"
 writingId = elementId "writing"
 writingTitleId = elementId "writing-title"
-contactTitleId = elementId "contact-title"

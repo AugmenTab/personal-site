@@ -2,9 +2,8 @@
 
 -- | The About page: the personal profile (Phase 05).
 --
--- About introduces the person; Contact (a section of the homepage, linked
--- from every page as @/#contact@) lists the ways to reach them. The two no
--- longer share a page or a section. About keeps the tree-and-eclipse
+-- About introduces the person; Contact (the shared footer's section on every
+-- page, linked as @#contact@) lists the ways to reach them. About keeps the tree-and-eclipse
 -- emblem, which appears nowhere else on the site.
 --
 -- The owner-approved About copy is a lede plus three prose paragraphs:
@@ -27,9 +26,8 @@ import Brigid.Types qualified as B
 
 import Site.Assets qualified as Asset
 import Site.Components (pageHeading)
-import Site.Page (Layout (..), Page (..), SiteConfig, sectionTitle)
-import Site.Pages.Home (CopyStatus (..))
-import Site.Routes (Route (About, Home), contactId, elementId, routeFragmentUrl)
+import Site.Page (CopyStatus (..), Layout (..), Page (..), SiteConfig, sectionTitle)
+import Site.Routes (Route (About), contactId, elementId)
 
 -- | The owner's approved personal introduction.
 data Profile =
@@ -67,7 +65,7 @@ page config =
                     ( [ E.p [ A.class_ "about__lede" ] [ E.text (profileLede profile) ] ]
                         <> [ E.p [ A.class_ "about__bio" ] [ E.text p ] | p <- profileParagraphs profile ]
                         <> [ E.p [ A.class_ "about__onward" ]
-                               [ E.a [ A.href (routeFragmentUrl Home contactId) ]
+                               [ E.a [ A.href contactId ]
                                    [ E.text "Get in touch"
                                    , E.span [ A.class_ "about__onward-arrow", A.aria_hidden True ] [ E.text " →" ]
                                    ]

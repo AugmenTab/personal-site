@@ -24,7 +24,7 @@ import Site.Build
 import Site.Content.Load (loadContent)
 import Site.Content.Types
 import Site.Definition (siteFrom)
-import Site.Layout (renderPage)
+import Site.Layout (ContactCopy (..), contactCopy, renderPage)
 import Site.Page (Page (..), Site (..))
 import Site.Pages.Home
 import Site.Settings (contactHref, contacts, ownerSettings)
@@ -165,7 +165,7 @@ realSiteTests =
         let teaser = sectionOf "black" (render s Home)
         attributeValues "href" teaser @?= ["/work/black/"]
         assertBool "status from the record" ("In development · Playground planned" `T.isInfixOf` teaser)
-    , testCase "contact links are the verified destinations only, each one control" $ do
+    , testCase "contact links (in the shared footer) are the verified destinations only, each one control" $ do
         map contactHref (contacts ownerSettings) @?= ["https://github.com/AugmenTab", "https://www.linkedin.com/in/thebaum/", "mailto:tyler.baum@protonmail.com"]
         s <- realSite
         let contact = sectionOf "contact" (render s Home)
@@ -324,6 +324,14 @@ structureTests =
         count "class=\"philosophy__principle\"" section @?= length (philosophyPrinciples philosophy)
         assertBool "three to five principles" (length (philosophyPrinciples philosophy) `elem` [3 .. 5])
         assertBool "no imagery" (not ("<img" `T.isInfixOf` section))
+    , testCase "the four principles render in their intended order" $ do
+        s <- realSite
+        let section = sectionOf "philosophy" (render s Home)
+            titles = map principleTitle (philosophyPrinciples philosophy)
+            position t = T.length (fst (T.breakOn t section))
+        titles @?= [ "Put the checks in the system.", "Define what finished means.", "Give agents responsibility with boundaries.", "Choose tools on merit, not familiarity." ]
+        forM_ titles $ \t -> count ("<h3 class=\"philosophy__principle-title\">" <> t <> "</h3>") section @?= 1
+        map position titles @?= sort (map position titles)
     , testCase "approved and draft copy statuses are tracked" $ do
         s <- realSite
         let section = sectionOf "philosophy" (render s Home)
@@ -333,15 +341,16 @@ structureTests =
         teaserStatus blackTeaser @?= FinalCopy
         introStatus introduction @?= FinalCopy
         contactStatus contactCopy @?= FinalCopy
-    , testCase "the homepage has a Contact section, not an About section, and no tree emblem" $ do
+    , testCase "the homepage has no About section, no tree emblem, and Contact only in the footer" $ do
         s <- realSite
         let html = render s Home
         count "id=\"contact\"" html @?= 1
         assertBool "no about section" (not ("id=\"about\"" `T.isInfixOf` html))
         assertBool "no tree" (not ("about-tree" `T.isInfixOf` html))
         assertBool "invitation" (contactInvitation contactCopy `T.isInfixOf` textOf (sectionOf "contact" html))
-        -- the Contact section ends the page: the footer follows it
-        assertBool "contact is last in main" ("</section></main><footer" `T.isInfixOf` snd (T.breakOn "id=\"contact\"" html))
+        -- no Contact section in main: the footer's is the only one
+        assertBool "no contact in main" (not ("contact" `T.isInfixOf` mainOf html))
+        assertBool "contact is in the footer" ("id=\"contact\"" `T.isInfixOf` snd (T.breakOn "<footer" html))
     ]
 
 --------------------------------------------------------------------------------

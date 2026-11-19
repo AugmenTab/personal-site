@@ -1133,58 +1133,9 @@ ul {
   color: var(--bone);
 }
 
-/* Contact (homepage, Phase 05): a short invitation and one control per
-   verified destination. Quieter than the sections above it. */
-.contact {
-  max-width: 62rem;
-  margin: 0 auto;
-  padding: var(--space-6) var(--gutter);
-  text-align: center;
-  scroll-margin-top: 1rem;
-}
-
-.contact__invitation {
-  max-width: var(--measure);
-  margin: var(--space-3) auto 0;
-  font-size: var(--step-1);
-  font-style: italic;
-  line-height: 1.45;
-  color: var(--text-muted);
-}
-
-.contact__links {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.75rem;
-  margin-top: var(--space-4);
-}
-
-/* Each card is one link: an icon beside its label, in a row (Phase 05
-   update 1; the full URL is no longer shown). */
-.contact__link {
-  display: inline-flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  min-width: 11rem;
-  min-height: 3.25rem;
-  padding: 0.75rem 1.5rem;
-  border: 1px solid var(--gold-line);
-  background: linear-gradient(180deg, rgb(26 22 25 / 0.8), rgb(18 16 19 / 0.8));
-  color: var(--text-gold);
-  text-decoration: none;
-  transition: border-color 160ms ease, color 160ms ease;
-}
-
-.contact__link:hover {
-  border-color: var(--gold);
-  color: var(--gold-bright);
-}
-
-/* The icon is a mask filled with the link's colour, so it follows hover
-   and forced-colours states with the text. */
+/* Contact icons (the footer's Contact links). The icon is a mask filled
+   with the link's colour, so it follows hover and forced-colours states
+   with the text. */
 .contact__icon {
   flex: none;
   width: 1.15rem;
@@ -1198,17 +1149,10 @@ ul {
 .contact__icon--linkedin { --icon: url("../images/icon-linkedin.svg"); }
 .contact__icon--email { --icon: url("../images/icon-email.svg"); }
 
-.contact__label {
-  font-family: var(--font-display);
-  font-size: var(--step--1);
-  letter-spacing: var(--tracking-caps);
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-/* Footer (Phase 05): identity, site links, contact destinations, then the
-   copyright and colophon. One ruled diamond on the top rule; no monogram,
-   no emblem, no artwork. */
+/* Footer (Phase 05; one structure on every page since the prelaunch
+   corrections): identity beside the stacked Site and Contact sections,
+   whose links run in rows, then the copyright and colophon. One ruled
+   diamond on the top rule; no monogram, no emblem, no artwork. */
 .site-footer {
   position: relative;
   padding: var(--space-5) var(--gutter) var(--space-4);
@@ -1231,21 +1175,22 @@ ul {
 }
 
 .site-footer__inner {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: var(--space-4) clamp(2rem, 6vw, 5rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: var(--space-3) clamp(2rem, 6vw, 5rem);
   max-width: 64rem;
   margin: 0 auto;
 }
 
-.site-footer__identity {
-  flex: 1 1 18rem;
+/* Site above Contact */
+.site-footer__sections {
+  display: grid;
+  gap: var(--space-3);
 }
 
-.site-footer__nav,
+/* the target of every Contact link */
 .site-footer__contact {
-  flex: 0 1 11rem;
+  scroll-margin-top: 1rem;
 }
 
 .site-footer__name {
@@ -1266,16 +1211,31 @@ ul {
   font-family: var(--font-display);
   font-size: var(--step--2);
   letter-spacing: var(--tracking-wide);
+  line-height: 1.5;
   text-transform: uppercase;
   color: var(--text-gold);
 }
 
+.site-footer__invitation {
+  max-width: var(--measure);
+  margin-top: 0.35rem;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+/* links run in a row and wrap naturally; each keeps a comfortable target */
 .site-footer__links {
-  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.75rem;
+  margin-top: 0.25rem;
 }
 
 .site-footer__link {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.25rem;
   padding: 0.3rem 0;
   color: var(--text-muted);
   text-decoration: none;
@@ -1437,15 +1397,17 @@ ul {
 
   /* Footer: one centred column */
   .site-footer__inner {
-    flex-direction: column;
-    align-items: center;
+    grid-template-columns: minmax(0, 1fr);
     text-align: center;
   }
 
-  .site-footer__identity,
-  .site-footer__nav,
-  .site-footer__contact {
-    flex: none;
+  .site-footer__invitation {
+    margin-inline: auto;
+  }
+
+  .site-footer__links {
+    justify-content: center;
+    gap: 0.25rem 1.5rem;
   }
 
   .site-footer__base {
@@ -2495,10 +2457,17 @@ ul {
   color: var(--text-muted);
 }
 
+/* Four principles: a 2×2 arrangement at desktop widths (prelaunch
+   correction; three columns left the fourth alone on a second row). The
+   row gap separates the rows; only the second card of each row carries
+   the internal vertical divider. */
 .philosophy__principles {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin-top: var(--space-5);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  row-gap: var(--space-5);
+  max-width: 56rem;
+  width: 100%;
+  margin: var(--space-5) auto 0;
   text-align: left;
 }
 
@@ -2509,8 +2478,14 @@ ul {
   padding: 0 clamp(1.25rem, 2.6vw, 2.25rem);
 }
 
-.philosophy__principle + .philosophy__principle {
+/* the columns sit flush with the block, so the divider is its centre line */
+.philosophy__principle:nth-child(2n + 1) {
+  padding-left: 0;
+}
+
+.philosophy__principle:nth-child(2n) {
   border-left: 1px solid var(--gold-hairline);
+  padding-right: 0;
 }
 
 .philosophy__numeral {
@@ -2626,14 +2601,18 @@ ul {
     grid-template-columns: 1fr;
     max-width: 36rem;
     margin-top: var(--space-4);
+    row-gap: 0;
   }
 
   .philosophy__principle {
     padding: var(--space-3) 0;
   }
 
-  .philosophy__principle + .philosophy__principle {
+  .philosophy__principle:nth-child(2n) {
     border-left: 0;
+  }
+
+  .philosophy__principle + .philosophy__principle {
     border-top: 1px solid var(--gold-hairline);
   }
 }
@@ -2668,14 +2647,6 @@ ul {
     padding-top: 0;
   }
 
-  .contact {
-    padding-block: var(--space-5);
-  }
-
-  .contact__link {
-    min-width: min(100%, 16rem);
-  }
-
   .feature__action {
     align-self: stretch;
   }
@@ -2689,10 +2660,6 @@ ul {
 }
 
 @media (forced-colors: active) {
-  .contact__link {
-    border: 1px solid LinkText;
-  }
-
   .contact__icon {
     forced-color-adjust: none;
     background-color: LinkText;
@@ -3267,15 +3234,20 @@ code {
   margin-bottom: var(--space-3);
 }
 
+/* The lattice is drawn by the items, not by a gold background showing
+   through the gaps (prelaunch correction): the list carries the top and
+   left rules and each item its own right and bottom rules. A complete
+   grid looks as before; an incomplete last row simply ends after its last
+   item, with no solid gold block in the unoccupied cells, at any column
+   count. */
 .dossier-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1px;
   max-width: none;
   margin: 0;
   padding: 0;
-  background: var(--gold-hairline);
-  border: 1px solid var(--gold-hairline);
+  border-top: 1px solid var(--gold-hairline);
+  border-left: 1px solid var(--gold-hairline);
 }
 
 .dossier-grid--count-2,
@@ -3287,6 +3259,9 @@ code {
   position: relative;
   padding: 1.4rem 1.4rem 1.5rem 2.6rem;
   background: linear-gradient(180deg, #131114, var(--void));
+  background-clip: padding-box;
+  border-right: 1px solid var(--gold-hairline);
+  border-bottom: 1px solid var(--gold-hairline);
 }
 
 .dossier-grid__item::before {
@@ -3486,9 +3461,13 @@ code {
     background: none;
   }
 
-  .artifact,
-  .dossier-grid__item {
+  .artifact {
     border: 1px solid CanvasText;
+  }
+
+  .dossier-grid,
+  .dossier-grid__item {
+    border-color: CanvasText;
   }
 }
 

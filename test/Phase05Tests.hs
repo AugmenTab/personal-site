@@ -74,6 +74,12 @@ article slug status =
 pdf :: BS.ByteString
 pdf = "%PDF-1.4\n% test fixture, not a real resume\n%%EOF\n"
 
+-- | The résumé link's tail, as in the nav and the footer: it opens the PDF
+-- in a new tab (no opener, no referrer), and says so to assistive
+-- technology. The visible label stays "Resume".
+resumeLink :: T.Text
+resumeLink = "href=\"/resume.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Resume<span class=\"visually-hidden\"> (PDF, opens in a new tab)</span></a>"
+
 strings :: [T.Text] -> Maybe Json.Value
 strings = Just . Json.toJSON
 
@@ -249,23 +255,29 @@ workIndexTests =
 navigationTests :: TestTree
 navigationTests =
   testGroup "navigation"
-    [ testCase "every page: Home, Work, Writing | monogram | About, Resume, Contact (/#contact); the target exists on the homepage" $ do
+    [ testCase "every page: Home, Work, Writing | monogram | About, Resume, Contact (#contact, the current page's footer); the target exists on every page" $ do
         s <- realSite
         forM_ (realRoutes s) $ \r -> do
           let header = headerOf (render s r)
-          attributeValues "href" header @?= ["/", "/work/", "/writing/", "/", "/about/", "/resume.pdf", "/#contact"]
-        count "id=\"contact\"" (render s Home) @?= 1
+          attributeValues "href" header @?= ["/", "/work/", "/writing/", "/", "/about/", "/resume.pdf", "#contact"]
+    , testCase "every page has exactly one #contact, in its footer, so the Contact link resolves locally" $ do
+        s <- realSite
+        forM_ (realRoutes s) $ \r -> do
+          let html = render s r
+          count "id=\"contact\"" html @?= 1
+          count "id=\"contact\"" (footerOf html) @?= 1
+          assertBool (show r <> ": Contact link") ("<a class=\"site-nav__link\" href=\"#contact\">Contact</a>" `T.isInfixOf` headerOf html)
     , testCase "on the homepage only Home is current, never Contact" $ do
         s <- realSite
         let header = headerOf (render s Home)
         count "aria-current=\"page\"" header @?= 1
         assertBool "home current" ("href=\"/\" aria-current=\"page\">Home</a>" `T.isInfixOf` header)
-        assertBool "contact not current" ("href=\"/#contact\">Contact</a>" `T.isInfixOf` header)
+        assertBool "contact not current" ("href=\"#contact\">Contact</a>" `T.isInfixOf` header)
     , testCase "Writing is always in the nav, before the monogram, with or without published writing" $ do
         withSite (article "draft-only" "draft") $ \_ s ->
-          attributeValues "href" (headerOf (render s Home)) @?= ["/", "/work/", "/writing/", "/", "/about/", "/#contact"]
+          attributeValues "href" (headerOf (render s Home)) @?= ["/", "/work/", "/writing/", "/", "/about/", "#contact"]
         withSite (article "first" "published") $ \_ s ->
-          attributeValues "href" (headerOf (render s Home)) @?= ["/", "/work/", "/writing/", "/", "/about/", "/#contact"]
+          attributeValues "href" (headerOf (render s Home)) @?= ["/", "/work/", "/writing/", "/", "/about/", "#contact"]
     , testCase "the real Writing page: heading, Coming soon, valid metadata, no list or fake entries" $ do
         s <- realSite
         let html = render s WritingIndex
@@ -283,7 +295,7 @@ navigationTests =
           let header = headerOf (render s About)
               labels = [ T.strip (fst (T.breakOn "<" (T.drop 1 (snd (T.breakOn ">" rest)))))
                        | rest <- drop 1 (T.splitOn "class=\"site-nav__link\"" header) ]
-          attributeValues "href" header @?= ["/", "/work/", "/writing/", "/", "/about/", "/resume.pdf", "/#contact"]
+          attributeValues "href" header @?= ["/", "/work/", "/writing/", "/", "/about/", "/resume.pdf", "#contact"]
           labels @?= ["Home", "Work", "Writing", "About", "Resume", "Contact"]
           assertBool "monogram between Writing and About"
             (T.isInfixOf "/writing/" (fst (T.breakOn "site-nav__mark" header)) && T.isInfixOf "/about/" (snd (T.breakOn "site-nav__mark" header)))
@@ -292,7 +304,7 @@ navigationTests =
         let about = render s About
             main = between "<main" "</main>" about
         assertBool "no github in the profile" (not ("github.com" `T.isInfixOf` main))
-        attributeValues "href" main @?= ["/#contact"]
+        attributeValues "href" main @?= ["#contact"]
         assertBool "emblem" ("about-tree.webp" `T.isInfixOf` main)
         About.profileStatus About.profile @?= Home.FinalCopy
         assertBool "approved personal lede" ("I've never had much success keeping my interests in separate boxes." `T.isInfixOf` main)
@@ -311,16 +323,32 @@ resumeTests =
         assertBool "a résumé URL" (siteResumeUrl (siteConfig s) /= Nothing)
         forM_ (realRoutes s) $ \r -> do
           let html = render s r
-              link = "href=\"/resume.pdf\">Resume<span class=\"visually-hidden\"> (PDF)</span></a>"
-          assertBool (show r <> " nav") (link `T.isInfixOf` headerOf html)
-          assertBool (show r <> " footer") (link `T.isInfixOf` footerOf html)
+          assertBool (show r <> " nav") (resumeLink `T.isInfixOf` headerOf html)
+          assertBool (show r <> " footer") (resumeLink `T.isInfixOf` footerOf html)
           assertBool (show r <> " no accent") (not ("Résumé" `T.isInfixOf` html))
+    , testCase "only the résumé links open a new tab; site and contact links do not" $ do
+        s <- realSite
+        forM_ (realRoutes s) $ \r -> do
+          let html = render s r
+          -- one in the nav, one in the footer, each with both rel tokens in one attribute
+          count "target=\"_blank\"" html @?= 2
+          count "target=\"_blank\" rel=\"noopener noreferrer\"" html @?= 2
+          forM_ ["href=\"/work/\"", "href=\"#contact\"", "href=\"https://github.com/AugmenTab\"", "href=\"mailto:tyler.baum@protonmail.com\""] $ \href ->
+            assertBool (show r <> ": " <> T.unpack href <> " opens in place")
+              (not (any ("_blank" `T.isInfixOf`) [ T.takeWhile (/= '>') rest | rest <- drop 1 (T.splitOn href html) ]))
+    , testCase "without a résumé PDF there is no résumé link, nav or footer" $
+        withSite (project "demo" []) $ \_ s ->
+          forM_ (realRoutes s) $ \r -> do
+            let html = render s r
+            assertBool (show r <> " no /resume.pdf") (not ("resume.pdf" `T.isInfixOf` html))
+            assertBool (show r <> " no Resume label") (not (">Resume<" `T.isInfixOf` html))
+            count "target=\"_blank\"" html @?= 0
     , testCase "a valid content/resume.pdf is published at /resume.pdf and linked from the nav and footer" $
         withSite (("content/resume.pdf", pdf) : project "demo" []) $ \root s -> do
           forM_ (realRoutes s) $ \r -> do
             let html = render s r
-            assertBool (show r <> " nav") ("href=\"/resume.pdf\">Resume<span class=\"visually-hidden\"> (PDF)</span></a>" `T.isInfixOf` headerOf html)
-            assertBool (show r <> " footer") ("href=\"/resume.pdf\">Resume<span class=\"visually-hidden\"> (PDF)</span></a>" `T.isInfixOf` footerOf html)
+            assertBool (show r <> " nav") (resumeLink `T.isInfixOf` headerOf html)
+            assertBool (show r <> " footer") (resumeLink `T.isInfixOf` footerOf html)
             assertBool (show r <> " no accented label") (not ("Résumé" `T.isInfixOf` html))
           let out = root </> "dist"
           _ <- buildSite BuildConfig { sourceRoot = root, outputDir = out } s
@@ -421,22 +449,28 @@ footerTests =
           let footer = footerOf (render s r)
           forM_ [ "<p class=\"site-footer__name\">Tyler Baum</p>"
                 , "<p class=\"site-footer__thesis\">Building precise systems for ambitious ideas.</p>"
-                , "<nav class=\"site-footer__nav\" aria-label=\"Footer\">"
+                , "<nav class=\"site-footer__nav\" aria-label=\"Footer\"><h2 class=\"site-footer__heading\">Site</h2><ul class=\"site-footer__links\">"
+                , "<section class=\"site-footer__contact\" id=\"contact\" aria-labelledby=\"contact-title\"><h2 class=\"site-footer__heading\" id=\"contact-title\">Contact</h2>"
+                , "<p class=\"site-footer__invitation\">Questions about a project, or an idea worth building? I’d be glad to hear from you.</p>"
                 , "<p class=\"site-footer__copyright\">© 2026 Tyler Baum</p>"
                 , "<p class=\"site-footer__colophon\">Built with Haskell &#38; Brigid.</p>" ] $ \needle ->
             assertBool (show r <> ": " <> T.unpack needle) (needle `T.isInfixOf` footer)
           attributeValues "href" (between "site-footer__nav" "</nav>" footer) @?= ["/work/", "/writing/", "/about/", "/resume.pdf"]
           forM_ ["monogram", "about-tree", "<img"] $ \needle ->
             assertBool (show r <> ": footer has " <> T.unpack needle) (not (needle `T.isInfixOf` footer))
-    , testCase "contact destinations: in the footer everywhere except the homepage, where Contact sits directly above" $ do
+    , testCase "contact destinations: in the footer of every page, the homepage included, each once" $ do
         s <- realSite
         forM_ (realRoutes s) $ \r -> do
-          let footer = footerOf (render s r)
-          if r == Home
-            then assertBool "home: no contact column" (not ("site-footer__contact" `T.isInfixOf` footer))
-            else attributeValues "href" (between "site-footer__contact" "</ul>" footer) @?= ["https://github.com/AugmenTab", "https://www.linkedin.com/in/thebaum/", "mailto:tyler.baum@protonmail.com"]
-        -- each destination is one control within the homepage's Contact section
-        count "https://github.com/AugmenTab" (render s Home) @?= 1
+          let html = render s r
+          attributeValues "href" (between "site-footer__contact" "</ul>" (footerOf html)) @?= ["https://github.com/AugmenTab", "https://www.linkedin.com/in/thebaum/", "mailto:tyler.baum@protonmail.com"]
+          forM_ ["https://github.com/AugmenTab", "https://www.linkedin.com/in/thebaum/", "mailto:tyler.baum@protonmail.com"] $ \href ->
+            count ("href=\"" <> href <> "\"") html @?= 1
+          assertBool (show r <> ": no contact section in main") (not ("contact__" `T.isInfixOf` between "<main" "</main>" html))
+    , testCase "the footer is structurally identical on every page (only aria-current differs)" $ do
+        s <- realSite
+        let normalised r = T.replace " aria-current=\"page\"" "" (footerOf (render s r))
+        forM_ (realRoutes s) $ \r ->
+          assertBool (show r <> " footer differs from the homepage's") (normalised r == normalised Home)
     , testCase "optional destinations appear only when configured" $
         withSite (("content/resume.pdf", pdf) : article "post" "published") $ \_ s -> do
           let footer = footerOf (render s About)
@@ -481,17 +515,17 @@ settingsTests =
         attributeValues "href" section @?= expected
         attributeValues "href" (between "site-footer__contact" "</ul>" (footerOf about)) @?= expected
         forM_ expected $ \href -> count ("href=\"" <> href <> "\"") home @?= 1
-        -- Phase 05 update 1: each card is one link holding an icon and the
-        -- label; the address is screen-reader text only
-        assertBool "email card"
-          ("<a class=\"contact__link\" href=\"mailto:name@example.com\"><span class=\"contact__icon contact__icon--email\" aria-hidden=\"true\"></span><span class=\"contact__label\">Email</span><span class=\"visually-hidden\">: name@example.com</span></a>" `T.isInfixOf` section)
+        -- Phase 05 update 1: each destination is one link holding an icon
+        -- and the label; the address is screen-reader text only
+        assertBool "email link"
+          ("<a class=\"site-footer__link site-footer__link--contact\" href=\"mailto:name@example.com\"><span class=\"contact__icon contact__icon--email\" aria-hidden=\"true\"></span><span class=\"site-footer__label\">Email</span><span class=\"visually-hidden\">: name@example.com</span></a>" `T.isInfixOf` section)
         forM_ ["github", "linkedin", "email"] $ \kind -> count ("contact__icon--" <> kind) section @?= 1
         count "<a " section @?= 3
     , testCase "contact cards show an icon and the label, never the URL (Phase 05 update 1)" $ do
         s <- realSite
         let section = between "id=\"contact\"" "</section>" (render s Home)
             visible = T.concat [ fst (T.breakOn "<" t) | t <- drop 1 (T.splitOn ">" (foldr (\(from, to) acc -> T.replace from to acc) section [ ("<span class=\"visually-hidden\">: github.com/AugmenTab</span>", ""), ("<span class=\"visually-hidden\">: linkedin.com/in/thebaum</span>", ""), ("<span class=\"visually-hidden\">: tyler.baum@protonmail.com</span>", "") ])) ]
-        assertBool "card" ("<a class=\"contact__link\" href=\"https://github.com/AugmenTab\"><span class=\"contact__icon contact__icon--github\" aria-hidden=\"true\"></span><span class=\"contact__label\">GitHub</span><span class=\"visually-hidden\">: github.com/AugmenTab</span></a>" `T.isInfixOf` section)
+        assertBool "link" ("<a class=\"site-footer__link site-footer__link--contact\" href=\"https://github.com/AugmenTab\"><span class=\"contact__icon contact__icon--github\" aria-hidden=\"true\"></span><span class=\"site-footer__label\">GitHub</span><span class=\"visually-hidden\">: github.com/AugmenTab</span></a>" `T.isInfixOf` section)
         assertBool ("no visible URL in: " <> T.unpack visible) (not (any (`T.isInfixOf` visible) ["github.com", "linkedin.com", "protonmail.com"]))
         assertBool "no display span" (not ("contact__display" `T.isInfixOf` section))
         -- the icon is decorative and the card is the only control

@@ -199,11 +199,11 @@ def no_js_walk(browser, failures):
         ("Brigid card", ".project-card__link[href='/work/brigid/']", "/work/brigid/"),
         ("sidebar All projects", ".project-nav__back", "/work/"),
         ("nav About", ".site-nav >> text=About", "/about/"),
-        ("About: get in touch", ".about__onward a", "/#contact"),
+        ("About: get in touch", ".about__onward a", "/about/#contact"),
         ("monogram", ".site-nav__mark", "/"),
         ("hero CTA", ".hero__actions .button--primary", "/#selected-work"),
         ("hero secondary CTA", ".hero__actions .button--secondary", "/about/"),
-        ("nav Contact", ".site-nav >> text=Contact", "/#contact"),
+        ("nav Contact (current page footer)", ".site-nav >> text=Contact", "/about/#contact"),
         ("footer Work", ".site-footer__nav >> text=Work", "/work/"),
         ("footer About", ".site-footer__nav >> text=About", "/about/"),
         ("nav Home", ".site-nav >> text=Home", "/"),
@@ -362,9 +362,10 @@ def focus_checks(browser, failures):
 
 PHASE03_OUT = f"{OUT}/phase-03"
 
-# The required homepage order (Phase 03 §11; Phase 05 replaced About with
-# Contact). #writing is conditional.
-HOME_SECTIONS = ["top", "black", "selected-work", "philosophy", "writing", "contact"]
+# The required homepage order (Phase 03 §11). #writing is conditional.
+# Contact (#contact) is in the shared footer, not in main, since the
+# prelaunch corrections; it is captured with the footer.
+HOME_SECTIONS = ["top", "black", "selected-work", "philosophy", "writing"]
 
 SECTION_CAPTURES = {
     "desktop": ["black", "selected-work", "philosophy", "writing", "contact"],

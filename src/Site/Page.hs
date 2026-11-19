@@ -5,6 +5,7 @@ module Site.Page
   ( SiteConfig (..)
   , Page (..)
   , Layout (..)
+  , CopyStatus (..)
   , GeneratedFile (..)
   , Site (..)
   , sectionTitle
@@ -32,6 +33,10 @@ data SiteConfig =
       -- ^ The published résumé PDF, when one exists; only then do the
       -- navigation and footer link to it.
     }
+
+-- | Whether a piece of editorial copy has been approved by the owner.
+data CopyStatus = DraftCopy | FinalCopy
+  deriving (Eq, Show)
 
 -- | How the shell frames a page's @<main>@.
 data Layout

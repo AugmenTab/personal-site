@@ -17,8 +17,8 @@ Pages are generated through one shared Brigid shell (navigation, footer,
 canonical and social metadata):
 
 - the homepage: the approved Phase 00 arrival, then Selected Work,
-  Engineering Philosophy, a conditional Writing preview, and Contact (see
-  [Homepage](#homepage));
+  Engineering Philosophy and a conditional Writing preview (see
+  [Homepage](#homepage)); Contact is a section of every page's footer;
 - a Work index: a two-column card grid with search and category filters
   that work without a server, and a complete list without JavaScript (see
   [Search and filtering](#search-and-filtering));
@@ -332,7 +332,11 @@ its file:
 
 **Grids** are written in Markdown, so the prose stays in one file. A grid
 section is optional introductory paragraphs, then exactly one bullet list
-of 2 to 9 items, each a single paragraph starting with a bold title:
+of 2 to 9 items, each a single paragraph starting with a bold title. The
+grid has three columns (two for 2 or 4 items, and on tablets; one on
+phones). Its hairline lattice is drawn by the items themselves, so an
+incomplete last row simply ends after its last item, with no filled block
+in the empty cells:
 
 ```markdown
 ## Design principles
@@ -550,7 +554,8 @@ Put the PDF at **`content/resume.pdf`** and build. Nothing else is needed:
   update it);
 - the navigation (between About and Contact) and the footer gain a
   **Resume** link (no accent in the label), announced to assistive
-  technology as "Resume (PDF)", which opens `/resume.pdf` directly;
+  technology as "Resume (PDF, opens in a new tab)", which opens
+  `/resume.pdf` in a new tab (`target="_blank"`, `rel="noopener noreferrer"`);
 - the build checks that it is a regular file inside `content/` (not a
   symlink out of it), that it starts with the PDF signature `%PDF-`, and
   that it is at most 10 MiB; anything else fails the build;
@@ -685,15 +690,14 @@ filtering and ordering stay in `Site.Content.Types`):
 | 3 | Selected Work (`#selected-work`) | `featuredProjects`, minus the teaser's project | at least one other featured project; otherwise the primary CTA goes to `/work/` |
 | 4 | Engineering Philosophy (`#philosophy`) | `philosophy` (Haskell record) | always |
 | 5 | Writing (`#writing`) | the newest 3 of `publishedArticles` | at least one published article; otherwise no heading, link or placeholder |
-| 6 | Contact (`#contact`) | `Home.contactCopy` (invitation), `Site.Settings` (destinations) | always; the target of every page's Contact link (`/#contact`) and of the hero's secondary button |
 
 **About and Contact are separate (Phase 05).** About is the personal
 profile at `/about/` (`Site.Pages.About.profile`, with the tree-and-eclipse
 emblem, which appears nowhere else). Contact is a short invitation and one
-control per verified destination at the foot of the homepage: no form, no
-backend, no About button. The hero's secondary button keeps its approved
-label, "About & contact", and now leads to `#contact`; renaming it is an
-owner decision (the hero is frozen).
+link per verified destination in the shared footer of every page (see
+[Navigation and footer](#navigation-and-footer)): no form, no backend. The
+homepage has no Contact section of its own (prelaunch corrections). The
+hero's secondary button, "About me", leads to `/about/`.
 
 To change what is featured, edit `featured_order` in the projects'
 `project.json`; no Haskell is involved. Selected Work lays out one, two or
@@ -713,7 +717,7 @@ approved, with later technical exhibits and improvements tracked separately.
 | Black excerpt | `Home.blackExample` | **Verified, not illustrative**: `white/test/conformance/NominalRecord.blk` from Black at `c1a45af`, an accepted conformance case |
 | Engineering Philosophy | `Home.philosophy` | Approved; “Confidence isn't evidence.” |
 | About profile | `About.profile` | Approved |
-| Contact invitation | `Home.contactCopy` | Approved |
+| Contact invitation | `Site.Layout.contactCopy` (the footer) | Approved |
 | Black, Brigid and Paranoia Engine dossiers | `content/projects/` | Approved; future engineering fixes and exhibits tracked in `docs/operations/post-deploy-project-followups.md` |
 
 ## Site configuration
@@ -728,7 +732,7 @@ every check and build (a bad value fails with `invalid site settings`):
 | `settingsName` | Tyler Baum | titles, `og:site_name`, footer, copyright |
 | `settingsThesis` | Building precise systems for ambitious ideas. | the hero and the footer |
 | `settingsCopyrightYears` | 2026 | the footer's "© 2026 Tyler Baum". A fixed value, not the build clock, so builds are reproducible; use a range such as `2026–2027` (en dash) later |
-| `settingsContacts` | `[GitHub "AugmenTab"]` | the homepage Contact section and the footer |
+| `settingsContacts` | GitHub, LinkedIn, Email (below) | the footer's Contact section on every page |
 
 ### Contact destinations
 
@@ -744,18 +748,15 @@ settingsContacts =
 ```
 
 Each kind may appear once; they always display in the order GitHub,
-LinkedIn, Email. On the homepage each is **one** card that is itself the
-link: a small icon beside the label ("GitHub"). The URL or address is not
+LinkedIn, Email. In the footer each is **one** link: a small icon beside the label ("GitHub"). The URL or address is not
 shown, but it stays in the link as visually hidden text, so screen readers
 still announce the destination. The icons are `assets/images/icon-{github,linkedin,email}.svg`,
 used as CSS masks, so they take the text colour on hover and in forced
 colours. There is no copy-to-clipboard control; if added later, it must be a
-separate button beside the email card, never inside the link. The constructors fix the scheme and host, and validation
+separate button beside the email link, never inside it. The constructors fix the scheme and host, and validation
 rejects anything but a plain username, profile id or address (no display
 names, queries or uppercase domains), so a contact cannot point anywhere
-unexpected. The footer repeats the destinations on every page except the
-homepage, where the Contact section sits directly above it. A test pins the
-real list so a change is deliberate.
+unexpected. A test pins the real list so a change is deliberate.
 
 ## Navigation and footer
 
@@ -763,19 +764,24 @@ The global navigation is `Home · Work · Writing` (monogram) `About ·
 [Resume] · Contact`. Writing is always present: its index exists before any
 article is published (post-Phase 07 update 1). Resume appears only with
 `content/resume.pdf`. The footer's site links follow the same rule: Work,
-Writing, About, then Resume when it exists. Contact is `/#contact` from every
-page, the 404 included: on the homepage it scrolls to the section without a
-reload. The header scrolls away with the page (it is not fixed), so nothing
+Writing, About, then Resume when it exists. Both Resume links open the PDF
+in a new tab; every other link opens in place. Contact is `#contact`, the
+current page's own footer, on every page (the 404 included), so it never
+leaves the page or reloads. The header scrolls away with the page (it is not fixed), so nothing
 covers the section. Only page links are marked current: on the homepage,
 Home alone. Every page now has five or six links, so phones (640px and
 below) stack each side's links on its own row under the monogram; five do
 not fit a single row at 390px. Wider screens keep one row either side of
 the monogram.
 
-The footer is the same on every page: the name and thesis; site links
-(Work, [Writing], About, [Résumé]); the contact destinations (not on the
-homepage); then "© 2026 Tyler Baum" and "Built with Haskell & Brigid." One
-ruled diamond sits on its top rule. It has no monogram, emblem or artwork.
+The footer has one structure on every page (prelaunch corrections; only
+`aria-current` differs): the name and thesis beside two stacked sections,
+**Site** (Work, Writing, About, [Resume], in a row) and **Contact**
+(`#contact`: the approved invitation, then GitHub, LinkedIn and Email in a
+row), then "© 2026 Tyler Baum" and "Built with Haskell & Brigid." The rows
+wrap naturally on narrow screens, where the footer becomes one centred
+column. One ruled diamond sits on its top rule. It has no monogram, emblem
+or artwork.
 
 ## Metadata and discovery
 
